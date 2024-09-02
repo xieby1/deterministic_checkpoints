@@ -27,7 +27,7 @@ in pkgs.stdenv.mkDerivation {
       '';
       before_workload = import ./initramfs/before_workload;
       qemu_trap = import ./initramfs/qemu_trap;
-      spec2006 = import ../spec2006.nix;
+      spec2006 = import ../spec2006;
       run_sh = pkgs.writeText "run.sh" ''
         before_workload
         echo start

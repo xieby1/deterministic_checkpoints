@@ -47,7 +47,7 @@ in pkgs.stdenv.mkDerivation {
   system = "x86_64-linux";
 
   srcs = [
-    ../../spec2006.tar.gz
+    ../../../spec2006.tar.gz
     CPU2006LiteWrapper
   ];
   sourceRoot = ".";
