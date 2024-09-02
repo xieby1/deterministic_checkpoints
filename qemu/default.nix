@@ -64,4 +64,14 @@ in pkgs.stdenv.mkDerivation {
     "--disable-download"
   ];
   preBuild = "cd build";
+
+  # build plugins
+  postBuild = ''
+    make -C contrib/plugins
+  '';
+  # install plugins
+  postInstall = ''
+    mkdir -p $out/lib
+    cp contrib/plugins/*.so $out/lib/
+  '';
 }
