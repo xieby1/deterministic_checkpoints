@@ -18,79 +18,14 @@ in pkgs.stdenv.mkDerivation {
   ];
   # TODO: add same gcc optimization cflags as benchmarks?
   buildPhase = let
-    # based on https://github.com/OpenXiangShan/riscv-rootfs/blob/checkpoint/rootfsimg/initramfs-spec.txt
-    initramfs_txt = let
-      busybox = import ./initramfs/busybox;
-      inittab = pkgs.writeText "inittab" ''
-        ::sysinit:/bin/busybox --install -s
-        /dev/console::sysinit:-/bin/sh /run/run.sh
-      '';
-      before_workload = import ./initramfs/before_workload;
-      qemu_trap = import ./initramfs/qemu_trap;
-      spec2006 = import ../spec2006;
-      run_sh = pkgs.writeText "run.sh" ''
-        before_workload
-        echo start
-        cd /run
-        for f in 166 200 c-typeck cp-decl expr expr2 g23 s04 scilab; do
-          echo $f: running...
-          ./403.gcc $f.i -o $f.s
-          echo $f: finished
-        done
-        echo exit
-        qemu_trap
-      '';
-    in pkgs.writeText "initramfs.txt" ''
-      dir /bin 755 0 0
-      dir /etc 755 0 0
-      dir /dev 755 0 0
-      dir /lib 755 0 0
-      dir /proc 755 0 0
-      dir /sbin 755 0 0
-      dir /sys 755 0 0
-      dir /tmp 755 0 0
-      dir /usr 755 0 0
-      dir /mnt 755 0 0
-      dir /usr/bin 755 0 0
-      dir /usr/lib 755 0 0
-      dir /usr/sbin 755 0 0
-      dir /var 755 0 0
-      dir /var/tmp 755 0 0
-      dir /root 755 0 0
-      dir /var/log 755 0 0
-
-      nod /dev/console 644 0 0 c 5 1
-      nod /dev/null 644 0 0 c 1 3
-
-      # busybox
-      file /bin/busybox ${busybox}/bin/busybox 755 0 0
-      file /etc/inittab ${inittab} 755 0 0
-      slink /init /bin/busybox 755 0 0
-
-      # traps
-      file /bin/before_workload ${before_workload}/bin/before_workload 755 0 0
-      file /bin/qemu_trap ${qemu_trap}/bin/qemu_trap 755 0 0
-
-      dir  /run 755 0 0
-      file /run/run.sh     ${run_sh} 644 0 0
-      file /run/403.gcc    ${spec2006}/403.gcc/build/403.gcc             755 0 0
-      file /run/166.i      ${spec2006}/403.gcc/data/ref/input/166.i      644 0 0
-      file /run/200.i      ${spec2006}/403.gcc/data/ref/input/200.i      644 0 0
-      file /run/c-typeck.i ${spec2006}/403.gcc/data/ref/input/c-typeck.i 644 0 0
-      file /run/cp-decl.i  ${spec2006}/403.gcc/data/ref/input/cp-decl.i  644 0 0
-      file /run/expr.i     ${spec2006}/403.gcc/data/ref/input/expr.i     644 0 0
-      file /run/expr2.i    ${spec2006}/403.gcc/data/ref/input/expr2.i    644 0 0
-      file /run/g23.i      ${spec2006}/403.gcc/data/ref/input/g23.i      644 0 0
-      file /run/s04.i      ${spec2006}/403.gcc/data/ref/input/s04.i      644 0 0
-      file /run/scilab.i   ${spec2006}/403.gcc/data/ref/input/scilab.i   644 0 0
-    '';
+    initramfs = import ./initramfs;
     # based on https://github.com/OpenXiangShan/nemu_board/raw/37dc20e77a9bbff54dc2e525dc6c0baa3d50f948/configs/xiangshan_defconfig
     xiangshan_defconfig = pkgs.writeText "xiangshan_defconfig" ''
       CONFIG_DEFAULT_HOSTNAME="(lvna)"
       # CONFIG_CROSS_MEMORY_ATTACH is not set
       CONFIG_LOG_BUF_SHIFT=15
       CONFIG_BLK_DEV_INITRD=y
-      CONFIG_INITRAMFS_SOURCE="${initramfs_txt}"
+      CONFIG_INITRAMFS_SOURCE="${initramfs}/403.gcc.cpio"
       CONFIG_EXPERT=y
       # CONFIG_SYSFS_SYSCALL is not set
       # CONFIG_FHANDLE is not set
