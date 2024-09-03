@@ -1,7 +1,6 @@
 let
   name = "initramfs-env";
   pkgs = import <nixpkgs> {};
-  # TODO: unify initramfs/ and cpio/
   busybox = import ./busybox;
   inittab = pkgs.writeText "inittab" ''
     ::sysinit:/bin/busybox --install -s
