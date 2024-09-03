@@ -41,6 +41,9 @@ in pkgs.stdenv.mkDerivation {
       cp -r $out/subprojects/packagefiles/berkeley-testfloat-3/* $out/subprojects/berkeley-testfloat-3/
     '';
   };
+  patches = [
+    ./allow_get_icount_anytime.patch
+  ];
 
   buildInputs = [
     pkgs.python3

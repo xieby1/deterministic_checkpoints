@@ -1,0 +1,21 @@
+diff --git a/accel/tcg/icount-common.c b/accel/tcg/icount-common.c
+index ec57192be8..d1ff3c839a 100644
+--- a/accel/tcg/icount-common.c
++++ b/accel/tcg/icount-common.c
+@@ -110,10 +110,12 @@ static int64_t icount_get_raw_locked(void)
+     CPUState *cpu = current_cpu;
+ 
+     if (cpu && cpu->running) {
+-        if (!cpu->neg.can_do_io) {
+-            error_report("Bad icount read");
+-            exit(1);
+-        }
++        // Generating checkpoints does not change the machine state.
++        // Therefore, it is safe to get_icount regardless of the can_do_io.
++        // if (!cpu->neg.can_do_io) {
++        //     error_report("Bad icount read");
++        //     exit(1);
++        // }
+         /* Take into account what has run */
+         icount_update_locked(cpu);
+     }
