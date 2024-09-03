@@ -1,5 +1,5 @@
 let
-  name = "initramfs-env";
+  name = "initramfs-overlays";
   pkgs = import <nixpkgs> {};
   busybox = import ./busybox;
   inittab = pkgs.writeText "inittab" ''
