@@ -42,6 +42,7 @@ let
     rev = "010ca8fe8bf229c68443a2dd1766e1be62fa7998";
     hash = "sha256-qNxmM9Dmobr6fvTZapacu8jngcBPRbybwayTi7CZGd0=";
   };
+  size = "ref";
 in pkgs.stdenv.mkDerivation {
   name = "spec2006exe";
   system = "x86_64-linux";
@@ -100,9 +101,22 @@ in pkgs.stdenv.mkDerivation {
 
   dontFixup = true;
 
+  # based on https://github.com/OpenXiangShan/CPU2006LiteWrapper/blob/main/scripts/run-template.sh
   installPhase = ''
-    mkdir -p $out
-    mv [0-9][0-9][0-9].* $out/
+    for WORK_DIR in [0-9][0-9][0-9].*; do
+      echo "Prepare data: $WORK_DIR"
+      pushd $WORK_DIR
+      mkdir -p run
+      if [ -d data/all/input ];        then cp -r data/all/input/*     run/; fi
+      if [ -d data/${size}/input ];    then cp -r data/${size}/input/* run/; fi
+      if [ -f extra-data/${size}.sh ]; then sh extra-data/${size}.sh       ; fi
+
+      mkdir -p $out/$WORK_DIR/run/
+      cp -r run/* $out/$WORK_DIR/run/
+      cp build/$WORK_DIR $out/$WORK_DIR/run/
+      popd
+    done
+
     find $out -type d -exec chmod 555 {} +
   '';
 }
