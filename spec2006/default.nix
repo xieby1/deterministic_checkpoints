@@ -114,6 +114,11 @@ in pkgs.stdenv.mkDerivation {
       mkdir -p $out/$WORK_DIR/run/
       cp -r run/* $out/$WORK_DIR/run/
       cp build/$WORK_DIR $out/$WORK_DIR/run/
+      # Replace $APP with executable in run-<size>.sh
+      # E.g.: 481.wrf/run-ref.sh
+      #   before replace: [run-ref.h]: $APP > rsl.out.0000
+      #   after replace:     [run.sh]: ./481.wrf > rsl.out.0000
+      sed 's,\$APP,./'$WORK_DIR',' run-${size}.sh > $out/$WORK_DIR/run/run-spec.sh
       popd
     done
 
