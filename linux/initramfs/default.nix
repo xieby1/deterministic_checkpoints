@@ -3,6 +3,7 @@ let
   name = "spec2006.cpio";
   base = import ./base;
   spec2006 = import ../../spec2006;
+  overlays = import ./overlays;
 in pkgs.runCommand name {} ''
   mkdir -p $out
 
@@ -12,6 +13,8 @@ in pkgs.runCommand name {} ''
     chmod +w $out/$TESTCASE_NAME.cpio
 
     cd $WORK_DIR
+    find . | ${pkgs.cpio}/bin/cpio --reproducible -H newc -oAF $out/$TESTCASE_NAME.cpio
+    cd ${overlays}
     find . | ${pkgs.cpio}/bin/cpio --reproducible -H newc -oAF $out/$TESTCASE_NAME.cpio
   done
 ''
