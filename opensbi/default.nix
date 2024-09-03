@@ -22,7 +22,7 @@ in pkgs.stdenv.mkDerivation {
 
   makeFlags = let
     linux = import ../linux;
-    dts = import ../dts;
+    dts = import ./dts;
   in [
     "CROSS_COMPILE=riscv64-unknown-linux-gnu-"
     "PLATFORM=generic"
