@@ -59,7 +59,7 @@ in pkgs.stdenv.mkDerivation {
 
       echo create Linux Kernel Image for $TESTCASE_NAME
       make ''${TESTCASE_DEFCONFIG##*/}
-      make -j
+      make -j $NIX_BUILD_CORES
       mv arch/riscv/boot/Image arch/riscv/boot/Image.$TESTCASE_NAME
       # Perform a minor cleanup to trigger the next make -j command for generating a new image.
       rm .config
