@@ -2,7 +2,7 @@
   testCase ? "403.gcc"
 }:
 let
-  name = "2.cluster.nix-${testCase}";
+  name = "2.cluster-${testCase}";
   pkgs = import <nixpkgs> {};
   simpoint = import ../simpoint;
   stage1_profiling = import ./1.profiling.nix {inherit testCase;};

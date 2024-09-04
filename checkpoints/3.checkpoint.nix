@@ -2,7 +2,7 @@
   testCase ? "403.gcc"
 }:
 let
-  name = "3.checkpoint.nix-${testCase}";
+  name = "3.checkpoint-${testCase}";
   pkgs = import <nixpkgs> {};
   qemu = import ../qemu;
   opensbi = import ../opensbi;
