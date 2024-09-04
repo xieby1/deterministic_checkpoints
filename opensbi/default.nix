@@ -1,6 +1,8 @@
 let
   name = "opensbi";
   pkgs = import <nixpkgs> {};
+  linux = import ../linux;
+  dts = import ./dts;
 in pkgs.stdenv.mkDerivation {
   inherit name;
 
@@ -16,23 +18,29 @@ in pkgs.stdenv.mkDerivation {
     pkgs.pkgsCross.riscv64.stdenv.cc
   ];
 
-  preBuild = ''
-    patchShebangs .
-  '';
-
-  makeFlags = let
-    linux = import ../linux;
-    dts = import ./dts;
-  in [
+  makeFlags = [
     "CROSS_COMPILE=riscv64-unknown-linux-gnu-"
     "PLATFORM=generic"
-    "FW_PAYLOAD_PATH=${linux}/arch/riscv/boot/Image"
     "FW_FDT_PATH=${dts}/xiangshan.dtb"
     "FW_PAYLOAD_OFFSET=0x200000"
   ];
+  buildPhase = ''
+    patchShebangs .
+
+    for KERNEL in ${linux}/arch/riscv/boot/Image.*; do
+      TESTCASE_NAME=''${KERNEL##*Image.}
+
+      echo Create firmware payload for $TESTCASE_NAME
+      make -j $NIX_BUILD_CORES $makeFlags FW_PAYLOAD_PATH=$KERNEL
+      mv build/platform/generic/firmware/fw_payload.bin build/platform/generic/firmware/fw_payload.$TESTCASE_NAME.bin
+      # Perform a minor cleanup to trigger the next make -j command for generating a new image.
+      rm build/platform/generic/firmware/fw_payload.o
+      rm build/platform/generic/firmware/fw_payload.elf*
+    done
+  '';
 
   installPhase = ''
     mkdir -p $out
-    cp build/platform/generic/firmware/fw_payload.bin $out/
+    cp build/platform/generic/firmware/fw_payload.*.bin $out/
   '';
 }
