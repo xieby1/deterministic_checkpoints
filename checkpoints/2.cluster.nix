@@ -1,8 +1,11 @@
+{
+  testCase ? "403.gcc"
+}:
 let
-  name = "2.cluster.nix";
+  name = "2.cluster.nix-${testCase}";
   pkgs = import <nixpkgs> {};
   simpoint = import ../simpoint;
-  stage1_profiling = import ./1.profiling.nix;
+  stage1_profiling = import ./1.profiling.nix {inherit testCase;};
 in pkgs.runCommand name {} (''
   mkdir -p $out
 '' + (builtins.toString [
