@@ -4,6 +4,7 @@ let
   # currently lastest stable linux version
   version = "6.10.7";
   pkgs = import <nixpkgs> {};
+  initramfs = import ./initramfs;
 in pkgs.stdenv.mkDerivation {
   inherit pname version;
   src = builtins.fetchurl {
@@ -17,14 +18,14 @@ in pkgs.stdenv.mkDerivation {
     pkgs.pkgsCross.riscv64.stdenv.cc
   ];
   # TODO: add same gcc optimization cflags as benchmarks?
+  # TODO: make create Image parallel
   buildPhase = let
-    initramfs = import ./initramfs;
     # based on https://github.com/OpenXiangShan/nemu_board/raw/37dc20e77a9bbff54dc2e525dc6c0baa3d50f948/configs/xiangshan_defconfig
+    # TODO: seperate xiangshan_defconfig into an independent file
     xiangshan_defconfig = pkgs.writeText "xiangshan_defconfig" ''
       CONFIG_DEFAULT_HOSTNAME="(lvna)"
       CONFIG_LOG_BUF_SHIFT=15
       CONFIG_BLK_DEV_INITRD=y
-      CONFIG_INITRAMFS_SOURCE="${initramfs}/403.gcc.cpio"
       CONFIG_EXPERT=y
       CONFIG_NONPORTABLE=y
       CONFIG_SMP=y
@@ -46,13 +47,26 @@ in pkgs.stdenv.mkDerivation {
     export ARCH=riscv
     export RISCV_ROOTFS_HOME=$(realpath ../riscv-rootfs/)
     export CROSS_COMPILE=riscv64-unknown-linux-gnu-
-    ln -s ${xiangshan_defconfig} arch/riscv/configs/xiangshan_defconfig
 
-    make xiangshan_defconfig
-    make -j
+    for CPIO in ${initramfs}/[0-9][0-9][0-9].*; do
+      TESTCASE_NAME=''${CPIO##*/}
+      TESTCASE_NAME=''${TESTCASE_NAME%.cpio}
+
+      # Prepare xiangshan_defconfig for <TESTCASE_NAME>
+      TESTCASE_DEFCONFIG=arch/riscv/configs/xiangshan_''${TESTCASE_NAME}_defconfig
+      cat ${xiangshan_defconfig} > $TESTCASE_DEFCONFIG
+      echo CONFIG_INITRAMFS_SOURCE=\"$CPIO\" >> $TESTCASE_DEFCONFIG
+
+      echo create Linux Kernel Image for $TESTCASE_NAME
+      make ''${TESTCASE_DEFCONFIG##*/}
+      make -j
+      mv arch/riscv/boot/Image arch/riscv/boot/Image.$TESTCASE_NAME
+      # Perform a minor cleanup to trigger the next make -j command for generating a new image.
+      rm .config
+    done
   '';
   installPhase = ''
     mkdir -p $out/arch/riscv/boot/
-    cp arch/riscv/boot/Image* $out/arch/riscv/boot/
+    cp arch/riscv/boot/Image.[0-9]* $out/arch/riscv/boot/
   '';
 }
