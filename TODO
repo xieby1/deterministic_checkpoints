@@ -6,3 +6,5 @@
 * add meta
 * use native jemalloc
 * split spec2006 into spec2006make spec2006run
+* parallel compile kernel for every testcase
+* parallel compile opensbi for every testcase
