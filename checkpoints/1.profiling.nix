@@ -5,7 +5,7 @@ let
   name = "1.profiling-${testCase}";
   pkgs = import <nixpkgs> {};
   qemu = import ../qemu;
-  opensbi = import ../opensbi;
+  opensbi = import ../opensbi {inherit testCase;};
 in pkgs.runCommand name {} (''
   mkdir -p $out
 '' + (builtins.toString [

@@ -5,7 +5,7 @@ let
   name = "3.checkpoint-${testCase}";
   pkgs = import <nixpkgs> {};
   qemu = import ../qemu;
-  opensbi = import ../opensbi;
+  opensbi = import ../opensbi {inherit testCase;};
   stage2_cluster = import ./2.cluster.nix {inherit testCase;};
 in pkgs.runCommand name {} (''
   mkdir -p $out
