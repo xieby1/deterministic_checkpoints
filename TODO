@@ -7,7 +7,6 @@
 * add meta
 * use native jemalloc
 * split spec2006 into spec2006make spec2006run
-* parallel compile opensbi for every testcase
 * BUG: ref input
   * 1.profiling
     * kernel panic: maybe? inspect the Image>=32MB
