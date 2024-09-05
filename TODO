@@ -1,4 +1,5 @@
 * name: deterministic_checkpoints: dckpts
+* pin nixpkgs version
 * rename xxx.nix => default.nix
 * add shell.nix
   * h
@@ -8,3 +9,7 @@
 * split spec2006 into spec2006make spec2006run
 * parallel compile kernel for every testcase
 * parallel compile opensbi for every testcase
+* ref input: kernel panic: maybe? inspect the Image>=32MB
+  * 450.soplex
+  * 401.bzip
+  * 456.hammer
