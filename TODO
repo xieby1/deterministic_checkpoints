@@ -9,7 +9,13 @@
 * split spec2006 into spec2006make spec2006run
 * parallel compile kernel for every testcase
 * parallel compile opensbi for every testcase
-* ref input: kernel panic: maybe? inspect the Image>=32MB
-  * 450.soplex
-  * 401.bzip
-  * 456.hammer
+* BUG: ref input
+  * 1.profiling
+    * kernel panic: maybe? inspect the Image>=32MB
+      * 450.soplex
+      * 401.bzip2
+      * 456.hammer
+    * long run time profiling (>18h)
+      * 483.xalancbmk
+      * 482.sphinx3
+      * 464.h264ref
