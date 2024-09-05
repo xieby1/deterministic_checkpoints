@@ -1,0 +1,20 @@
+--- old/arch/riscv/kernel/reset.c	2024-08-29 23:36:13.000000000 +0800
++++ new/arch/riscv/kernel/reset.c	2024-09-05 14:34:32.353111103 +0800
+@@ -15,9 +15,16 @@
+ void (*pm_power_off)(void) = NULL;
+ EXPORT_SYMBOL(pm_power_off);
+ 
++static void nemu_signal(int a){
++    asm volatile ("mv a0, %0\n\t"
++                  ".insn r 0x6B, 0, 0, x0, x0, x0\n\t"
++                  :
++                  : "r"(a)
++                  : "a0");
++}
+ void machine_restart(char *cmd)
+ {
+-	do_kernel_restart(cmd);
++	nemu_signal(-1); // BAD_TRAP
+ 	while (1);
+ }
+ 

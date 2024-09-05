@@ -17,6 +17,14 @@ in pkgs.stdenv.mkDerivation {
     pkgs.bison
     pkgs.pkgsCross.riscv64.stdenv.cc
   ];
+
+  patches = [
+    # Shutdown QEMU when the kernel raises a panic.
+    # This feature prevents the kernel from entering an endless loop,
+    # allowing for quicker identification of failed SPEC CPU testCases.
+    ./panic_shutdown.patch
+  ];
+
   # TODO: add same gcc optimization cflags as benchmarks?
   # TODO: make create Image parallel
   buildPhase = let
