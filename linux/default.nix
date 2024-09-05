@@ -50,6 +50,7 @@ in pkgs.stdenv.mkDerivation {
       CONFIG_PRINTK_TIME=y
       CONFIG_STACKTRACE=y
       CONFIG_RCU_CPU_STALL_TIMEOUT=300
+      CONFIG_CMDLINE="norandmaps"
     '';
   in ''
     export ARCH=riscv
