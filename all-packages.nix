@@ -12,4 +12,7 @@ rec {
   qemu_trap = pkgs.callPackage ./linux/initramfs/overlays/qemu_trap {
     inherit riscv64-cc riscv64-libc-static;
   };
+  initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
+    inherit before_workload busybox qemu_trap;
+  };
 }

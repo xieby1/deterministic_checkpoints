@@ -1,14 +1,16 @@
+{ writeText
+, runCommand
+, before_workload
+, busybox
+, qemu_trap
+}:
 let
   name = "initramfs-overlays";
-  pkgs = import <nixpkgs> {};
-  busybox = import ./busybox;
-  inittab = pkgs.writeText "inittab" ''
+  inittab = writeText "inittab" ''
     ::sysinit:/bin/busybox --install -s
     /dev/console::sysinit:-/bin/sh /bin/run.sh
   '';
-  before_workload = import ./before_workload;
-  qemu_trap = import ./qemu_trap;
-  run_sh = pkgs.writeText "run.sh" ''
+  run_sh = writeText "run.sh" ''
     before_workload
     echo start
     cd /run
@@ -16,7 +18,7 @@ let
     echo exit
     qemu_trap
   '';
-in pkgs.runCommand name {} ''
+in runCommand name {} ''
   mkdir -p $out/bin
   cp ${busybox}/bin/busybox $out/bin/
   ln -s /bin/busybox $out/init
