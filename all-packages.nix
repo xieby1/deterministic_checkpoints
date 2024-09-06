@@ -1,5 +1,37 @@
 { pkgs }:
-rec {
+let
+  testCases = [
+    "400.perlbench"
+    "401.bzip2"
+    "403.gcc"
+    "410.bwaves"
+    "416.gamess"
+    "429.mcf"
+    "433.milc"
+    "434.zeusmp"
+    "435.gromacs"
+    "436.cactusADM"
+    "437.leslie3d"
+    "444.namd"
+    "445.gobmk"
+    "447.dealII"
+    "450.soplex"
+    "453.povray"
+    "454.calculix"
+    "456.hmmer"
+    "458.sjeng"
+    "459.GemsFDTD"
+    "462.libquantum"
+    "464.h264ref"
+    "465.tonto"
+    "470.lbm"
+    "471.omnetpp"
+    "473.astar"
+    "481.wrf"
+    "482.sphinx3"
+    "483.xalancbmk"
+  ];
+in rec {
   riscv64-cc = pkgs.pkgsCross.riscv64.stdenv.cc;
   riscv64-libc-static = pkgs.pkgsCross.riscv64.stdenv.cc.libc.static;
   riscv64-fortran = let
@@ -47,5 +79,20 @@ rec {
   };
   initramfs = pkgs.callPackage ./linux/initramfs {
     inherit initramfs_base initramfs_overlays spec2006;
+  };
+  linux-images = let
+    linux-images-list = builtins.map (testCase: (
+      pkgs.callPackage ./linux {
+        inherit testCase riscv64-cc initramfs;
+      }
+    )) testCases;
+  in pkgs.symlinkJoin {
+    name = "linux-images";
+    paths = linux-images-list;
+    passthru = builtins.listToAttrs (
+      pkgs.lib.zipListsWith (
+        name: value: {inherit name value;}
+      ) testCases linux-images-list
+    );
   };
 }

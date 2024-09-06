@@ -1,18 +1,22 @@
-{
-  testCase ? "403.gcc"
+{ stdenv
+, bc
+, flex
+, bison
+
+, testCase ? "403.gcc"
+, riscv64-cc
+, initramfs
 }:
 let
   name = "linux-${testCase}";
-  pkgs = import <nixpkgs> {};
-  initramfs = import ./initramfs;
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit name;
   src = import ./common-build.nix;
   buildInputs = [
-    pkgs.bc
-    pkgs.flex
-    pkgs.bison
-    pkgs.pkgsCross.riscv64.stdenv.cc
+    bc
+    flex
+    bison
+    riscv64-cc
   ];
 
   buildPhase = ''
