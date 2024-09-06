@@ -1,12 +1,16 @@
+{ stdenv
+, lib
+, fetchFromGitHub
+, libxcrypt-legacy
+
+, riscv64-cc
+, riscv64-fortran
+, riscv64-libc-static
+, riscv64-jemalloc
+}:
 let
-  # TODO: use latest nixpkgs
-  # pkgs = import <nixpkgs> {};
-  pkgs = import (fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
-    sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
-  }) {};
-  riscv64Pkgs = pkgs.pkgsCross.riscv64;
-  customJemalloc = riscv64Pkgs.jemalloc.overrideAttrs (oldAttrs: {
+  # TODO: move to all-packages
+  customJemalloc = riscv64-jemalloc.overrideAttrs (oldAttrs: {
     configureFlags = (oldAttrs.configureFlags or []) ++ [
       "--enable-static"
       "--disable-shared"
@@ -22,28 +26,14 @@ let
       cp -v lib/libjemalloc.a $out/lib/
     '';
   });
-  riscv64Fortran = riscv64Pkgs.wrapCCWith {
-    cc = riscv64Pkgs.stdenv.cc.cc.override {
-      name = "gfortran";
-      langFortran = true;
-      langCC = false;
-      langC = false;
-      profiledCompiler = false;
-    };
-    # fixup wrapped prefix, which only appear if hostPlatform!=targetPlatform
-    #   for more details see <nixpkgs>/pkgs/build-support/cc-wrapper/default.nix
-    stdenvNoCC = riscv64Pkgs.stdenvNoCC.override {
-      hostPlatform = pkgs.stdenv.hostPlatform;
-    };
-  };
-  CPU2006LiteWrapper = pkgs.fetchFromGitHub {
+  CPU2006LiteWrapper = fetchFromGitHub {
     owner = "OpenXiangShan";
     repo = "CPU2006LiteWrapper";
     rev = "010ca8fe8bf229c68443a2dd1766e1be62fa7998";
     hash = "sha256-qNxmM9Dmobr6fvTZapacu8jngcBPRbybwayTi7CZGd0=";
   };
-  size = "ref";
-in pkgs.stdenv.mkDerivation {
+  size = "ref"; # test, train, ref
+in stdenv.mkDerivation {
   name = "spec2006exe";
   system = "x86_64-linux";
 
@@ -54,11 +44,9 @@ in pkgs.stdenv.mkDerivation {
   sourceRoot = ".";
 
   buildInputs = [
-    riscv64Pkgs.buildPackages.gcc
-    riscv64Pkgs.buildPackages.binutils
-    riscv64Fortran
-    riscv64Pkgs.glibc
-    riscv64Pkgs.glibc.static
+    riscv64-cc
+    riscv64-fortran
+    riscv64-libc-static
     customJemalloc
   ];
 
@@ -74,13 +62,13 @@ in pkgs.stdenv.mkDerivation {
   '';
 
   configurePhase = let
-    rpath = pkgs.lib.makeLibraryPath [
-      pkgs.libxcrypt-legacy
+    rpath = lib.makeLibraryPath [
+      libxcrypt-legacy
     ];
   in ''
     echo patchelf: ./spec2006/bin/
     for file in $(find ./spec2006/bin -type f \( -perm /0111 -o -name \*.so\* \) ); do
-      patchelf --set-interpreter "$(cat ${pkgs.stdenv.cc}/nix-support/dynamic-linker)" "$file" &> /dev/null || true
+      patchelf --set-interpreter "$(cat ${stdenv.cc}/nix-support/dynamic-linker)" "$file" &> /dev/null || true
       patchelf --set-rpath ${rpath} $file &> /dev/null || true
     done
   '';
@@ -95,10 +83,6 @@ in pkgs.stdenv.mkDerivation {
     export CROSS_COMPILE=riscv64-unknown-linux-gnu-
     export OPTIMIZE="-O3 -flto"
     export SUBPROCESS_NUM=5
-
-    export CC=${riscv64Pkgs.stdenv.cc}/bin/riscv64-unknown-linux-gnu-gcc
-    export CXX=${riscv64Pkgs.stdenv.cc}/bin/riscv64-unknown-linux-gnu-g++
-    export LD=${riscv64Pkgs.stdenv.cc}/bin/riscv64-unknown-linux-gnu-ld
 
     export CFLAGS="$CFLAGS -static -Wno-format-security -I${customJemalloc}/include "
     export CXXFLAGS="$CXXFLAGS -static -Wno-format-security -I${customJemalloc}/include"
