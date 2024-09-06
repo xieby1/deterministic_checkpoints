@@ -1,10 +1,14 @@
+{ stdenv
+, fetchFromGitHub
+, riscv64-cc
+, riscv64-libc-static
+}:
 let
   pname = "busybox";
   version = "1_32_1";
-  pkgs = import <nixpkgs> {};
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit pname version;
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "mirror";
     repo = pname;
     rev = version;
@@ -12,8 +16,8 @@ in pkgs.stdenv.mkDerivation {
   };
 
   buildInputs = [
-    pkgs.pkgsCross.riscv64.stdenv.cc
-    pkgs.pkgsCross.riscv64.stdenv.cc.libc.static
+    riscv64-cc
+    riscv64-libc-static
   ];
 
   hardeningDisable = [ "format" "pie" ];
