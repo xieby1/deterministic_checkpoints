@@ -1,7 +1,7 @@
 { stdenv
 , python3
 
-, testCase ? "403.gcc"
+, testCase
 , riscv64-cc
 , linux
 , dts

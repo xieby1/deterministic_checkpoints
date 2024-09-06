@@ -3,7 +3,7 @@
 , flex
 , bison
 
-, testCase ? "403.gcc"
+, testCase
 , riscv64-cc
 , initramfs
 , linux-common-build
