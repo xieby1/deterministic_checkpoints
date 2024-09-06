@@ -16,4 +16,7 @@ rec {
     inherit before_workload busybox qemu_trap;
   };
   gen_init_cpio = pkgs.callPackage ./linux/initramfs/base/gen_init_cpio {};
+  initramfs_base = pkgs.callPackage ./linux/initramfs/base {
+    inherit gen_init_cpio;
+  };
 }
