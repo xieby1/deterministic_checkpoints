@@ -6,12 +6,13 @@
 , testCase ? "403.gcc"
 , riscv64-cc
 , initramfs
+, linux-common-build
 }:
 let
   name = "linux-${testCase}";
 in stdenv.mkDerivation {
   inherit name;
-  src = import ./common-build.nix;
+  src = linux-common-build;
   buildInputs = [
     bc
     flex

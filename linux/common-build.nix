@@ -1,7 +1,14 @@
+{ stdenv
+, writeText
+, bc
+, flex
+, bison
+
+, riscv64-cc
+}:
 let
   name = "linux-common-build";
-  pkgs = import <nixpkgs> {};
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit name;
   src = builtins.fetchurl {
     # currently lastest stable linux version
@@ -9,10 +16,10 @@ in pkgs.stdenv.mkDerivation {
     sha256 = "1adkbn6dqbpzlr3x87a18mhnygphmvx3ffscwa67090qy1zmc3ch";
   };
   buildInputs = [
-    pkgs.bc
-    pkgs.flex
-    pkgs.bison
-    pkgs.pkgsCross.riscv64.stdenv.cc
+    bc
+    flex
+    bison
+    riscv64-cc
   ];
 
   patches = [
@@ -26,7 +33,7 @@ in pkgs.stdenv.mkDerivation {
   buildPhase = let
     # based on https://github.com/OpenXiangShan/nemu_board/raw/37dc20e77a9bbff54dc2e525dc6c0baa3d50f948/configs/xiangshan_defconfig
     # TODO: seperate xiangshan_defconfig into an independent file
-    xiangshan_defconfig = pkgs.writeText "xiangshan_defconfig" ''
+    xiangshan_defconfig = writeText "xiangshan_defconfig" ''
       CONFIG_DEFAULT_HOSTNAME="(lvna)"
       CONFIG_LOG_BUF_SHIFT=15
       CONFIG_BLK_DEV_INITRD=y

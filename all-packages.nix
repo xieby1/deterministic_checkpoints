@@ -80,10 +80,13 @@ in rec {
   initramfs = pkgs.callPackage ./linux/initramfs {
     inherit initramfs_base initramfs_overlays spec2006;
   };
+  linux-common-build = pkgs.callPackage ./linux/common-build.nix {
+    inherit riscv64-cc;
+  };
   linux-images = let
     linux-images-list = builtins.map (testCase: (
       pkgs.callPackage ./linux {
-        inherit testCase riscv64-cc initramfs;
+        inherit testCase riscv64-cc initramfs linux-common-build;
       }
     )) testCases;
   in pkgs.symlinkJoin {
