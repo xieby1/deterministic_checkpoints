@@ -102,4 +102,20 @@ in rec {
   opensbi-common-build = pkgs.callPackage ./opensbi/common-build.nix {
     inherit riscv64-cc dts;
   };
+  opensbi-bins = let
+    opensbi-bins-list = builtins.map (testCase: (
+      pkgs.callPackage ./opensbi {
+        inherit testCase riscv64-cc dts opensbi-common-build;
+        linux = builtins.getAttr testCase linux-images;
+      }
+    )) testCases;
+  in pkgs.symlinkJoin {
+    name = "opensbi-bins";
+    paths = opensbi-bins-list;
+    passthru = builtins.listToAttrs (
+      pkgs.lib.zipListsWith (
+        name: value: {inherit name value;}
+      ) testCases opensbi-bins-list
+    );
+  };
 }

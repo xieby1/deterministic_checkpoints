@@ -1,19 +1,22 @@
-{
-  testCase ? "403.gcc"
+{ stdenv
+, python3
+
+, testCase ? "403.gcc"
+, riscv64-cc
+, linux
+, dts
+, opensbi-common-build
 }:
 let
   name = "opensbi-${testCase}";
-  pkgs = import <nixpkgs> {};
-  linux = import ../linux {inherit testCase;};
-  dts = import ./dts;
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit name;
 
-  src = import ./common-build.nix;
+  src = opensbi-common-build;
 
   buildInputs = [
-    pkgs.python3
-    pkgs.pkgsCross.riscv64.stdenv.cc
+    python3
+    riscv64-cc
   ];
 
   makeFlags = [
