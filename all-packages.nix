@@ -155,4 +155,22 @@ in rec {
       ) testCases stage2-clusters-list
     );
   };
+
+  stage3-checkpoints = let
+    stage3-checkpoints-list = builtins.map (testCase: (
+      pkgs.callPackage ./checkpoints/3.checkpoint.nix {
+        inherit testCase qemu;
+        opensbi-bin = builtins.getAttr testCase opensbi-bins;
+        stage2-cluster = builtins.getAttr testCase stage2-clusters;
+      }
+    )) testCases;
+  in pkgs.symlinkJoin {
+    name = "3.checkpoints";
+    paths = stage3-checkpoints-list;
+    passthru = builtins.listToAttrs (
+      pkgs.lib.zipListsWith (
+        name: value: {inherit name value;}
+      ) testCases stage3-checkpoints-list
+    );
+  };
 }

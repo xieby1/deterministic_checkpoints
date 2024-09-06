@@ -1,20 +1,20 @@
-{
-  testCase ? "403.gcc"
+{ runCommand
+
+, testCase
+, qemu
+, opensbi-bin
+, stage2-cluster
 }:
 let
   name = "3.checkpoint-${testCase}";
-  pkgs = import <nixpkgs> {};
-  qemu = import ../qemu;
-  opensbi = import ../opensbi {inherit testCase;};
-  stage2_cluster = import ./2.cluster.nix {inherit testCase;};
-in pkgs.runCommand name {} (''
+in runCommand name {} (''
   mkdir -p $out
 '' + (builtins.toString [
   "${qemu}/bin/qemu-system-riscv64"
   "-bios"
-  "${opensbi}/fw_payload.${testCase}.bin"
+  "${opensbi-bin}/fw_payload.${testCase}.bin"
   "-M"
-  "nemu,simpoint-path=${stage2_cluster},workload=.,cpt-interval=20000000,output-base-dir=$out,config-name=miao,checkpoint-mode=SimpointCheckpoint"
+  "nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=20000000,output-base-dir=$out,config-name=miao,checkpoint-mode=SimpointCheckpoint"
   "-nographic"
   "-m 8G"
   "-smp 1"
