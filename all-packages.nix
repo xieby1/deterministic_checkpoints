@@ -45,4 +45,7 @@ rec {
   initramfs_base = pkgs.callPackage ./linux/initramfs/base {
     inherit gen_init_cpio;
   };
+  initramfs = pkgs.callPackage ./linux/initramfs {
+    inherit initramfs_base initramfs_overlays spec2006;
+  };
 }
