@@ -99,4 +99,7 @@ in rec {
     );
   };
   dts = pkgs.callPackage ./opensbi/dts {};
+  opensbi-common-build = pkgs.callPackage ./opensbi/common-build.nix {
+    inherit riscv64-cc dts;
+  };
 }

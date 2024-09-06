@@ -1,11 +1,16 @@
+{ stdenv
+, fetchFromGitHub
+, python3
+
+, riscv64-cc
+, dts
+}:
 let
   name = "opensbi-common-build";
-  pkgs = import <nixpkgs> {};
-  dts = import ./dts;
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit name;
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "riscv-software-src";
     repo = "opensbi";
     rev = "c4940a9517486413cd676fc8032bb55f9d4e2778";
@@ -13,8 +18,8 @@ in pkgs.stdenv.mkDerivation {
   };
 
   buildInputs = [
-    pkgs.python3
-    pkgs.pkgsCross.riscv64.stdenv.cc
+    python3
+    riscv64-cc
   ];
 
   makeFlags = [
