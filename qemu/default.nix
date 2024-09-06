@@ -1,28 +1,36 @@
-let
+{ stdenv
+, fetchFromGitHub
+, fetchFromGitLab
+, python3
+, ninja
+, meson
+, glib
+, pkg-config
+, zstd
+, dtc
+}:
+stdenv.mkDerivation {
   name = "xs-checkpoint-qemu";
-  pkgs = import <nixpkgs> {};
-in pkgs.stdenv.mkDerivation {
-  inherit name;
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "OpenXiangShan";
     repo = "qemu";
     # latest checkpoint branch
     rev = "8758c375de12f09073614cad48f9956fe53b5aa7";
     hash = "sha256-xSJcR4bywPwpBGQfFKGOTrYZBhMoy0gOP8hYoA+hEOM=";
     postFetch = let
-      keycodemapdb = pkgs.fetchFromGitLab {
+      keycodemapdb = fetchFromGitLab {
         owner = "qemu-project";
         repo = "keycodemapdb";
         rev = "f5772a62ec52591ff6870b7e8ef32482371f22c6";
         hash = "sha256-GbZ5mrUYLXMi0IX4IZzles0Oyc095ij2xAsiLNJwfKQ=";
       };
-      berkeley-softfloat-3 = pkgs.fetchFromGitLab {
+      berkeley-softfloat-3 = fetchFromGitLab {
         owner = "qemu-project";
         repo = "berkeley-softfloat-3";
         rev = "b64af41c3276f97f0e181920400ee056b9c88037";
         hash = "sha256-Yflpx+mjU8mD5biClNpdmon24EHg4aWBZszbOur5VEA=";
       };
-      berkeley-testfloat-3 = pkgs.fetchFromGitLab {
+      berkeley-testfloat-3 = fetchFromGitLab {
         owner = "qemu-project";
         repo = "berkeley-testfloat-3";
         rev = "e7af9751d9f9fd3b47911f51a5cfd08af256a9ab";
@@ -46,13 +54,13 @@ in pkgs.stdenv.mkDerivation {
   ];
 
   buildInputs = [
-    pkgs.python3
-    pkgs.ninja
-    pkgs.meson
-    pkgs.glib
-    pkgs.pkg-config
-    pkgs.zstd
-    pkgs.dtc
+    python3
+    ninja
+    meson
+    glib
+    pkg-config
+    zstd
+    dtc
   ];
 
   dontUseMesonConfigure = true;

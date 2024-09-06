@@ -118,4 +118,6 @@ in rec {
       ) testCases opensbi-bins-list
     );
   };
+
+  qemu = pkgs.callPackage ./qemu {};
 }
