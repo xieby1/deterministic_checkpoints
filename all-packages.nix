@@ -15,4 +15,5 @@ rec {
   initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
     inherit before_workload busybox qemu_trap;
   };
+  gen_init_cpio = pkgs.callPackage ./linux/initramfs/base/gen_init_cpio {};
 }
