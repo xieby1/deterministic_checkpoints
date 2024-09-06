@@ -98,4 +98,5 @@ in rec {
       ) testCases linux-images-list
     );
   };
+  dts = pkgs.callPackage ./opensbi/dts {};
 }

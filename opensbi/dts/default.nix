@@ -1,9 +1,12 @@
+{ stdenv
+, fetchFromGitHub
+, dtc
+}:
 let
   name = "xiangshan.dtb";
-  pkgs = import <nixpkgs> {};
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit name;
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "OpenXiangShan";
     repo = "nemu_board";
     rev = "37dc20e77a9bbff54dc2e525dc6c0baa3d50f948";
@@ -11,7 +14,7 @@ in pkgs.stdenv.mkDerivation {
   };
 
   buildInputs = [
-    pkgs.dtc
+    dtc
   ];
   buildPhase = ''
     cd dts
