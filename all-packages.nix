@@ -137,4 +137,6 @@ in rec {
       ) testCases stage1-profiling-list
     );
   };
+
+  simpoint = pkgs.callPackage ./simpoint {};
 }
