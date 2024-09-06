@@ -1,8 +1,5 @@
 * name: deterministic_checkpoints: dckpts
 * rename xxx.nix => default.nix
-* add shell.nix
-  * h
-  * nom-build
 * add meta
 * use native jemalloc
 * split spec2006 into spec2006make spec2006run
