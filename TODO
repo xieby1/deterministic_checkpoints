@@ -1,5 +1,4 @@
 * name: deterministic_checkpoints: dckpts
-* pin nixpkgs version
 * rename xxx.nix => default.nix
 * add shell.nix
   * h

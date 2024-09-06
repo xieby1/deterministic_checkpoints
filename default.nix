@@ -1,40 +1,9 @@
 let
-  name = "checkpoints";
-  pkgs = import <nixpkgs> {};
-  testCases = [
-    "400.perlbench"
-    "401.bzip2"
-    "403.gcc"
-    "410.bwaves"
-    "416.gamess"
-    "429.mcf"
-    "433.milc"
-    "434.zeusmp"
-    "435.gromacs"
-    "436.cactusADM"
-    "437.leslie3d"
-    "444.namd"
-    "445.gobmk"
-    "447.dealII"
-    "450.soplex"
-    "453.povray"
-    "454.calculix"
-    "456.hmmer"
-    "458.sjeng"
-    "459.GemsFDTD"
-    "462.libquantum"
-    "464.h264ref"
-    "465.tonto"
-    "470.lbm"
-    "471.omnetpp"
-    "473.astar"
-    "481.wrf"
-    "482.sphinx3"
-    "483.xalancbmk"
-  ];
-in pkgs.linkFarm name (builtins.map (
-  testCase: {
-    name = testCase;
-    path = import ./checkpoints/3.checkpoint.nix {inherit testCase;};
-  }
-) testCases)
+  pkgs = import (fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
+    sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
+  }) {};
+  all-packages = import ./all-packages.nix {
+    inherit pkgs;
+  };
+in all-packages.stage3-checkpoints
