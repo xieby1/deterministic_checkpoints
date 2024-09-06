@@ -1,16 +1,16 @@
-{
-  testCase ? "403.gcc"
+{ runCommand
+
+, testCase
+, qemu
+, opensbi-bin
 }:
 let
   name = "1.profiling-${testCase}";
-  pkgs = import <nixpkgs> {};
-  qemu = import ../qemu;
-  opensbi = import ../opensbi {inherit testCase;};
-in pkgs.runCommand name {} (''
+in runCommand name {} (''
   mkdir -p $out
 '' + (builtins.toString [
   "${qemu}/bin/qemu-system-riscv64"
-  "-bios ${opensbi}/fw_payload.${testCase}.bin"
+  "-bios ${opensbi-bin}/fw_payload.${testCase}.bin"
   "-M nemu"
   "-nographic"
   "-m 8G"

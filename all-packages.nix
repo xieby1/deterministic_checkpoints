@@ -120,4 +120,21 @@ in rec {
   };
 
   qemu = pkgs.callPackage ./qemu {};
+
+  stage1-profiling = let
+    stage1-profiling-list = builtins.map (testCase: (
+      pkgs.callPackage ./checkpoints/1.profiling.nix {
+        inherit testCase qemu;
+        opensbi-bin = builtins.getAttr testCase opensbi-bins;
+      }
+    )) testCases;
+  in pkgs.symlinkJoin {
+    name = "1.profiling";
+    paths = stage1-profiling-list;
+    passthru = builtins.listToAttrs (
+      pkgs.lib.zipListsWith (
+        name: value: {inherit name value;}
+      ) testCases stage1-profiling-list
+    );
+  };
 }
