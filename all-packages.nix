@@ -106,7 +106,7 @@ in rec {
     opensbi-bins-list = builtins.map (testCase: (
       pkgs.callPackage ./opensbi {
         inherit testCase riscv64-cc dts opensbi-common-build;
-        linux = builtins.getAttr testCase linux-images;
+        linux-image = builtins.getAttr testCase linux-images;
       }
     )) testCases;
   in pkgs.symlinkJoin {
