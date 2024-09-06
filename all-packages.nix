@@ -164,13 +164,19 @@ in rec {
         stage2-cluster = builtins.getAttr testCase stage2-clusters;
       }
     )) testCases;
-  in pkgs.symlinkJoin {
-    name = "3.checkpoints";
-    paths = stage3-checkpoints-list;
-    passthru = builtins.listToAttrs (
-      pkgs.lib.zipListsWith (
-        name: value: {inherit name value;}
-      ) testCases stage3-checkpoints-list
-    );
-  };
+  # TODO: add every individual testCase to stage3-checkpoints
+  # in pkgs.symlinkJoin {
+  #   name = "3.checkpoints";
+  #   paths = stage3-checkpoints-list;
+  #   passthru = builtins.listToAttrs (
+  #     pkgs.lib.zipListsWith (
+  #       name: value: {inherit name value;}
+  #     ) testCases stage3-checkpoints-list
+  #   );
+  # };
+  in pkgs.linkFarm "3.checkpoints" (
+    pkgs.lib.zipListsWith (
+      name: path: {inherit name path;}
+    ) testCases stage3-checkpoints-list
+  );
 }
