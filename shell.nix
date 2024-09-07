@@ -6,7 +6,9 @@ let
 
     * Set SPEC CPU 2006 source code: edit `spec2006/default.nix`: `srcs = [...]`
     * Set input size: edit `spec2006/default.nix`: `size = xxx` (default input is ref)
-    * Generate SPEC CPU 2006 checkpoint into `result/`: `nom-build`
+    * Generate the checkpoints of all testCases into `result/`: `nom-build -A checkpoints`
+    * Generate the checkpoints of a specific <testCase> into `result/`: `nom-build -A 'checkpoints.entries."<testCase>"'`
+      * E.g.: `nom-build -A 'checkpoints.entries."403.gcc"'`
   '';
   _h_ = pkgs.writeShellScriptBin "h" ''
     ${pkgs.glow}/bin/glow ${h_content}
