@@ -132,52 +132,34 @@ in rec {
         opensbi-bin = builtins.getAttr testCase opensbi-bins;
       }
     )) testCases;
-  in pkgs.symlinkJoin {
-    name = "1.profilings";
-    paths = stage1-profilings-list;
-    passthru = builtins.listToAttrs (
-      pkgs.lib.zipListsWith (
-        name: value: {inherit name value;}
-      ) testCases stage1-profilings-list
-    );
-  };
+  in pkgs.linkFarm "1.profilings" (
+    pkgs.lib.zipListsWith (
+      name: path: {inherit name path;}
+    ) testCases stage1-profilings-list
+  );
 
   simpoint = pkgs.callPackage ./simpoint {};
   stage2-clusters = let
     stage2-clusters-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/2.cluster.nix {
         inherit testCase simpoint;
-        stage1-profiling = builtins.getAttr testCase stage1-profilings;
+        stage1-profiling = builtins.getAttr testCase stage1-profilings.entries;
       }
     )) testCases;
-  in pkgs.symlinkJoin {
-    name = "2.clusters";
-    paths = stage2-clusters-list;
-    passthru = builtins.listToAttrs (
-      pkgs.lib.zipListsWith (
-        name: value: {inherit name value;}
-      ) testCases stage2-clusters-list
-    );
-  };
+  in pkgs.linkFarm "2.clusters" (
+    pkgs.lib.zipListsWith (
+      name: path: {inherit name path;}
+    ) testCases stage2-clusters-list
+  );
 
   stage3-checkpoints = let
     stage3-checkpoints-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/3.checkpoint.nix {
         inherit testCase qemu;
         opensbi-bin = builtins.getAttr testCase opensbi-bins;
-        stage2-cluster = builtins.getAttr testCase stage2-clusters;
+        stage2-cluster = builtins.getAttr testCase stage2-clusters.entries;
       }
     )) testCases;
-  # TODO: add every individual testCase to stage3-checkpoints
-  # in pkgs.symlinkJoin {
-  #   name = "3.checkpoints";
-  #   paths = stage3-checkpoints-list;
-  #   passthru = builtins.listToAttrs (
-  #     pkgs.lib.zipListsWith (
-  #       name: value: {inherit name value;}
-  #     ) testCases stage3-checkpoints-list
-  #   );
-  # };
   in pkgs.linkFarm "3.checkpoints" (
     pkgs.lib.zipListsWith (
       name: path: {inherit name path;}
