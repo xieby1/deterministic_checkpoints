@@ -78,8 +78,11 @@ in rec {
   initramfs_base = pkgs.callPackage ./linux/initramfs/base {
     inherit gen_init_cpio;
   };
+  cpio = pkgs.cpio.overrideAttrs (old: {
+    patches = [./linux/initramfs/cpio_reset_timestamp.patch];
+  });
   initramfs = pkgs.callPackage ./linux/initramfs {
-    inherit initramfs_base initramfs_overlays spec2006;
+    inherit cpio initramfs_base initramfs_overlays spec2006;
   };
   linux-common-build = pkgs.callPackage ./linux/common-build.nix {
     inherit riscv64-cc;

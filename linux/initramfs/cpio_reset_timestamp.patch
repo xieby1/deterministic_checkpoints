@@ -1,0 +1,22 @@
+--- old/src/copyout.c	2023-04-29 02:35:54.000000000 +0800
++++ new/src/copyout.c	2024-09-07 03:14:13.246022894 +0800
+@@ -338,16 +338,16 @@
+   to_ascii_or_warn (p, file_hdr->c_mode, 8, LG_16, file_hdr->c_name,
+ 		    _("file mode"));
+   p += 8;
+-  to_ascii_or_warn (p, file_hdr->c_uid, 8, LG_16, file_hdr->c_name,
++  to_ascii_or_warn (p, 0, 8, LG_16, file_hdr->c_name,
+ 		    _("uid"));
+   p += 8;
+-  to_ascii_or_warn (p, file_hdr->c_gid, 8, LG_16, file_hdr->c_name,
++  to_ascii_or_warn (p, 0, 8, LG_16, file_hdr->c_name,
+ 		    _("gid"));
+   p += 8;
+   to_ascii_or_warn (p, file_hdr->c_nlink, 8, LG_16, file_hdr->c_name,
+ 		    _("number of links"));
+   p += 8;
+-  to_ascii_or_warn (p, file_hdr->c_mtime, 8, LG_16, file_hdr->c_name,
++  to_ascii_or_warn (p, 0, 8, LG_16, file_hdr->c_name,
+ 		    _("modification time"));
+   p += 8;
+   if (to_ascii_or_error (p, file_hdr->c_filesize, 8, LG_16, file_hdr->c_name,

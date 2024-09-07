@@ -1,6 +1,6 @@
 { runCommand
-, cpio
 
+, cpio
 , initramfs_base
 , initramfs_overlays
 , spec2006
