@@ -60,6 +60,7 @@ in stdenv.mkDerivation {
     export RISCV_ROOTFS_HOME=$(realpath ../riscv-rootfs/)
     export CROSS_COMPILE=riscv64-unknown-linux-gnu-
 
+    export KBUILD_BUILD_TIMESTAMP=@0
     ln -s ${xiangshan_defconfig} arch/riscv/configs/xiangshan_defconfig
     make xiangshan_defconfig
     make -j $NIX_BUILD_CORES
