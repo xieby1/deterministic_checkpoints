@@ -35,6 +35,7 @@ let
     "482.sphinx3"
     "483.xalancbmk"
   ];
+  lib-customized = pkgs.callPackage ./lib-customized.nix {};
 in rec {
   riscv64-cc = pkgs.pkgsCross.riscv64.stdenv.cc;
   riscv64-libc-static = pkgs.pkgsCross.riscv64.stdenv.cc.libc.static;
@@ -136,7 +137,7 @@ in rec {
         opensbi-bin = builtins.getAttr testCase opensbi-bins;
       }
     )) testCases;
-  in pkgs.linkFarm "1.profilings" (
+  in lib-customized.linkFarmNoEntries "1.profilings" (
     pkgs.lib.zipListsWith (
       name: path: {inherit name path;}
     ) testCases stage1-profilings-list
@@ -147,10 +148,10 @@ in rec {
     stage2-clusters-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/2.cluster.nix {
         inherit testCase simpoint;
-        stage1-profiling = builtins.getAttr testCase stage1-profilings.entries;
+        stage1-profiling = builtins.getAttr testCase stage1-profilings;
       }
     )) testCases;
-  in pkgs.linkFarm "2.clusters" (
+  in lib-customized.linkFarmNoEntries "2.clusters" (
     pkgs.lib.zipListsWith (
       name: path: {inherit name path;}
     ) testCases stage2-clusters-list
@@ -161,10 +162,10 @@ in rec {
       pkgs.callPackage ./checkpoints/3.checkpoint.nix {
         inherit testCase qemu;
         opensbi-bin = builtins.getAttr testCase opensbi-bins;
-        stage2-cluster = builtins.getAttr testCase stage2-clusters.entries;
+        stage2-cluster = builtins.getAttr testCase stage2-clusters;
       }
     )) testCases;
-  in pkgs.linkFarm "3.checkpoints" (
+  in lib-customized.linkFarmNoEntries "3.checkpoints" (
     pkgs.lib.zipListsWith (
       name: path: {inherit name path;}
     ) testCases stage3-checkpoints-list
