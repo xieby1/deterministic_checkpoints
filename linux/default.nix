@@ -30,6 +30,7 @@ in stdenv.mkDerivation {
     cat arch/riscv/configs/xiangshan_defconfig > $TESTCASE_DEFCONFIG
     echo CONFIG_INITRAMFS_SOURCE=\"${initramfs}/${testCase}.cpio\" >> $TESTCASE_DEFCONFIG
 
+    export KBUILD_BUILD_TIMESTAMP=@0
     make xiangshan_${testCase}_defconfig
     make -j $NIX_BUILD_CORES
     mv arch/riscv/boot/Image arch/riscv/boot/Image.${testCase}
