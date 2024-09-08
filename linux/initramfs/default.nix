@@ -16,8 +16,8 @@ in runCommand name {} ''
     chmod +w $out/$TESTCASE_NAME.cpio
 
     cd $WORK_DIR
-    find . | sort -sd | ${cpio}/bin/cpio --reproducible -H newc -oAF $out/$TESTCASE_NAME.cpio
+    find . | sort -n | ${cpio}/bin/cpio --reproducible -H newc -oAF $out/$TESTCASE_NAME.cpio
     cd ${initramfs_overlays}
-    find . | sort -sd | ${cpio}/bin/cpio --reproducible -H newc -oAF $out/$TESTCASE_NAME.cpio
+    find . | sort -n | ${cpio}/bin/cpio --reproducible -H newc -oAF $out/$TESTCASE_NAME.cpio
   done
 ''
