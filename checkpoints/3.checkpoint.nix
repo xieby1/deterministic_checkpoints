@@ -2,7 +2,7 @@
 
 , testCase
 , qemu
-, opensbi-bin
+, gcpt-bin
 , stage2-cluster
 }:
 let
@@ -12,7 +12,7 @@ in runCommand name {} (''
 '' + (builtins.toString [
   "${qemu}/bin/qemu-system-riscv64"
   "-bios"
-  "${opensbi-bin}/fw_payload.${testCase}.bin"
+  "${gcpt-bin}/gcpt.${testCase}.bin"
   "-M"
   "nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=20000000,output-base-dir=$out,config-name=miao,checkpoint-mode=SimpointCheckpoint"
   "-nographic"

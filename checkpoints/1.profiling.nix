@@ -2,7 +2,7 @@
 
 , testCase
 , qemu
-, opensbi-bin
+, gcpt-bin
 }:
 let
   name = "1.profiling-${testCase}";
@@ -10,7 +10,7 @@ in runCommand name {} (''
   mkdir -p $out
 '' + (builtins.toString [
   "${qemu}/bin/qemu-system-riscv64"
-  "-bios ${opensbi-bin}/fw_payload.${testCase}.bin"
+  "-bios ${gcpt-bin}/gcpt.${testCase}.bin"
   "-M nemu"
   "-nographic"
   "-m 8G"

@@ -128,13 +128,30 @@ in rec {
     );
   };
 
+  gcpt-bins = let
+    gcpt-bins-list = builtins.map (testCase: (
+      pkgs.callPackage ./gcpt {
+        inherit testCase riscv64-cc;
+        opensbi-bin = builtins.getAttr testCase opensbi-bins;
+      }
+    )) testCases;
+  in pkgs.symlinkJoin {
+    name = "gcpt-bins";
+    paths = gcpt-bins-list;
+    passthru = builtins.listToAttrs (
+      pkgs.lib.zipListsWith (
+        name: value: {inherit name value;}
+      ) testCases gcpt-bins-list
+    );
+  };
+
   qemu = pkgs.callPackage ./qemu {};
 
   stage1-profilings = let
     stage1-profilings-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/1.profiling.nix {
         inherit testCase qemu;
-        opensbi-bin = builtins.getAttr testCase opensbi-bins;
+        gcpt-bin = builtins.getAttr testCase gcpt-bins;
       }
     )) testCases;
   in lib-customized.linkFarmNoEntries "1.profilings" (
@@ -161,7 +178,7 @@ in rec {
     stage3-checkpoints-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/3.checkpoint.nix {
         inherit testCase qemu;
-        opensbi-bin = builtins.getAttr testCase opensbi-bins;
+        gcpt-bin = builtins.getAttr testCase gcpt-bins;
         stage2-cluster = builtins.getAttr testCase stage2-clusters;
       }
     )) testCases;
