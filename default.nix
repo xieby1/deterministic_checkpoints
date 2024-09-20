@@ -147,6 +147,8 @@ in rec {
 
   qemu = pkgs.callPackage ./qemu {};
 
+  nemu = pkgs.callPackage ./nemu {inherit riscv64-cc;};
+
   stage1-profilings = let
     stage1-profilings-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/1.profiling.nix {
