@@ -30,27 +30,19 @@ spec2017_int_list = [
 spec2017_fp_list = list(set(spec_2017_list) - set(spec2017_int_list))
 
 
-def profiling_instrs(profiling_log, spec_app, using_new_script=False):
+def profiling_instrs(profiling_log, spec_app, config):
     regex = r".*total guest instructions = (.*)"
-    new_path = os.path.join(profiling_log, spec_app, "qemu_output.log")
-    old_path = os.path.join(profiling_log, "{}-out.log".format(spec_app))
-    if using_new_script:
-        path = new_path
-        assert os.path.exists(new_path)
-    elif os.path.exists(old_path):
-        path = old_path
-    elif os.path.exists(new_path):
-        path = new_path
-    else:
-        print("Either {} or {} does not exist".format(old_path, new_path))
-        raise
+    log_file = os.path.join(profiling_log, spec_app, config["log_file"])
+    
+    if not os.path.exists(log_file):
+        print(f"Log file {log_file} does not exist")
+        raise FileNotFoundError
 
-    with open(path, "r", encoding="utf-8") as f:
-        for i in f.readlines():
-            if "total guest instructions" in i:
-                match = re.findall(regex, i)
-                match = match[0].replace(',', '')
-                return match
+    with open(log_file, "r", encoding="utf-8") as f:
+        for line in f:
+            if "total guest instructions" in line:
+                match = re.findall(regex, line)
+                return match[0].replace(',', '')
         return 0
 
 
@@ -75,18 +67,17 @@ def cluster_weight(cluster_path, spec_app):
     return points
 
 
-def per_checkpoint_generate_json(profiling_log, cluster_path, app_list,
-                                 target_path):
+def per_checkpoint_generate_json(profiling_log, cluster_path, app_list, target_path, config):
     result = {}
     for spec in app_list:
         result.update({
             spec: {
-                "insts": profiling_instrs(profiling_log, spec),
+                "insts": profiling_instrs(profiling_log, spec, config),
                 'points': cluster_weight(cluster_path, spec)
             }
         })
     with open(os.path.join(target_path), "w") as f:
-        f.write(json.dumps(result))
+        json.dump(result, f, indent=2)
 
 
 def per_checkpoint_generate_worklist(cpt_path, target_path):
@@ -149,11 +140,14 @@ def generate_result_list(base_path, times, ids):
 
 
 def dump_result(base_path, spec_app_list, times, ids):
+    with open(os.path.join(base_path, "checkpoint-config.json"), "r") as f:
+        config = json.load(f)
+    
     result_list = generate_result_list(base_path, times, ids)
 
     for result in result_list:
         per_checkpoint_generate_json(result["profiling_log"], result["cl_res"],
-                                     spec_app_list, result["json_path"])
+                                     spec_app_list, result["json_path"], config)
         per_checkpoint_generate_worklist(result["checkpoint_path"],
                                          result["list_path"])
 

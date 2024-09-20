@@ -152,7 +152,7 @@ in rec {
   stage1-profilings = let
     stage1-profilings-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/1.profiling.nix {
-        inherit testCase qemu;
+        inherit testCase qemu nemu;
         gcpt-bin = builtins.getAttr testCase gcpt-bins;
       }
     )) testCases;
@@ -179,7 +179,7 @@ in rec {
   stage3-checkpoints = let
     stage3-checkpoints-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/3.checkpoint.nix {
-        inherit testCase qemu;
+        inherit testCase qemu nemu;
         gcpt-bin = builtins.getAttr testCase gcpt-bins;
         stage2-cluster = builtins.getAttr testCase stage2-clusters;
       }

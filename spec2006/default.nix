@@ -9,6 +9,7 @@
 , riscv64-jemalloc
 }:
 let
+  config = lib.importJSON ../checkpoint-config.json;
   # TODO: move to all-packages
   customJemalloc = riscv64-jemalloc.overrideAttrs (oldAttrs: {
     configureFlags = (oldAttrs.configureFlags or []) ++ [
@@ -38,7 +39,7 @@ in stdenv.mkDerivation {
   system = "x86_64-linux";
 
   srcs = [
-    ../../../spec2006.tar.gz
+    config.spec2006_path
     CPU2006LiteWrapper
   ];
   sourceRoot = ".";
@@ -103,8 +104,8 @@ in stdenv.mkDerivation {
       pushd $WORK_DIR
       mkdir -p run
       if [ -d data/all/input ];        then cp -r data/all/input/*     run/; fi
-      if [ -d data/${size}/input ];    then cp -r data/${size}/input/* run/; fi
-      if [ -f extra-data/${size}.sh ]; then sh extra-data/${size}.sh       ; fi
+      if [ -d data/${config.size}/input ];    then cp -r data/${config.size}/input/* run/; fi
+      if [ -f extra-data/${config.size}.sh ]; then sh extra-data/${config.size}.sh       ; fi
 
       mkdir -p $out/$WORK_DIR/run/
       cp -r run/* $out/$WORK_DIR/run/
@@ -113,7 +114,7 @@ in stdenv.mkDerivation {
       # E.g.: 481.wrf/run-ref.sh
       #   before replace: [run-ref.h]: $APP > rsl.out.0000
       #   after replace:     [run.sh]: ./481.wrf > rsl.out.0000
-      sed 's,\$APP,./'$WORK_DIR',' run-${size}.sh > $out/$WORK_DIR/run/run-spec.sh
+      sed 's,\$APP,./'$WORK_DIR',' run-${config.size}.sh > $out/$WORK_DIR/run/run-spec.sh
       popd
     done
 
