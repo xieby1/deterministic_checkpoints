@@ -1,6 +1,4 @@
 { runCommand
-, lib
-, jq
 , testCase
 , qemu
 , nemu
@@ -8,7 +6,7 @@
 }:
 let
   name = "1.profiling-${testCase}";
-  config = lib.importJSON ../checkpoint-config.json;
+  config = import ../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
@@ -37,8 +35,8 @@ in runCommand name {} ''
   mkdir -p $out
 
   ${if config.simulator == "qemu" then ''
-    ${lib.escapeShellArgs qemuCommand} | tee $out/${config.log_file}
+    ${builtins.toString qemuCommand} | tee $out/${config.log_file}
   '' else ''
-    ${lib.escapeShellArgs nemuCommand} | tee $out/${config.log_file}
+    ${builtins.toString nemuCommand} | tee $out/${config.log_file}
   ''}
 ''

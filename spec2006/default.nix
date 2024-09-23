@@ -9,7 +9,7 @@
 , riscv64-jemalloc
 }:
 let
-  config = lib.importJSON ../checkpoint-config.json;
+  config = import ../config.nix;
   # TODO: move to all-packages
   customJemalloc = riscv64-jemalloc.overrideAttrs (oldAttrs: {
     configureFlags = (oldAttrs.configureFlags or []) ++ [

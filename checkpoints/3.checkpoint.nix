@@ -8,7 +8,7 @@
 }:
 let
   name = "3.checkpoint-${testCase}";
-  config = lib.importJSON ../checkpoint-config.json;
+  config = import ../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
@@ -37,12 +37,9 @@ in runCommand name {} ''
 
  ${if config.simulator == "qemu" then ''
     echo "Executing QEMU command:"
-    echo ${lib.escapeShellArgs qemuCommand}
-    ${lib.escapeShellArgs qemuCommand} | tee $out/${config.log_file}
+    ${builtins.toString qemuCommand} | tee $out/${config.log_file}
   '' else ''
     echo "Executing NEMU command:"
-    echo ${lib.escapeShellArgs nemuCommand}
-    ${lib.escapeShellArgs nemuCommand} \
-      > >(tee $out/${config.log_file}) 2> >(tee $out/${testCase}-err.txt >&2)
+    ${builtins.toString nemuCommand} | tee $out/${config.log_file}
   ''}
 ''
