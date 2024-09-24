@@ -21,7 +21,7 @@ let
   ];
 
   nemuCommand = [
-    "${nemu}/bin/nemu"
+    "${nemu}/bin/riscv64-nemu-interpreter"
     "${gcpt-bin}/gcpt.${testCase}.bin"
     "-b"
     "-D $out"
@@ -35,8 +35,10 @@ in runCommand name {} ''
   mkdir -p $out
 
   ${if config.simulator == "qemu" then ''
-    ${builtins.toString qemuCommand} | tee $out/${config.log_file}
+    echo ${builtins.toString qemuCommand}
+    ${builtins.toString qemuCommand} | tee $out/${config.profiling_log}
   '' else ''
-    ${builtins.toString nemuCommand} | tee $out/${config.log_file}
+    echo ${builtins.toString nemuCommand}
+    ${builtins.toString nemuCommand} | tee $out/${config.profiling_log}
   ''}
 ''

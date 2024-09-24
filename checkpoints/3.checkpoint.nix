@@ -22,7 +22,7 @@ let
   ];
 
   nemuCommand = [
-    "${nemu}/bin/nemu"
+    "${nemu}/bin/riscv64-nemu-interpreter"
     "${gcpt-bin}/gcpt.${testCase}.bin"
     "-b"
     "-D $out"
@@ -37,9 +37,9 @@ in runCommand name {} ''
 
  ${if config.simulator == "qemu" then ''
     echo "Executing QEMU command:"
-    ${builtins.toString qemuCommand} | tee $out/${config.log_file}
+    ${builtins.toString qemuCommand} | tee $out/${config.checkpoint_log}
   '' else ''
     echo "Executing NEMU command:"
-    ${builtins.toString nemuCommand} | tee $out/${config.log_file}
+    ${builtins.toString nemuCommand} | tee $out/${config.checkpoint_log}
   ''}
 ''
