@@ -76,8 +76,11 @@ in rec {
   qemu_trap = pkgs.callPackage ./linux/initramfs/overlays/qemu_trap {
     inherit riscv64-cc riscv64-libc-static;
   };
+  nemu_trap = pkgs.callPackage ./linux/initramfs/overlays/nemu_trap {
+    inherit riscv64-cc riscv64-libc-static;
+  };  
   initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
-    inherit before_workload busybox qemu_trap;
+    inherit before_workload busybox qemu_trap nemu_trap;
   };
   gen_init_cpio = pkgs.callPackage ./linux/initramfs/base/gen_init_cpio {};
   initramfs_base = pkgs.callPackage ./linux/initramfs/base {

@@ -36,10 +36,10 @@ in runCommand name {} ''
   mkdir -p $out
 
  ${if config.simulator == "qemu" then ''
-    echo "Executing QEMU command:"
+    echo "Executing QEMU command: ${builtins.toString qemuCommand}"
     ${builtins.toString qemuCommand} | tee $out/${config.checkpoint_log}
   '' else ''
-    echo "Executing NEMU command:"
+    echo "Executing NEMU command: ${builtins.toString nemuCommand}"
     ${builtins.toString nemuCommand} | tee $out/${config.checkpoint_log}
   ''}
 ''

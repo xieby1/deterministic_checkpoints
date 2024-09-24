@@ -40,5 +40,6 @@ in runCommand name {} ''
   '' else ''
     echo ${builtins.toString nemuCommand}
     ${builtins.toString nemuCommand} | tee $out/${config.profiling_log}
+    cp $out/${testCase}/${config.workload}/simpoint_bbv.gz $out/
   ''}
 ''
