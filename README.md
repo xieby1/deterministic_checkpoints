@@ -18,7 +18,10 @@ The project uses Nix to manage dependencies and build the necessary components:
 Before using this project, you need to prepare the SPEC CPU2006 program source code yourself. Please follow these steps:
 
 1. Obtain the SPEC CPU2006 source code (we cannot provide the source code due to licensing restrictions).
-2. Rename the obtained source code folder to "spec2006".
+2. It is recommended to store the SPEC CPU2006 source code directory separately, not in the same location as this repository.
+3. Rename the obtained source code folder to "spec2006", like ~/workspace/spec2006.
+4. Please do not modify the source code, as this may cause the build to fail.
+5. Note that the spec2006/default.nix directory in this repository is different from the SPEC CPU2006 source code directory. The former can be considered as a Nix build script.
 
 ## Nix Installation and Usage
 
@@ -48,11 +51,13 @@ it will show you some usage tips
 ```
    DETERMINISTIC_CHECKPOINTS USAGE TIPS                                                                               
                                                                                                                       
-  • Set SPEC CPU 2006 source code: edit  spec2006/default.nix :  srcs = [...]                                         
+  • Set SPEC CPU 2006 source code: edit  spec2006/default.nix :  srcs = [~/workspace/spec2006 CPU2006LiteWrapper];                                         
   • Set input size: edit  spec2006/default.nix :  size = xxx  (default input is ref)                                  
   • Generate the checkpoints of all testCases into  result/ :  nom-build -A checkpoints                               
-  • Generate the checkpoints of a specific  into  result/ :  nom-build -A 'checkpoints."<testCase>"'                  
-    • E.g.:  nom-build -A 'checkpoints."403.gcc"'                                                                      
+  • Generate the checkpoints of a specific testCase into  result/ :  nom-build -A 'checkpoints."<testCase>"'                  
+    • E.g.:  nom-build -A 'checkpoints."403.gcc"' 
+  • Running nom-build without parameters will generate results-* directory containing all intermediate build results, symlinked to the corresponding /nix/store/....nix. You can then use dump_result.py to read the log files within and obtain the dynamic instruction count of the program.
+    • E.g.:  nom-build
 ```
 
 
