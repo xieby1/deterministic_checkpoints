@@ -27,7 +27,7 @@ let
     "-b"
     "-D $out"
     "-C checkpoint"
-    "-w ${config.workload}"
+    "-w ."
     "-S ${stage2-cluster}"
     "--cpt-interval ${toString config.intervals}"
   ];
