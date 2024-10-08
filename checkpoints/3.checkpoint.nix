@@ -30,6 +30,7 @@ let
     "-w ."
     "-S ${stage2-cluster}"
     "--cpt-interval ${toString config.intervals}"
+    "--checkpoint-format ${toString config.checkpoint_format}"
   ];
 
 in runCommand name {} ''
