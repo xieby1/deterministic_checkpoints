@@ -82,7 +82,7 @@ in stdenv.mkDerivation {
     export SPEC_LITE=$PWD
     export ARCH=riscv64
     export CROSS_COMPILE=riscv64-unknown-linux-gnu-
-    export OPTIMIZE="-O3 -flto"
+    export OPTIMIZE="-O3 -flto -march=rv64gc_zba_zbb_zbc_zbs"
     export SUBPROCESS_NUM=5
 
     export CFLAGS="$CFLAGS -static -Wno-format-security -I${customJemalloc}/include "
