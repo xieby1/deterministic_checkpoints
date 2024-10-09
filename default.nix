@@ -76,8 +76,11 @@ in rec {
   qemu_trap = pkgs.callPackage ./linux/initramfs/overlays/qemu_trap {
     inherit riscv64-cc riscv64-libc-static;
   };
+  nemu_trap = pkgs.callPackage ./linux/initramfs/overlays/nemu_trap {
+    inherit riscv64-cc riscv64-libc-static;
+  };  
   initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
-    inherit before_workload busybox qemu_trap;
+    inherit before_workload busybox qemu_trap nemu_trap;
   };
   gen_init_cpio = pkgs.callPackage ./linux/initramfs/base/gen_init_cpio {};
   initramfs_base = pkgs.callPackage ./linux/initramfs/base {
@@ -152,7 +155,7 @@ in rec {
   stage1-profilings = let
     stage1-profilings-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/1.profiling.nix {
-        inherit testCase qemu;
+        inherit testCase qemu nemu;
         gcpt-bin = builtins.getAttr testCase gcpt-bins;
       }
     )) testCases;
@@ -179,7 +182,7 @@ in rec {
   stage3-checkpoints = let
     stage3-checkpoints-list = builtins.map (testCase: (
       pkgs.callPackage ./checkpoints/3.checkpoint.nix {
-        inherit testCase qemu;
+        inherit testCase qemu nemu;
         gcpt-bin = builtins.getAttr testCase gcpt-bins;
         stage2-cluster = builtins.getAttr testCase stage2-clusters;
       }

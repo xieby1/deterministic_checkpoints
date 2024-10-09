@@ -1,2 +1,5 @@
 result*
 .direnv
+checkpoint.lst
+cluster-0-0.json
+.vscode

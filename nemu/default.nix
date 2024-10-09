@@ -37,6 +37,10 @@ stdenv.mkDerivation {
     rev = "4332a525";
     hash = "sha256-nVnSVdZa5pskPE8wVVD43e/vrsukeb7KQjPu34HbYko=";
   };
+
+  patches = [
+    ./serializer_readonly.patch
+  ];
   
   buildInputs = [
     git
@@ -96,4 +100,6 @@ stdenv.mkDerivation {
       mkdir -p $out/bin
       cp build/riscv64-nemu-interpreter $out/bin/
     '';
+
+    dontFixup = true;
 }
