@@ -34,14 +34,9 @@ stdenv.mkDerivation {
     owner = "OpenXiangShan";
     repo = "NEMU";
     # latest checkpoint branch
-    rev = "4332a525";
-    hash = "sha256-nVnSVdZa5pskPE8wVVD43e/vrsukeb7KQjPu34HbYko=";
+    rev = "cf24515c85f5be898687959ab299ea276dbd7c56";
+    hash = "sha256-m6hNgEXnhTmwwFOCuZ7gBRnrCNbfdExGIJsAfbhnwa0=";
   };
-
-  patches = [
-    ./serializer_readonly.patch
-  ];
-  
   buildInputs = [
     git
     zlib
