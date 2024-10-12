@@ -2,7 +2,7 @@
   simulator = "nemu";       # nemu or qemu
   intervals = 20000000;
   workload = "miao";
-  size = "test";            # test or ref
+  size = "ref";            # test or ref
   profiling_log = "profiling.log";
   checkpoint_log = "checkpoint.log";
   spec2006_path = /nfs/home/yanyue/tools/spec2006;
