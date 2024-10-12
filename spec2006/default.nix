@@ -60,6 +60,13 @@ in stdenv.mkDerivation {
     #   * [profiling QEMU plugin](https://github.com/OpenXiangShan/qemu/blob/8758c375de12f09073614cad48f9956fe53b5aa7/contrib/plugins/profiling.c#L249)
     #   * [before_workload](https://github.com/OpenXiangShan/riscv-rootfs/blob/03bdc9553ed9db132844b1e314485d465667eabd/apps/before_workload/before_workload.c#L15)
     sed -i '/sleep.t/d' ./spec2006/benchspec/CPU2006/400.perlbench/data/test/input/test.pl
+
+    # Fix the compilation error of 483.xalancbmk , for gcc version >= 14
+    if git apply --check ${./483.xalancbmk.patch}; then
+      git apply ${./483.xalancbmk.patch}
+    else
+      echo "警告：483.xalancbmk.patch 无法应用，可能是因为文件已经被修改。跳过此补丁。"
+    fi
   '';
 
   configurePhase = let
