@@ -80,6 +80,9 @@ stdenv.mkDerivation {
       # Build gcpt_restore
       make -C resource/gcpt_restore
 
+      # gem5 does not support SV48 at present, use SV39 instead
+      sed -i "s/CONFIG_RV_SV48/CONFIG_RV_SV39/g" configs/riscv64-xs-cpt_defconfig
+
       make riscv64-xs-cpt_defconfig
 
       # Ensure softfloat build directory has write permissions
