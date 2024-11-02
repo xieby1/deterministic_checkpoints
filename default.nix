@@ -1,6 +1,6 @@
 { pkgs ? import (fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
-    sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
+    url = "https://github.com/NixOS/nixpkgs/tarball/nixos-24.05";
+    sha256 = "sha256:18fhmpwhn77vxppvjnlvjvl0642271wqpnz6iwpai2ar04x2hgzp";
   }) {}
 }:
 let
@@ -37,7 +37,7 @@ let
   ];
   lib-customized = pkgs.callPackage ./lib-customized.nix {};
 in rec {
-  riscv64-cc = pkgs.pkgsCross.riscv64.stdenv.cc;
+  riscv64-cc = pkgs.pkgsCross.riscv64.gcc14Stdenv.cc;
   riscv64-libc-static = pkgs.pkgsCross.riscv64.stdenv.cc.libc.static;
   riscv64-fortran = let
     pkgs2311 = import (fetchTarball {
@@ -46,7 +46,7 @@ in rec {
     }) {};
   # TODO: Why pkgs 24.05 gfortran does not work, but 23.11 works?
   in pkgs2311.pkgsCross.riscv64.wrapCCWith {
-    cc = pkgs.pkgsCross.riscv64.stdenv.cc.cc.override {
+    cc = pkgs.pkgsCross.riscv64.gcc14Stdenv.cc.cc.override {
       name = "gfortran";
       langFortran = true;
       langCC = false;
