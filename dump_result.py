@@ -86,7 +86,7 @@ def per_checkpoint_generate_json(profiling_log, cluster_path, app_list,
             }
         })
     with open(os.path.join(target_path), "w") as f:
-        f.write(json.dumps(result))
+        json.dump(result, f, indent=4)
 
 
 def per_checkpoint_generate_worklist(cpt_path, target_path):
