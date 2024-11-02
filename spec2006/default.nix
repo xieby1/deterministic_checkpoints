@@ -17,7 +17,7 @@ let
       "--disable-shared"
     ];
     preBuild = ''
-      # Add weak attribute to C++ operators, 作用和jemalloc_cpp.patch效果一样
+      # Add weak attribute to C++ operators, same as jemalloc_cpp.patch
       sed -i 's/void \*operator new(size_t)/void *operator new(size_t) __attribute__((weak))/g' src/jemalloc_cpp.cpp
       sed -i 's/void operator delete(void \*)/void operator delete(void *) __attribute__((weak))/g' src/jemalloc_cpp.cpp
     '';

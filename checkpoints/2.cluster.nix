@@ -22,6 +22,6 @@ in runCommand name {} (''
   "-seedproj 829610"
 ]) + ''
 
-  # 修改生成文件的权限444改为644, nemu fstream读取默认需要写权限
+  # chmod from 444 to 644, nemu fstream need write permission
   chmod +w $out/simpoints0 $out/weights0
 '')
