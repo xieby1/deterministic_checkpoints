@@ -32,14 +32,14 @@ in stdenv.mkDerivation {
     # Refers to https://github.com/riscv-software-src/opensbi/blob/master/platform/generic/objects.mk
     # and https://docs.xiangshan.cc/zh-cn/latest/tools/opensbi-kernel-for-xs/
     # FW_PAYLOAD_OFFSET=0x100000
-    # ┌───────┬───────────────────┬──────────────────────────┬─────┐
-    # │ gcpt  │  opensbi firmware │ payload e.g. linux Image │ FDT │
-    # └───────┴───────────────────┴──────────────────────────┴─────┘
-    # │       │                   │                          │
-    # │OFFSET─┤ FW_PAYLOAD_OFFSET │                          │
-    # │(1MB)  │ (default:0x100000=1MB) │                     │
-    # │                                                      │
-    # └─────────────────FW_PAYLOAD_FDT_OFFSET────────────────┘
+    # -------------------------------------------------------------------
+    # | gcpt  |  opensbi firmware      | payload e.g. linux Image | FDT |
+    # -------------------------------------------------------------------
+    # |       |                        |                          |
+    # |OFFSET | FW_PAYLOAD_OFFSET      |                          |
+    # |(1MB)  | (default:0x100000=1MB) |                          |
+    # |                                                           |
+    # |---------- FW_PAYLOAD_FDT_OFFSET --------------------------|
     #             (default:0x2200000=2MB+32MB)
     # Noted: In 64bit system, the FW_PAYLOAD_OFFSET and FW_PAYLOAD_FDT_OFFSET must be aligned to 2MB.
 
