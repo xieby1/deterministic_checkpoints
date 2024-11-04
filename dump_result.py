@@ -114,7 +114,7 @@ def per_checkpoint_generate_worklist(cpt_path, target_path):
 def find_nix_path(base_path, suffix):
     for item in os.scandir(base_path):
         if item.is_symlink() and item.name.startswith('result'):
-            target_path = os.readlink(item.path)  # 获取符号链接指向的路径
+            target_path = os.readlink(item.path)
             if target_path.endswith(suffix):
                 return item.path
     return None

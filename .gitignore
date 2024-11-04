@@ -3,3 +3,5 @@ result*
 checkpoint.lst
 cluster-0-0.json
 .vscode
+backup*
+!backup_checkpoints.py

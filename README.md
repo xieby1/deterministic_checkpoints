@@ -83,6 +83,15 @@ With the test input size, the entire process should complete in about 30 minutes
 
 Finally, it will generate a result folder, you will get all the checkpoints in the result folder
 
+If you want to back up some checkpoints:
+run
+```bash
+nom-build -j 30
+python3 backup_checkpoints.py
+```
+It will copy checkpoints from nix path to local pwd path, named backup_XXX (timestamp).
+Notice: backup_XXX is about 100GB!
+
 
 ## Running on Gem5
 
