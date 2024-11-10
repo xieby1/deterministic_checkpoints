@@ -1,0 +1,9 @@
+[book]
+authors = ["xieby1"]
+language = "en"
+multilingual = false
+src = "docs/"
+title = "🪚确定性切片（deterministic_checkpoints）❄️"
+
+[output.html]
+git-repository-url = "https://github.com/xieby1/deterministic_checkpoints"

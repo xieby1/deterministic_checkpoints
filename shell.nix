@@ -12,6 +12,7 @@ let
       * E.g.: `nom-build -A 'checkpoints."403.gcc"'`
     * Running nom-build without parameters will generate results-* directory, used by dump_result.py
       * E.g.: `nom-build`
+    * Generate html doc into `book/`: `make doc`, 
   '';
   _h_ = pkgs.writeShellScriptBin "h" ''
     ${pkgs.glow}/bin/glow ${h_content}
@@ -22,6 +23,8 @@ pkgs.mkShell {
   packages = [
     _h_
     pkgs.nix-output-monitor
+    pkgs.mdbook
+    pkgs.graphviz
   ];
   shellHook = ''
     h
