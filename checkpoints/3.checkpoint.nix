@@ -1,18 +1,17 @@
 { runCommand
 , lib
-, testCase
+
 , qemu
 , nemu
 , gcpt-bin
 , stage2-cluster
 }:
 let
-  name = "3.checkpoint-${testCase}";
   config = import ../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
-    "-bios ${gcpt-bin}/gcpt.${testCase}.bin"
+    "-bios ${gcpt-bin}"
     "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${toString config.intervals},output-base-dir=$out,config-name=${config.workload},checkpoint-mode=SimpointCheckpoint"
     "-nographic"
     "-m 8G"
@@ -23,7 +22,7 @@ let
 
   nemuCommand = [
     "${nemu}/bin/riscv64-nemu-interpreter"
-    "${gcpt-bin}/gcpt.${testCase}.bin"
+    "${gcpt-bin}"
     "-b"
     "-D $out"
     "-C checkpoint"
@@ -33,7 +32,7 @@ let
     "--checkpoint-format ${toString config.checkpoint_format}"
   ];
 
-in runCommand name {} ''
+in runCommand "${lib.removeSuffix ".2_cluster" stage2-cluster.name}.3_checkpoint" {} ''
   mkdir -p $out
 
  ${if config.simulator == "qemu" then ''
