@@ -1,13 +1,11 @@
 { stdenv
+, lib
 , fetchFromGitHub
+
 , riscv64-cc
-, testCase
 , opensbi-bin
-}:
-let
-    name = "gcpt-${testCase}";
-in stdenv.mkDerivation {
-    inherit name;
+}: stdenv.mkDerivation {
+  name = "${lib.removeSuffix ".opensbi" opensbi-bin.name}.gcpt";
 
     src = fetchFromGitHub {
         owner = "OpenXiangShan";
@@ -21,7 +19,7 @@ in stdenv.mkDerivation {
     ];
     makeFlags = [
         "CROSS_COMPILE=riscv64-unknown-linux-gnu-"
-        "GCPT_PAYLOAD_PATH=${opensbi-bin}/fw_payload.${testCase}.bin"
+        "GCPT_PAYLOAD_PATH=${opensbi-bin}"
     ];
     buildPhase = ''
         make clean
@@ -29,8 +27,6 @@ in stdenv.mkDerivation {
     '';
 
     installPhase = ''
-        mkdir -p $out
-        cp build/gcpt.bin $out/gcpt.${testCase}.bin
-        # cp build/gcpt.txt $out/gcpt.${testCase}.txt
+        cp build/gcpt.bin $out
     '';
 }
