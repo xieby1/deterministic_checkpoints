@@ -1,16 +1,17 @@
 { runCommand
-, testCase
+, lib
+
 , qemu
 , nemu
 , gcpt-bin
 }:
 let
-  name = "1.profiling-${testCase}";
+  name = "${lib.removeSuffix ".gcpt" gcpt-bin.name}.1_profiling";
   config = import ../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
-    "-bios ${gcpt-bin}/gcpt.${testCase}.bin"
+    "-bios ${gcpt-bin}"
     "-M nemu"
     "-nographic"
     "-m 8G"
@@ -22,10 +23,10 @@ let
 
   nemuCommand = [
     "${nemu}/bin/riscv64-nemu-interpreter"
-    "${gcpt-bin}/gcpt.${testCase}.bin"
+    "${gcpt-bin}"
     "-b"
     "-D $out"
-    "-C ${testCase}"
+    "-C ${name}"
     "-w ${config.workload}"
     "--simpoint-profile"
     "--cpt-interval ${toString config.intervals}"
@@ -40,6 +41,6 @@ in runCommand name {} ''
   '' else ''
     echo ${builtins.toString nemuCommand}
     ${builtins.toString nemuCommand} | tee $out/${config.profiling_log}
-    cp $out/${testCase}/${config.workload}/simpoint_bbv.gz $out/
+    cp $out/${name}/${config.workload}/simpoint_bbv.gz $out/
   ''}
 ''
