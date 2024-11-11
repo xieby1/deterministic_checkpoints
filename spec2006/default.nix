@@ -42,7 +42,8 @@
   };
 in builtins.listToAttrs (
   builtins.map (testcase: {
-    name = testcase;
+    # change `.` to `_`, e.g. "403.gcc" to "403_gcc"
+    name = builtins.replaceStrings ["."] ["_"] testcase;
     value = runCommand "${testcase}" {} ''
       mkdir -p $out
       cp -r ${build-all}/${testcase}/* $out/

@@ -49,14 +49,14 @@ h
 
 it will show you some usage tips
 ```
-   DETERMINISTIC_CHECKPOINTS USAGE TIPS                                                                               
-                                                                                                                      
-  • Set SPEC CPU 2006 source code: edit  config.nix :  spec2006_path = [...]                    
+   DETERMINISTIC_CHECKPOINTS USAGE TIPS
+
+  • Set SPEC CPU 2006 source code: edit  config.nix :  spec2006_path = [...]
   • Set input size: edit  config.nix :  size = xxx  (default input is ref)
-  • Change other configs in  config.nix                           
-  • Generate the checkpoints of all testCases into  result/ :  nom-build -A checkpoints                               
-  • Generate the checkpoints of a specific testCase into  result/ :  nom-build -A 'checkpoints."<testCase>"'                  
-    • E.g.:  nom-build -A 'checkpoints."403.gcc"' 
+  • Change other configs in  config.nix
+  • Generate the checkpoints of all testCases into  result/ :  nom-build -A checkpoints
+  • Generate the checkpoints of a specific testCase into  result/ :  nom-build -A checkpoints.<testCase>
+    • E.g.:  nom-build -A checkpoints.403_gcc
   • Running nom-build without parameters will generate results-* directory containing all intermediate build results, symlinked to the corresponding /nix/store/....nix. You can then use dump_result.py to read the log files within and obtain the dynamic instruction count of the program.
     • E.g.:  nom-build
 ```

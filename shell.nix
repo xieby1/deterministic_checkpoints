@@ -8,8 +8,8 @@ let
     * Set input size: edit `config.nix`: `size = xxx` (default input is ref)
     * Change other configs in `config.nix`
     * Generate the checkpoints of all testCases into `result/`: `nom-build -A checkpoints`
-    * Generate the checkpoints of a specific <testCase> into `result/`: `nom-build -A 'checkpoints."<testCase>"'`
-      * E.g.: `nom-build -A 'checkpoints."403.gcc"'`
+    * Generate the checkpoints of a specific <testCase> into `result/`: `nom-build -A checkpoints.<testCase>`
+      * E.g.: `nom-build -A checkpoints.403_gcc`
     * Running nom-build without parameters will generate results-* directory, used by dump_result.py
       * E.g.: `nom-build`
     * Generate html doc into `book/`: `make doc`, 
