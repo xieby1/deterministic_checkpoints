@@ -2,11 +2,16 @@
 , callPackage
 , cpio
 
-, initramfs_overlays
+, riscv64-cc
+, riscv64-libc-static
+, riscv64-busybox
 , benchmark
 }: let
   cpioPatched = cpio.overrideAttrs (old: { patches = [./cpio_reset_timestamp.patch]; });
   base = callPackage ./base {};
+  initramfs_overlays = callPackage ./overlays {
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
+  };
 in runCommand "${benchmark.name}.cpio" {} ''
   cp ${base}/init.cpio $out
   chmod +w $out

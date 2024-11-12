@@ -3,17 +3,15 @@
 }: let
   riscv64-cc = pkgs.pkgsCross.riscv64.stdenv.cc;
   riscv64-libc-static = pkgs.pkgsCross.riscv64.stdenv.cc.libc.static;
+  riscv64-busybox = pkgs.pkgsCross.riscv64.busybox.override {
+    enableStatic = true;
+    useMusl = true;
+  };
 
   # TODO: move folders to imgBuilder/
-  initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
-    inherit riscv64-cc riscv64-libc-static;
-    riscv64-busybox = pkgs.pkgsCross.riscv64.busybox.override {
-      enableStatic = true;
-      useMusl = true;
-    };
-  };
   initramfs = pkgs.callPackage ./linux/initramfs {
-    inherit initramfs_overlays benchmark;
+    inherit benchmark;
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
   };
   linux-common-build = pkgs.callPackage ./linux/common-build.nix {
     inherit riscv64-cc;
@@ -34,7 +32,7 @@
 in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
-    inherit initramfs_overlays initramfs;
+    inherit initramfs;
     inherit linux-common-build linux-image;
     inherit dts opensbi-common-build opensbi-bin;
   };
