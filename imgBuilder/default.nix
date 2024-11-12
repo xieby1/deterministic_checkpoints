@@ -21,9 +21,8 @@
   initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
     inherit before_workload busybox qemu_trap nemu_trap;
   };
-  initramfs_base = pkgs.callPackage ./linux/initramfs/base {};
   initramfs = pkgs.callPackage ./linux/initramfs {
-    inherit initramfs_base initramfs_overlays benchmark;
+    inherit initramfs_overlays benchmark;
   };
   linux-common-build = pkgs.callPackage ./linux/common-build.nix {
     inherit riscv64-cc;
