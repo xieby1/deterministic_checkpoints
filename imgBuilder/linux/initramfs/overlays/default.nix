@@ -4,7 +4,7 @@
 
 , riscv64-cc
 , riscv64-libc-static
-, busybox
+, riscv64-busybox
 , qemu_trap
 , nemu_trap
 }:
@@ -27,7 +27,7 @@ let
   '';
 in runCommand name {} ''
   mkdir -p $out/bin
-  cp ${busybox}/bin/busybox $out/bin/
+  cp ${riscv64-busybox}/bin/busybox $out/bin/
   ln -s /bin/busybox $out/init
 
   mkdir -p $out/etc
