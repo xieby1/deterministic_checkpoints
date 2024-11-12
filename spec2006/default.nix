@@ -44,9 +44,15 @@ in builtins.listToAttrs (
   builtins.map (testcase: {
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"
     name = builtins.replaceStrings ["."] ["_"] testcase;
-    value = runCommand "${testcase}" {} ''
+    value = (runCommand "${testcase}" {
+      # sh script to run a testcase
+      run = ''
+        cd /run
+        sh ./run-spec.sh
+      '';
+    } ''
       mkdir -p $out
       cp -r ${build-all}/${testcase}/* $out/
-    '';
+    '');
   }) testCases
 )

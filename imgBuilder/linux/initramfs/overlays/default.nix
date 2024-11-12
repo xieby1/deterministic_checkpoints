@@ -5,6 +5,7 @@
 , riscv64-cc
 , riscv64-libc-static
 , riscv64-busybox
+, benchmark-run
 }:
 let
   name = "initramfs-overlays";
@@ -20,8 +21,7 @@ let
   run_sh = writeText "run.sh" ''
     before_workload
     echo start
-    cd /run
-    sh ./run-spec.sh
+    ${benchmark-run}
     echo exit
     ${trapCommand}
   '';

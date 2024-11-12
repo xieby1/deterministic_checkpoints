@@ -11,6 +11,8 @@
   base = callPackage ./base {};
   initramfs_overlays = callPackage ./overlays {
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
+    # TODO: check if `run` doest not exist, throw an error
+    benchmark-run = benchmark.run;
   };
 in runCommand "${benchmark.name}.cpio" {} ''
   cp ${base}/init.cpio $out
