@@ -1,13 +1,20 @@
 { stdenv
-, lib
 , python3
+, callPackage
 
 , riscv64-cc
-, linux-image
+, riscv64-libc-static
+, riscv64-busybox
+, benchmark
 , dts
 , opensbi-common-build
-}: stdenv.mkDerivation {
-  name = "${lib.removeSuffix ".linux" linux-image.name}.opensbi";
+}: let
+  linux = callPackage ../linux {
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
+    inherit benchmark;
+  };
+in stdenv.mkDerivation {
+  name = "${benchmark.name}.opensbi";
 
   src = opensbi-common-build;
 
@@ -20,7 +27,7 @@
     "CROSS_COMPILE=riscv64-unknown-linux-gnu-"
     "PLATFORM=generic"
     "FW_FDT_PATH=${dts}/xiangshan.dtb"
-    "FW_PAYLOAD_PATH=${linux-image}"
+    "FW_PAYLOAD_PATH=${linux}"
   ];
   buildPhase = ''
     patchShebangs .
@@ -43,7 +50,7 @@
     # Calculate the FW_PAYLOAD_FDT_OFFSET
     ALIGN=0x200000
     FW_PAYLOAD_OFFSET=0x100000
-    IMAGE_SIZE=$(ls -l ${linux-image} | awk '{print $5}')
+    IMAGE_SIZE=$(ls -l ${linux} | awk '{print $5}')
     IMAGE_END=$((FW_PAYLOAD_OFFSET + IMAGE_SIZE))
     IMAGE_END_ALIGNED=$(( (IMAGE_END + ALIGN-1) & ~(ALIGN-1) ))
     IMAGE_END_ALIGNED_HEX=$(printf "0x%x" $IMAGE_END_ALIGNED)
