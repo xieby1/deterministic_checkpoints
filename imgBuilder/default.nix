@@ -9,12 +9,7 @@
   };
 
   # TODO: move folders to imgBuilder/
-  dts = pkgs.callPackage ./opensbi/dts {};
-  opensbi-common-build = pkgs.callPackage ./opensbi/common-build.nix {
-    inherit riscv64-cc dts;
-  };
   opensbi-bin = pkgs.callPackage ./opensbi {
-    inherit opensbi-common-build;
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
     inherit benchmark;
   };
@@ -24,6 +19,6 @@
 in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
-    inherit opensbi-common-build opensbi-bin;
+    inherit opensbi-bin;
   };
 })
