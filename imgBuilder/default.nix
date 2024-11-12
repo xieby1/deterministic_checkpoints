@@ -9,15 +9,13 @@
   };
 
   # TODO: move folders to imgBuilder/
-  initramfs = pkgs.callPackage ./linux/initramfs {
-    inherit benchmark;
-    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
-  };
   linux-common-build = pkgs.callPackage ./linux/common-build.nix {
     inherit riscv64-cc;
   };
   linux-image = pkgs.callPackage ./linux {
-    inherit riscv64-cc initramfs linux-common-build;
+    inherit linux-common-build;
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
+    inherit benchmark;
   };
   dts = pkgs.callPackage ./opensbi/dts {};
   opensbi-common-build = pkgs.callPackage ./opensbi/common-build.nix {
@@ -32,7 +30,6 @@
 in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
-    inherit initramfs;
     inherit linux-common-build linux-image;
     inherit dts opensbi-common-build opensbi-bin;
   };

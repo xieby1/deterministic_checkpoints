@@ -1,15 +1,22 @@
 { stdenv
-, lib
+, callPackage
 , bc
 , flex
 , bison
 
 , riscv64-cc
-, initramfs
+, riscv64-libc-static
+, riscv64-busybox
+, benchmark
 # TODO: use overlayfs to reduce disk usage
 , linux-common-build
-}: stdenv.mkDerivation {
-  name = "${lib.removeSuffix ".cpio" initramfs.name}.linux";
+}: let
+  initramfs = callPackage ./initramfs {
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
+    inherit benchmark;
+  };
+in stdenv.mkDerivation {
+  name = "${benchmark.name}.linux";
   src = linux-common-build;
   buildInputs = [
     bc
