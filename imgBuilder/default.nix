@@ -14,7 +14,7 @@
     inherit riscv64-cc dts;
   };
   opensbi-bin = pkgs.callPackage ./opensbi {
-    inherit dts opensbi-common-build;
+    inherit opensbi-common-build;
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
     inherit benchmark;
   };
@@ -24,6 +24,6 @@
 in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
-    inherit dts opensbi-common-build opensbi-bin;
+    inherit opensbi-common-build opensbi-bin;
   };
 })
