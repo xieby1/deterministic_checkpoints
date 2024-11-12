@@ -8,13 +8,13 @@
 , riscv64-libc-static
 , riscv64-busybox
 , benchmark
-# TODO: use overlayfs to reduce disk usage
-, linux-common-build
 }: let
   initramfs = callPackage ./initramfs {
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
     inherit benchmark;
   };
+  # TODO: use overlayfs to reduce disk usage
+  linux-common-build = callPackage ./common-build.nix {inherit riscv64-cc;};
 in stdenv.mkDerivation {
   name = "${benchmark.name}.linux";
   src = linux-common-build;
