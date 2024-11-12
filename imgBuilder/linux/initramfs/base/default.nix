@@ -1,6 +1,6 @@
 { writeText
 , runCommand
-, gen_init_cpio
+, callPackage
 }:
 let
   name = "init.cpio";
@@ -26,6 +26,7 @@ let
     nod /dev/console  644 0 0 c 5 1
     nod /dev/null     644 0 0 c 1 3
   '';
+  gen_init_cpio = callPackage ./gen_init_cpio {};
 in runCommand name {} ''
   mkdir -p $out
   ${gen_init_cpio}/bin/gen_init_cpio -t 0 ${cpio_list} > $out/${name}
