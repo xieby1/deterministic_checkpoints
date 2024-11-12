@@ -7,14 +7,12 @@
     enableStatic = true;
     useMusl = true;
   };
-
-  # TODO: move folders to imgBuilder/
-  gcpt-bin = pkgs.callPackage ./gcpt {
+  gcpt = pkgs.callPackage ./gcpt {
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
     inherit benchmark;
   };
-in gcpt-bin.overrideAttrs (old: {
+in gcpt.overrideAttrs (old: {
   passthru = {
-    inherit riscv64-cc riscv64-libc-static;
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox benchmark;
   };
 })
