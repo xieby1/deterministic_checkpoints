@@ -5,9 +5,6 @@
   riscv64-libc-static = pkgs.pkgsCross.riscv64.stdenv.cc.libc.static;
 
   # TODO: move folders to imgBuilder/
-  before_workload = pkgs.callPackage ./linux/initramfs/overlays/before_workload {
-    inherit riscv64-cc riscv64-libc-static;
-  };
   busybox = pkgs.pkgsCross.riscv64.busybox.override {
     enableStatic = true;
     useMusl = true;
@@ -19,7 +16,8 @@
     inherit riscv64-cc riscv64-libc-static;
   };  
   initramfs_overlays = pkgs.callPackage ./linux/initramfs/overlays {
-    inherit before_workload busybox qemu_trap nemu_trap;
+    inherit busybox qemu_trap nemu_trap;
+    inherit riscv64-cc riscv64-libc-static;
   };
   initramfs = pkgs.callPackage ./linux/initramfs {
     inherit initramfs_overlays benchmark;
@@ -43,7 +41,7 @@
 in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
-    inherit before_workload busybox qemu_trap nemu_trap;
+    inherit busybox qemu_trap nemu_trap;
     inherit initramfs_overlays initramfs;
     inherit linux-common-build linux-image;
     inherit dts opensbi-common-build opensbi-bin;

@@ -1,12 +1,16 @@
 { writeText
 , runCommand
-, before_workload
+, callPackage
+
+, riscv64-cc
+, riscv64-libc-static
 , busybox
 , qemu_trap
 , nemu_trap
 }:
 let
   name = "initramfs-overlays";
+  before_workload = callPackage ./before_workload {inherit riscv64-cc riscv64-libc-static;};
   inittab = writeText "inittab" ''
     ::sysinit:/bin/busybox --install -s
     /dev/console::sysinit:-/bin/sh /bin/run.sh
