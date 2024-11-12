@@ -9,16 +9,12 @@
   };
 
   # TODO: move folders to imgBuilder/
-  opensbi-bin = pkgs.callPackage ./opensbi {
+  gcpt-bin = pkgs.callPackage ./gcpt {
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
     inherit benchmark;
-  };
-  gcpt-bin = pkgs.callPackage ./gcpt {
-    inherit riscv64-cc opensbi-bin;
   };
 in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
-    inherit opensbi-bin;
   };
 })

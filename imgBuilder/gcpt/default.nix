@@ -1,11 +1,17 @@
 { stdenv
-, lib
 , fetchFromGitHub
+, callPackage
 
 , riscv64-cc
-, opensbi-bin
-}: stdenv.mkDerivation {
-  name = "${lib.removeSuffix ".opensbi" opensbi-bin.name}.gcpt";
+, riscv64-libc-static
+, riscv64-busybox
+, benchmark
+}: let
+  opensbi = callPackage ../opensbi {
+    inherit riscv64-cc riscv64-libc-static riscv64-busybox benchmark;
+  };
+in stdenv.mkDerivation {
+  name = "${benchmark.name}.gcpt";
 
     src = fetchFromGitHub {
         owner = "OpenXiangShan";
@@ -19,7 +25,7 @@
     ];
     makeFlags = [
         "CROSS_COMPILE=riscv64-unknown-linux-gnu-"
-        "GCPT_PAYLOAD_PATH=${opensbi-bin}"
+        "GCPT_PAYLOAD_PATH=${opensbi}"
     ];
     buildPhase = ''
         make clean
