@@ -22,11 +22,8 @@
     inherit before_workload busybox qemu_trap nemu_trap;
   };
   initramfs_base = pkgs.callPackage ./linux/initramfs/base {};
-  cpio = pkgs.cpio.overrideAttrs (old: {
-    patches = [./linux/initramfs/cpio_reset_timestamp.patch];
-  });
   initramfs = pkgs.callPackage ./linux/initramfs {
-    inherit cpio initramfs_base initramfs_overlays benchmark;
+    inherit initramfs_base initramfs_overlays benchmark;
   };
   linux-common-build = pkgs.callPackage ./linux/common-build.nix {
     inherit riscv64-cc;
@@ -48,7 +45,7 @@ in gcpt-bin.overrideAttrs (old: {
   passthru = {
     inherit riscv64-cc riscv64-libc-static;
     inherit before_workload busybox qemu_trap nemu_trap;
-    inherit initramfs_overlays cpio initramfs;
+    inherit initramfs_overlays initramfs;
     inherit linux-common-build linux-image;
     inherit dts opensbi-common-build opensbi-bin;
   };
