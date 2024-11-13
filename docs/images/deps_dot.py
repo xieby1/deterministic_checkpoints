@@ -1,10 +1,10 @@
 from pydot import Dot, Edge, Node, Graph, Cluster
+def safe_set(args: dict, key: str, value):
+  if key not in args: args[key] = value
 class CCluster(Cluster): # Connectable Cluster
   def __init__(self, name, **args):
-    def testandset(key: str ,value):
-      if key not in args: args[key] = value
-    testandset("label", name)
-    testandset("penwidth", 2)
+    safe_set(args, "label", name)
+    safe_set(args, "penwidth", 2)
     Cluster.__init__(self, name, **args)
     self._connect_node_ = addNode(self, "_connect_node_", label="",
                                   shape="none", width=0, height=0, margin=0)
@@ -15,8 +15,12 @@ def addNode(g: Graph|CCluster, name, **args):
   g.add_node(n)
   return n
 def addEdge(g: Graph, n1: Node|CCluster, n2: Node|CCluster, **args):
-  if isinstance(n1, Node)  and n1.get("color"):    args["color"] = n1.get("color")
-  if isinstance(n1, Graph) and n1.get("pencolor"): args["color"] = n1.get("pencolor")
+  # auto edge color
+  if isinstance(n1, Node)  and n1.get("color"):    safe_set(args, "color", n1.get("color"))
+  if isinstance(n1, Graph) and n1.get("pencolor"): safe_set(args, "color", n1.get("pencolor"))
+  # auto edge width
+  if n1.get("penwidth"): safe_set(args, "penwidth", n1.get("penwidth"))
+
   if isinstance(n1, CCluster): l = n1._connect_node_; args["ltail"] = n1.get_name()
   else: l = n1
   if isinstance(n2, CCluster): r = n2._connect_node_; args["lhead"] = n2.get_name()
@@ -36,17 +40,6 @@ graph = Dot(label="Deterministic Checkpoint Dependency Graph", bgcolor="transpar
 graph.set_node_defaults(shape="box")
 graph.set_edge_defaults(color="#00000044")
 
-
-riscv64_cc = addNode(graph, "riscv64-cc")
-riscv64_libc_static = addNode(graph, "riscv64-libc-static")
-riscv64_fortran = addNode(graph, "riscv64-fortran")
-riscv64_jemalloc = addNode(graph, "riscv64-jemalloc")
-
-spec2006 = addCluster(graph, "spec2006", cluster=True, bgcolor="#F5F5F5", pencolor="#666666")
-checkpoints = addNode(graph, "checkpoints")
-
-openblas = addNode(graph, "openblas")
-checkpoints_openblas = addNode(graph, "checkpoints-openblas")
 
 class ImgBuilder(CCluster):
   class GCPT(CCluster):
@@ -81,10 +74,10 @@ class ImgBuilder(CCluster):
         addEdge(self, self.dts, self.common_build)
         self.linux = self.Linux(); add(self, self.linux)
     def __init__(self, **args):
-      CCluster.__init__(self, "gcpt", **args, bgcolor="#DAE8FC", pencolor="#6C8EBF")
+      CCluster.__init__(self, "gcpt", **args, bgcolor="#DAE8FC", pencolor="#6C8EBF", penwidth=3)
       self.opensbi = self.OpenSBI(); add(self, self.opensbi)
   def __init__(self, **args):
-    CCluster.__init__(self, "imgBuilder", **args, bgcolor="#F5F5F5", pencolor="#666666")
+    CCluster.__init__(self, "imgBuilder", **args, bgcolor="#CCE5FF", pencolor="#666666")
     self.riscv64_cc = addNode(self, "riscv64-cc")
     self.riscv64_libc_static = addNode(self, "riscv64-libc-static")
     self.riscv64_busybox = addNode(self, "riscv64-busybox")
@@ -100,7 +93,7 @@ imgBuilder = ImgBuilder(); add(graph, imgBuilder)
 
 class CptBuilder(CCluster):
   def __init__(self, **args):
-    CCluster.__init__(self, "cptBuilder", **args, bgcolor="#F5F5F5", pencolor="#666666")
+    CCluster.__init__(self, "cptBuilder", **args, bgcolor="#F8CECC", pencolor="#B85450")
     self.riscv64_cc = addNode(self, "riscv64-cc")
     self.qemu = addNode(self, "qemu")
     self.nemu = addNode(self, "nemu")
@@ -117,8 +110,8 @@ class CptBuilder(CCluster):
     addEdge(self, self.nemu, self.stage3_checkpoint)
     addEdge(self, self.stage2_cluster,self.stage3_checkpoint)
 cptBuilder = CptBuilder(); add(graph, cptBuilder)
-addEdge(graph, imgBuilder.gcpt, cptBuilder.stage1_profiling, penwidth=2)
-addEdge(graph, imgBuilder.gcpt, cptBuilder.stage3_checkpoint, penwidth=2)
+addEdge(graph, imgBuilder.gcpt, cptBuilder.stage1_profiling, penwidth=3)
+addEdge(graph, imgBuilder.gcpt, cptBuilder.stage3_checkpoint, penwidth=3)
 
 pkgs = addNode(graph, "pkgs")
 addEdge(graph, pkgs, imgBuilder.riscv64_cc)
@@ -128,7 +121,7 @@ addEdge(graph, pkgs, cptBuilder.riscv64_cc)
 
 class Benchmark(CCluster):
   def __init__(self, name, **args):
-    CCluster.__init__(self, name, **args, bgcolor="#F5F5F5", pencolor="#666666")
+    CCluster.__init__(self, name, **args, bgcolor="#D5E8D4", pencolor="#82B366")
     self.run = addNode(self, "run")
 benchmark = Benchmark("benchmark"); add(graph, benchmark)
 addEdge(graph, benchmark.run, imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
@@ -136,5 +129,6 @@ addEdge(graph, benchmark, imgBuilder.gcpt.opensbi.linux.initramfs)
 
 # Tweaks
 addEdge(graph, imgBuilder.gcpt.opensbi.common_build, cptBuilder.riscv64_cc, color="transparent")
+addEdge(graph, benchmark.run, imgBuilder, color="transparent")
 
 graph.write(__file__.replace("_dot.py", "_py.dot"))
