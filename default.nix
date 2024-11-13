@@ -51,4 +51,12 @@ in rec {
     inherit riscv64-cc riscv64-fortran riscv64-libc-static;
     riscv64-libfortran = pkgs.pkgsCross.riscv64.gfortran.cc;
   };
+  # TODO: rename
+  checkpoints-openblas = import ./cptBuilder {
+    inherit pkgs;
+    gcpt-bin = import ./imgBuilder {
+      inherit pkgs;
+      benchmark = openblas;
+    };
+  };
 }

@@ -66,4 +66,11 @@
     cp benchmark/*.goto $out/bin/
   '';
   doCheck = false;
+
+  passthru.run = ''
+    for goto in /bin/*.goto; do
+      echo running $goto
+      $goto
+    done
+  '';
 }
