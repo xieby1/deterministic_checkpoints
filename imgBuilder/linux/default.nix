@@ -14,10 +14,10 @@
     inherit benchmark;
   };
   # TODO: use overlayfs to reduce disk usage
-  linux-common-build = callPackage ./common-build.nix {inherit riscv64-cc;};
+  common-build = callPackage ./common-build.nix {inherit riscv64-cc;};
 in stdenv.mkDerivation {
   name = "${benchmark.name}.linux";
-  src = linux-common-build;
+  src = common-build;
   buildInputs = [
     bc
     flex

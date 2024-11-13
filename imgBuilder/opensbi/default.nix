@@ -12,11 +12,11 @@
     inherit benchmark;
   };
   dts = callPackage ./dts {};
-  opensbi-common-build = callPackage ./common-build.nix {inherit riscv64-cc dts;};
+  common-build = callPackage ./common-build.nix {inherit riscv64-cc dts;};
 in stdenv.mkDerivation {
   name = "${benchmark.name}.opensbi";
 
-  src = opensbi-common-build;
+  src = common-build;
 
   buildInputs = [
     python3

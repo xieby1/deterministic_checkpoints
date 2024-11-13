@@ -8,4 +8,5 @@ backup*
 
 # doc
 book
-*_dot.svg
+*_py.dot
+*_py.svg

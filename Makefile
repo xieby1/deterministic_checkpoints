@@ -1,7 +1,12 @@
-doc: $(wildcard docs/*.md) docs/images/deps_dot.svg
+.NOTINTERMEDIATE:
+
+PYSVGs=$(subst _dot.py,_py.svg,$(shell find docs/ -name "*_dot.py"))
+doc: $(wildcard docs/*.md) ${PYSVGs}
 	mdbook build
 
-%_dot.svg: %.dot
+%_py.dot: %_dot.py
+	python3 $<
+%.svg: %.dot
 	dot -Tsvg $< -o $@
 	# css can only recognize intrinsic size in px
 	# https://developer.mozilla.org/en-US/docs/Glossary/Intrinsic_Size

@@ -1,3 +1,3 @@
 # 简介（Intro）
 
-![](./images/deps_dot.svg)
+![](./images/deps_py.svg)

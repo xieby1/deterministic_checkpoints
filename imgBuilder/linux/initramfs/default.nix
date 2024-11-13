@@ -9,7 +9,7 @@
 }: let
   cpioPatched = cpio.overrideAttrs (old: { patches = [./cpio_reset_timestamp.patch]; });
   base = callPackage ./base {};
-  initramfs_overlays = callPackage ./overlays {
+  overlays = callPackage ./overlays {
     inherit riscv64-cc riscv64-libc-static riscv64-busybox;
     # TODO: check if `run` doest not exist, throw an error
     benchmark-run = benchmark.run;
@@ -19,6 +19,6 @@ in runCommand "${benchmark.name}.cpio" {} ''
   chmod +w $out
   cd ${benchmark}
   find . | sort -n | ${cpioPatched}/bin/cpio --reproducible -H newc -oAF $out
-  cd ${initramfs_overlays}
+  cd ${overlays}
   find . | sort -n | ${cpioPatched}/bin/cpio --reproducible -H newc -oAF $out
 ''

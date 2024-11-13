@@ -1,6 +1,10 @@
 let
   name = "deterministic_checkpoints";
   pkgs = import <nixpkgs> {};
+  my-python3 = pkgs.python3.withPackages (python-pkgs: [
+    # for docs
+    python-pkgs.pydot
+  ]);
   h_content = builtins.toFile "h_content" ''
     # ${pkgs.lib.toUpper "${name} usage tips"}
 
@@ -25,6 +29,7 @@ pkgs.mkShell {
     pkgs.nix-output-monitor
     pkgs.mdbook
     pkgs.graphviz
+    my-python3
   ];
   shellHook = ''
     h
