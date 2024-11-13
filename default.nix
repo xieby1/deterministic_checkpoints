@@ -46,4 +46,9 @@ in rec {
   checkpoints = lib-customized.linkFarmNoEntries "checkpoints" (
     pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) checkpointsAttrs
   );
+
+  openblas = pkgs.callPackage ./benchmarks/openblas {
+    inherit riscv64-cc riscv64-fortran riscv64-libc-static;
+    riscv64-libfortran = pkgs.pkgsCross.riscv64.gfortran.cc;
+  };
 }

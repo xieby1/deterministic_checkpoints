@@ -1,11 +1,14 @@
-{ pkgs ? import (fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
-    sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
-  }) {}
-}: pkgs.stdenv.mkDerivation {
+{ stdenv
+, fetchFromGitHub
+
+, riscv64-cc
+, riscv64-fortran
+, riscv64-libc-static
+, riscv64-libfortran
+}: stdenv.mkDerivation {
   pname = "openblas";
   version = "0.3.28";
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "OpenMathLib";
     repo = "OpenBLAS";
     rev = "v0.3.28";
@@ -13,26 +16,43 @@
   };
 
   depsBuildBuild = [
-    pkgs.stdenv.cc
-    pkgs.gfortran
-    pkgs.glibc
-    pkgs.glibc.static
+    riscv64-cc
+    riscv64-fortran
+    riscv64-libc-static
   ];
 
   buildPhase = let
-    makeFlags_common = [
-      "CC=${pkgs.stdenv.cc}/bin/gcc"
-      "FC=${pkgs.gfortran}/bin/gfortran"
+    makeFlags_common = let
+      prefix = "${riscv64-cc}/bin/riscv64-unknown-linux-gnu-";
+    in [
+      "CC=${prefix}gcc"
+      "AR=${prefix}ar"
+      "AS=${prefix}as"
+      "LD=${prefix}ld"
+      "RANLIB=${prefix}ranlib"
+      "NM=${prefix}nm"
+      "FC=${riscv64-fortran}/bin/riscv64-unknown-linux-gnu-gfortran"
+
+      "BINARY=64"
+      "TARGET=RISCV64_GENERIC"
+      "DYNAMIC_ARCH=false"
+      "CROSS=true"
+      "HOSTCC=cc"
+      # "ARCH=riscv64"
+      # TODO: "USE_OPENMP=true"
+      "NUM_THREADS=64"
     ];
     makeFlags1 = makeFlags_common ++ [
       "NO_STATIC=0"
       "NO_SHARED=1"
+      # not run tests, only compilation
+      "shared"
     ];
     makeFlags2 = makeFlags_common ++ [
       # benchmark/Makefile uses `cc` to compile and link, does not use `ld` directly.
       # Therefore, benchmark/Makefile does not receive LDFLAGS, only receives CFLAGS
-      "CFLAGS=\"-L${pkgs.gfortran.cc}/lib -static\""
-      "FFLAGS=\"-L${pkgs.gfortran.cc}/lib -static\""
+      "CFLAGS=\"-L${riscv64-libfortran}/lib -L${riscv64-libc-static}/lib -static\""
+      "FFLAGS=\"-L${riscv64-libfortran}/lib -L${riscv64-libc-static}/lib -static\""
       "-C benchmark"
     ];
   in ''
