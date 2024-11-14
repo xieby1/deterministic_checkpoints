@@ -9,7 +9,7 @@
 , riscv64-jemalloc
 }:
 let
-  config = import ../config.nix;
+  config = import ../../config.nix;
   # TODO: move to all-packages
   customJemalloc = riscv64-jemalloc.overrideAttrs (oldAttrs: {
     configureFlags = (oldAttrs.configureFlags or []) ++ [

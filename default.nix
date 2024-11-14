@@ -29,8 +29,7 @@ in rec {
   };
   riscv64-jemalloc = pkgs.pkgsCross.riscv64.jemalloc;
 
-  # TODO: move to benchmarks/ folder
-  spec2006 = pkgs.callPackage ./spec2006 {
+  spec2006 = pkgs.callPackage ./benchmarks/spec2006 {
     inherit riscv64-cc riscv64-fortran riscv64-libc-static;
     inherit riscv64-jemalloc;
   };
