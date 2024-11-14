@@ -3,15 +3,15 @@
 
 , qemu
 , nemu
-, gcpt-bin
+, gcpt
 }:
 let
-  name = "${lib.removeSuffix ".gcpt" gcpt-bin.name}.1_profiling";
+  name = "${lib.removeSuffix ".gcpt" gcpt.name}.1_profiling";
   config = import ../../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
-    "-bios ${gcpt-bin}"
+    "-bios ${gcpt}"
     "-M nemu"
     "-nographic"
     "-m 8G"
@@ -23,7 +23,7 @@ let
 
   nemuCommand = [
     "${nemu}/bin/riscv64-nemu-interpreter"
-    "${gcpt-bin}"
+    "${gcpt}"
     "-b"
     "-D $out"
     "-C ${name}"

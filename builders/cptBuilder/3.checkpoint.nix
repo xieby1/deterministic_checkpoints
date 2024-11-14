@@ -3,7 +3,7 @@
 
 , qemu
 , nemu
-, gcpt-bin
+, gcpt
 , stage2-cluster
 }:
 let
@@ -11,7 +11,7 @@ let
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
-    "-bios ${gcpt-bin}"
+    "-bios ${gcpt}"
     "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${toString config.intervals},output-base-dir=$out,config-name=${config.workload},checkpoint-mode=SimpointCheckpoint"
     "-nographic"
     "-m 8G"
@@ -22,7 +22,7 @@ let
 
   nemuCommand = [
     "${nemu}/bin/riscv64-nemu-interpreter"
-    "${gcpt-bin}"
+    "${gcpt}"
     "-b"
     "-D $out"
     "-C checkpoint"
