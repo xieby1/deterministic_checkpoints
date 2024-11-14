@@ -16,7 +16,8 @@ let
     ::sysinit:/bin/busybox --install -s
     /dev/console::sysinit:-/bin/sh /bin/run.sh
   '';
-  config = import ../../../../config.nix;
+  # pass config through parameters
+  config = import ../../../../../config.nix;
   trapCommand = if config.simulator == "nemu" then "nemu_trap" else "qemu_trap";
   run_sh = writeText "run.sh" ''
     before_workload

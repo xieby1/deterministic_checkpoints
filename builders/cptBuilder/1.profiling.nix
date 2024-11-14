@@ -7,7 +7,7 @@
 }:
 let
   name = "${lib.removeSuffix ".gcpt" gcpt-bin.name}.1_profiling";
-  config = import ../config.nix;
+  config = import ../../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"

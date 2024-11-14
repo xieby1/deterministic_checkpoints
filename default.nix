@@ -35,14 +35,11 @@ in rec {
     inherit riscv64-jemalloc;
   };
 
-  gcpt-bin = import ./imgBuilder {inherit pkgs; benchmark=spec2006."403.gcc";};
-  cpt = import ./cptBuilder/default.nix {inherit pkgs gcpt-bin;};
-
-  checkpointsAttrs = builtins.mapAttrs (name: benchmark: import ./cptBuilder {
-    inherit pkgs;
-    gcpt-bin = import ./imgBuilder { inherit pkgs benchmark; };
-  }) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) spec2006);
+  checkpointsAttrs = builtins.mapAttrs (name: benchmark:
+    import ./builders { inherit pkgs benchmark; }
+  ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) spec2006);
   # TODO: use native linkFarm
+  # TODO: rename
   checkpoints = lib-customized.linkFarmNoEntries "checkpoints" (
     pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) checkpointsAttrs
   );
@@ -51,12 +48,7 @@ in rec {
     inherit riscv64-cc riscv64-fortran riscv64-libc-static;
     riscv64-libfortran = pkgs.pkgsCross.riscv64.gfortran.cc;
   };
+  # TODO: pass pkgs in a more elegant way
   # TODO: rename
-  checkpoints-openblas = import ./cptBuilder {
-    inherit pkgs;
-    gcpt-bin = import ./imgBuilder {
-      inherit pkgs;
-      benchmark = openblas;
-    };
-  };
+  checkpoints-openblas = import ./builders { inherit pkgs; benchmark=openblas; };
 }

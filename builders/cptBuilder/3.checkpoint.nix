@@ -7,7 +7,7 @@
 , stage2-cluster
 }:
 let
-  config = import ../config.nix;
+  config = import ../../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
