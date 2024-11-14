@@ -2,9 +2,7 @@
     url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
     sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
   }) {}
-}: let
-  lib-customized = pkgs.callPackage ./lib-customized.nix {};
-in rec {
+}: rec {
   riscv64-cc = pkgs.pkgsCross.riscv64.stdenv.cc;
   riscv64-libc-static = pkgs.pkgsCross.riscv64.stdenv.cc.libc.static;
   riscv64-fortran = let
@@ -37,11 +35,10 @@ in rec {
   checkpointsAttrs = builtins.mapAttrs (name: benchmark:
     import ./builders { inherit pkgs benchmark; }
   ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) spec2006);
-  # TODO: use native linkFarm
   # TODO: rename
-  checkpoints = lib-customized.linkFarmNoEntries "checkpoints" (
+  checkpoints = (pkgs.linkFarm "checkpoints" (
     pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) checkpointsAttrs
-  );
+  )).overrideAttrs (old: { passthru = checkpointsAttrs; });
 
   openblas = pkgs.callPackage ./benchmarks/openblas {
     inherit riscv64-cc riscv64-fortran riscv64-libc-static;
