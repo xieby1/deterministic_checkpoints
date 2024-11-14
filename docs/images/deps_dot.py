@@ -118,7 +118,10 @@ class Builder(CCluster):
     addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage3_checkpoint, penwidth=3)
 builder = Builder(); add(graph, builder)
 
-pkgs = addNode(graph, "pkgs")
+inputs = CCluster("inputs", label="", pencolor="transparent"); add(graph, inputs)
+outputs = CCluster("outputs", label="", pencolor="transparent"); add(graph, outputs)
+
+pkgs = addNode(inputs, "pkgs")
 addEdge(graph, pkgs, builder.imgBuilder.riscv64_cc)
 addEdge(graph, pkgs, builder.imgBuilder.riscv64_libc_static)
 addEdge(graph, pkgs, builder.imgBuilder.riscv64_busybox)
@@ -128,12 +131,14 @@ class Benchmark(CCluster):
   def __init__(self, name, **args):
     CCluster.__init__(self, name, **args, bgcolor="#D5E8D4", pencolor="#82B366")
     self.run = addNode(self, "run")
-benchmark = Benchmark("benchmark"); add(graph, benchmark)
+benchmark = Benchmark("benchmark"); add(inputs, benchmark)
 addEdge(graph, benchmark.run, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
 addEdge(graph, benchmark, builder.imgBuilder.gcpt.opensbi.linux.initramfs)
 
+checkpoints = addNode(graph, "checkpoints", style="filled", fillcolor="#FFE6CC", color="#D79B00")
+addEdge(outputs, builder.cptBuilder.stage3_checkpoint, checkpoints)
+
 # Tweaks
 addEdge(graph, builder.imgBuilder.gcpt.opensbi.common_build, builder.cptBuilder.riscv64_cc, color="transparent")
-addEdge(graph, benchmark.run, builder.imgBuilder, color="transparent")
 
 graph.write(__file__.replace("_dot.py", "_py.dot"))
