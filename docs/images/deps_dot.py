@@ -89,7 +89,6 @@ class ImgBuilder(CCluster):
       for j in (overlays.before_workload, overlays.qemu_trap, overlays.nemu_trap):
         addEdge(self, i, j)
     addEdge(self, self.riscv64_busybox, self.gcpt.opensbi.linux.initramfs.overlays)
-imgBuilder = ImgBuilder(); add(graph, imgBuilder)
 
 class CptBuilder(CCluster):
   def __init__(self, **args):
@@ -109,26 +108,32 @@ class CptBuilder(CCluster):
     addEdge(self, self.qemu, self.stage3_checkpoint)
     addEdge(self, self.nemu, self.stage3_checkpoint)
     addEdge(self, self.stage2_cluster,self.stage3_checkpoint)
-cptBuilder = CptBuilder(); add(graph, cptBuilder)
-addEdge(graph, imgBuilder.gcpt, cptBuilder.stage1_profiling, penwidth=3)
-addEdge(graph, imgBuilder.gcpt, cptBuilder.stage3_checkpoint, penwidth=3)
+
+class Builder(CCluster):
+  def __init__(self, **args):
+    CCluster.__init__(self, "builder", **args, bgcolor="#F5F5F5", pencolor="#666666")
+    self.imgBuilder = ImgBuilder(); add(self, self.imgBuilder)
+    self.cptBuilder = CptBuilder(); add(self, self.cptBuilder)
+    addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage1_profiling, penwidth=3)
+    addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage3_checkpoint, penwidth=3)
+builder = Builder(); add(graph, builder)
 
 pkgs = addNode(graph, "pkgs")
-addEdge(graph, pkgs, imgBuilder.riscv64_cc)
-addEdge(graph, pkgs, imgBuilder.riscv64_libc_static)
-addEdge(graph, pkgs, imgBuilder.riscv64_busybox)
-addEdge(graph, pkgs, cptBuilder.riscv64_cc)
+addEdge(graph, pkgs, builder.imgBuilder.riscv64_cc)
+addEdge(graph, pkgs, builder.imgBuilder.riscv64_libc_static)
+addEdge(graph, pkgs, builder.imgBuilder.riscv64_busybox)
+addEdge(graph, pkgs, builder.cptBuilder.riscv64_cc)
 
 class Benchmark(CCluster):
   def __init__(self, name, **args):
     CCluster.__init__(self, name, **args, bgcolor="#D5E8D4", pencolor="#82B366")
     self.run = addNode(self, "run")
 benchmark = Benchmark("benchmark"); add(graph, benchmark)
-addEdge(graph, benchmark.run, imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
-addEdge(graph, benchmark, imgBuilder.gcpt.opensbi.linux.initramfs)
+addEdge(graph, benchmark.run, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
+addEdge(graph, benchmark, builder.imgBuilder.gcpt.opensbi.linux.initramfs)
 
 # Tweaks
-addEdge(graph, imgBuilder.gcpt.opensbi.common_build, cptBuilder.riscv64_cc, color="transparent")
-addEdge(graph, benchmark.run, imgBuilder, color="transparent")
+addEdge(graph, builder.imgBuilder.gcpt.opensbi.common_build, builder.cptBuilder.riscv64_cc, color="transparent")
+addEdge(graph, benchmark.run, builder.imgBuilder, color="transparent")
 
 graph.write(__file__.replace("_dot.py", "_py.dot"))
