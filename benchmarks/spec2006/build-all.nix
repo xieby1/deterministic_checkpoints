@@ -37,7 +37,7 @@ in stdenv.mkDerivation {
   system = "x86_64-linux";
 
   srcs = [
-    config.spec2006_path
+    config.src
     CPU2006LiteWrapper
   ];
   sourceRoot = ".";
