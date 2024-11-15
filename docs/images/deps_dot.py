@@ -1,4 +1,4 @@
-from common import CDot, CCluster, addNode, addEdge, add
+from common import CDot, CCluster, addNode, addEdge, add, set_colors
 
 graph = CDot(label="Deterministic Checkpoint Dependency Graph", splines="line")
 
@@ -35,10 +35,12 @@ class ImgBuilder(CCluster):
         addEdge(self, self.dts, self.common_build)
         self.linux = add(self, self.Linux())
     def __init__(self, **args):
-      CCluster.__init__(self, "gcpt", **args, bgcolor="#DAE8FC", pencolor="#6C8EBF", penwidth=3)
+      CCluster.__init__(self, "gcpt", **args, penwidth=3)
+      set_colors.gcpt(self)
       self.opensbi = add(self, self.OpenSBI())
   def __init__(self, **args):
-    CCluster.__init__(self, "imgBuilder", **args, bgcolor="#CCE5FF", pencolor="#666666")
+    CCluster.__init__(self, "imgBuilder", **args)
+    set_colors.imgBuilder(self)
     self.riscv64_cc = addNode(self, "riscv64-cc")
     self.riscv64_libc_static = addNode(self, "riscv64-libc-static")
     self.riscv64_busybox = addNode(self, "riscv64-busybox")
@@ -53,7 +55,8 @@ class ImgBuilder(CCluster):
 
 class CptBuilder(CCluster):
   def __init__(self, **args):
-    CCluster.__init__(self, "cptBuilder", **args, bgcolor="#F8CECC", pencolor="#B85450")
+    CCluster.__init__(self, "cptBuilder", **args)
+    set_colors.cptBuilder(self)
     self.riscv64_cc = addNode(self, "riscv64-cc")
     self.qemu = addNode(self, "qemu")
     self.nemu = addNode(self, "nemu")
@@ -72,7 +75,8 @@ class CptBuilder(CCluster):
 
 class Builder(CCluster):
   def __init__(self, **args):
-    CCluster.__init__(self, "builder", **args, bgcolor="#F5F5F5", pencolor="#666666")
+    CCluster.__init__(self, "builder", **args)
+    set_colors.builder(self)
     self.imgBuilder = add(self, ImgBuilder())
     self.cptBuilder = add(self, CptBuilder())
     addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage1_profiling)
@@ -90,13 +94,15 @@ addEdge(graph, pkgs, builder.cptBuilder.riscv64_cc)
 
 class Benchmark(CCluster):
   def __init__(self, name, **args):
-    CCluster.__init__(self, name, **args, bgcolor="#D5E8D4", pencolor="#82B366")
+    CCluster.__init__(self, name, **args)
+    set_colors.benchmark(self)
     self.run = addNode(self, "run")
 benchmark = add(inputs, Benchmark("benchmark"))
 addEdge(graph, benchmark.run, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
 addEdge(graph, benchmark, builder.imgBuilder.gcpt.opensbi.linux.initramfs)
 
-checkpoints = addNode(graph, "checkpoints", style="filled", fillcolor="#FFE6CC", color="#D79B00", penwidth=2)
+checkpoints = addNode(graph, "checkpoints", penwidth=2)
+set_colors.checkpoints(checkpoints)
 addEdge(outputs, builder.cptBuilder.stage3_checkpoint, checkpoints)
 
 # Tweaks

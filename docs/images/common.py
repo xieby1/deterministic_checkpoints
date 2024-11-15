@@ -47,3 +47,19 @@ def add(g: Graph, item: T) -> T:
   else: raise Exception(f"add(g, item): unknown item type [{type(item)}]")
   return item
 
+class _Colors_:
+  def set(self, item: Node|Graph, background, boundary):
+    if isinstance(item, Node):
+      item.set("style", "filled") # TODO: safe add style
+      item.set("fillcolor", background)
+      item.set("color", boundary)
+    elif isinstance(item, Graph):
+      item.set("bgcolor", background)
+      item.set("pencolor", boundary)
+  def benchmark  (self, item: Node|Graph): self.set(item, "#D5E8D4", "#82B366")
+  def builder    (self, item: Node|Graph): self.set(item, "#F5F5F5", "#666666")
+  def imgBuilder (self, item: Node|Graph): self.set(item, "#CCE5FF", "#666666")
+  def cptBuilder (self, item: Node|Graph): self.set(item, "#F8CECC", "#B85450")
+  def gcpt       (self, item: Node|Graph): self.set(item, "#DAE8FC", "#6C8EBF")
+  def checkpoints(self, item: Node|Graph): self.set(item, "#FFE6CC", "#D79B00")
+set_colors = _Colors_()
