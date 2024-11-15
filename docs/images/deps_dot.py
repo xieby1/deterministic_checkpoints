@@ -1,6 +1,7 @@
 from common import CDot, CCluster, addNode, addEdge, add, set_colors
 
 graph = CDot(label="Deterministic Checkpoint Dependency Graph", splines="line")
+graph.set_node_defaults(margin=0)
 
 class ImgBuilder(CCluster):
   class GCPT(CCluster):
@@ -32,7 +33,7 @@ class ImgBuilder(CCluster):
         CCluster.__init__(self, "opensbi", **args)
         self.dts = addNode(self, "dts")
         self.common_build = addNode(self, "common-build")
-        addEdge(self, self.dts, self.common_build)
+        addEdge(self, self.dts, self.common_build, constraint=False)
         self.linux = add(self, self.Linux())
     def __init__(self, **args):
       CCluster.__init__(self, "gcpt", **args, penwidth=3)
@@ -41,30 +42,18 @@ class ImgBuilder(CCluster):
   def __init__(self, **args):
     CCluster.__init__(self, "imgBuilder", **args)
     set_colors.imgBuilder(self)
-    self.riscv64_cc = addNode(self, "riscv64-cc")
-    self.riscv64_libc_static = addNode(self, "riscv64-libc-static")
-    self.riscv64_busybox = addNode(self, "riscv64-busybox")
     self.gcpt = add(self, self.GCPT())
-    addEdge(self, self.riscv64_cc, self.gcpt.opensbi.common_build)
-    addEdge(self, self.riscv64_cc, self.gcpt.opensbi.linux.common_build)
-    for i in (self.riscv64_cc, self.riscv64_libc_static):
-      overlays = self.gcpt.opensbi.linux.initramfs.overlays
-      for j in (overlays.before_workload, overlays.qemu_trap, overlays.nemu_trap):
-        addEdge(self, i, j)
-    addEdge(self, self.riscv64_busybox, self.gcpt.opensbi.linux.initramfs.overlays)
 
 class CptBuilder(CCluster):
   def __init__(self, **args):
     CCluster.__init__(self, "cptBuilder", **args)
     set_colors.cptBuilder(self)
-    self.riscv64_cc = addNode(self, "riscv64-cc")
     self.qemu = addNode(self, "qemu")
     self.nemu = addNode(self, "nemu")
     self.stage1_profiling = addNode(self, "stage1_profiling")
     self.simpoint = addNode(self, "simpoint")
     self.stage2_cluster = addNode(self, "stage2_cluster")
     self.stage3_checkpoint = addNode(self, "stage3_checkpoint")
-    addEdge(self, self.riscv64_cc, self.nemu)
     addEdge(self, self.qemu, self.stage1_profiling)
     addEdge(self, self.nemu, self.stage1_profiling)
     addEdge(self, self.simpoint, self.stage2_cluster)
@@ -86,12 +75,6 @@ builder = add(graph, Builder())
 inputs = add(graph, CCluster("inputs", label="", pencolor="transparent"))
 outputs = add(graph, CCluster("outputs", label="", pencolor="transparent"))
 
-pkgs = addNode(inputs, "pkgs")
-addEdge(graph, pkgs, builder.imgBuilder.riscv64_cc)
-addEdge(graph, pkgs, builder.imgBuilder.riscv64_libc_static)
-addEdge(graph, pkgs, builder.imgBuilder.riscv64_busybox)
-addEdge(graph, pkgs, builder.cptBuilder.riscv64_cc)
-
 class Benchmark(CCluster):
   def __init__(self, name, **args):
     CCluster.__init__(self, name, **args)
@@ -106,6 +89,6 @@ set_colors.checkpoints(checkpoints)
 addEdge(outputs, builder.cptBuilder.stage3_checkpoint, checkpoints)
 
 # Tweaks
-addEdge(graph, builder.imgBuilder.gcpt.opensbi.common_build, builder.cptBuilder.riscv64_cc, color="transparent")
+addEdge(graph, builder.imgBuilder, builder.cptBuilder.qemu, color="transparent")
 
 graph.write(__file__.replace("_dot.py", "_py.dot"))
