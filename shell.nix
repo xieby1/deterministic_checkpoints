@@ -10,9 +10,14 @@ let
 
     ## Configuration
 
-    * Set SPEC CPU 2006 source code: edit `config.nix`: `spec2006_path = [...]`
-    * Set input size: edit `config.nix`: `size = xxx` (default input is ref)
-    * Change other configs in `config.nix`
+    From higher priority to lower priority:
+
+    * Configure by CLI:
+      * `nom-build ... --arg <key> <value> ...`
+      * `nom-build ... --argstr <key> <strvalue> ...`
+      * E.g: Generate spec2006 checkpoints using given source code, by qemu, in test size:
+        * `nom-build -A spec2006 --arg spec2006_path ~/Codes/spec2006.tar.gz --argstr simulator qemu --argstr size test`
+    * Configure by global config file: edit `./config.nix`
 
     ## Generation
 

@@ -3,6 +3,7 @@
   intervals = 20000000;
   workload = "miao";
   size = "ref";            # test or ref
+  # TODO: remove *_log
   profiling_log = "profiling.log";
   checkpoint_log = "checkpoint.log";
   spec2006_path = /nfs/home/yanyue/tools/spec2006;

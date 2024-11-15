@@ -2,7 +2,8 @@
     url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
     sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
   }) {}
-}: let
+, ...
+} @ args: let
   scope = pkgs.lib.makeScope pkgs.newScope (self: rec {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
     riscv64-cc = riscv64-pkgs.stdenv.cc;
@@ -27,7 +28,7 @@
         hostPlatform = pkgs.stdenv.hostPlatform;
       };
     };
-    config = pkgs.config // import ./config.nix;
+    config = pkgs.config // import ./config.nix // args;
   });
 in {
   spec2006 = let
