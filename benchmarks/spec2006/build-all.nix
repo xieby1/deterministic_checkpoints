@@ -3,14 +3,13 @@
 , fetchFromGitHub
 , libxcrypt-legacy
 
+, config
 , riscv64-pkgs
 , riscv64-cc
 , riscv64-fortran
 , riscv64-libc-static
 }:
 let
-  config = import ../../config.nix;
-  # TODO: move to all-packages
   customJemalloc = riscv64-pkgs.jemalloc.overrideAttrs (oldAttrs: {
     configureFlags = (oldAttrs.configureFlags or []) ++ [
       "--enable-static"

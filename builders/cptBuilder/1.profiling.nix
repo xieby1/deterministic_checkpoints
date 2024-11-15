@@ -1,13 +1,13 @@
 { runCommand
 , lib
 
+, config
 , qemu
 , nemu
 , gcpt
 }:
 let
   name = "${lib.removeSuffix ".gcpt" gcpt.name}.1_profiling";
-  config = import ../../config.nix;
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"

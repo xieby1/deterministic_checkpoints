@@ -1,14 +1,13 @@
 { runCommand
 , lib
 
+, config
 , qemu
 , nemu
 , gcpt
 , stage2-cluster
 }:
 let
-  config = import ../../config.nix;
-
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
     "-bios ${gcpt}"
