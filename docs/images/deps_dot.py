@@ -1,9 +1,6 @@
 from common import CDot, CCluster, addNode, addEdge, add
 
 graph = CDot(label="Deterministic Checkpoint Dependency Graph", splines="line")
-graph.set_node_defaults(shape="box")
-graph.set_edge_defaults(color="#00000044")
-
 
 class ImgBuilder(CCluster):
   class GCPT(CCluster):
@@ -78,8 +75,8 @@ class Builder(CCluster):
     CCluster.__init__(self, "builder", **args, bgcolor="#F5F5F5", pencolor="#666666")
     self.imgBuilder = add(self, ImgBuilder())
     self.cptBuilder = add(self, CptBuilder())
-    addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage1_profiling, penwidth=3)
-    addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage3_checkpoint, penwidth=3)
+    addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage1_profiling)
+    addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage3_checkpoint)
 builder = add(graph, Builder())
 
 inputs = add(graph, CCluster("inputs", label="", pencolor="transparent"))
@@ -99,7 +96,7 @@ benchmark = add(inputs, Benchmark("benchmark"))
 addEdge(graph, benchmark.run, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
 addEdge(graph, benchmark, builder.imgBuilder.gcpt.opensbi.linux.initramfs)
 
-checkpoints = addNode(graph, "checkpoints", style="filled", fillcolor="#FFE6CC", color="#D79B00")
+checkpoints = addNode(graph, "checkpoints", style="filled", fillcolor="#FFE6CC", color="#D79B00", penwidth=2)
 addEdge(outputs, builder.cptBuilder.stage3_checkpoint, checkpoints)
 
 # Tweaks

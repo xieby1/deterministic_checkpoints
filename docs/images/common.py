@@ -16,6 +16,8 @@ class CDot(Dot): # Compound Dot
     args["compound"] = True
     safe_set(args, "bgcolor", "transparent")
     Dot.__init__(self, *vargs, **args)
+    self.set_node_defaults(shape="box")
+    self.set_edge_defaults(color="#00000044")
 
 def addNode(g: Graph|CCluster, name, **args):
   if "label" not in args: args["label"] = name
