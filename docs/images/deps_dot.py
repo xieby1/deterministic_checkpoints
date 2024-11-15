@@ -25,27 +25,27 @@ class ImgBuilder(CCluster):
               self.run_sh = addNode(self, "run_sh", label="run.sh")
           def __init__(self, **args):
             CCluster.__init__(self, "initramfs", **args)
-            self.base = self.Base(); add(self, self.base)
-            self.overlays = self.Overlays(); add(self, self.overlays)
+            self.base = add(self, self.Base())
+            self.overlays = add(self, self.Overlays())
         def __init__(self, **args):
           CCluster.__init__(self, "linux", **args)
-          self.initramfs = self.InitRamFs(); add(self, self.initramfs)
+          self.initramfs = add(self, self.InitRamFs())
           self.common_build = addNode(self, "common-build")
       def __init__(self, **args):
         CCluster.__init__(self, "opensbi", **args)
         self.dts = addNode(self, "dts")
         self.common_build = addNode(self, "common-build")
         addEdge(self, self.dts, self.common_build)
-        self.linux = self.Linux(); add(self, self.linux)
+        self.linux = add(self, self.Linux())
     def __init__(self, **args):
       CCluster.__init__(self, "gcpt", **args, bgcolor="#DAE8FC", pencolor="#6C8EBF", penwidth=3)
-      self.opensbi = self.OpenSBI(); add(self, self.opensbi)
+      self.opensbi = add(self, self.OpenSBI())
   def __init__(self, **args):
     CCluster.__init__(self, "imgBuilder", **args, bgcolor="#CCE5FF", pencolor="#666666")
     self.riscv64_cc = addNode(self, "riscv64-cc")
     self.riscv64_libc_static = addNode(self, "riscv64-libc-static")
     self.riscv64_busybox = addNode(self, "riscv64-busybox")
-    self.gcpt = self.GCPT(); add(self, self.gcpt)
+    self.gcpt = add(self, self.GCPT())
     addEdge(self, self.riscv64_cc, self.gcpt.opensbi.common_build)
     addEdge(self, self.riscv64_cc, self.gcpt.opensbi.linux.common_build)
     for i in (self.riscv64_cc, self.riscv64_libc_static):
@@ -76,14 +76,14 @@ class CptBuilder(CCluster):
 class Builder(CCluster):
   def __init__(self, **args):
     CCluster.__init__(self, "builder", **args, bgcolor="#F5F5F5", pencolor="#666666")
-    self.imgBuilder = ImgBuilder(); add(self, self.imgBuilder)
-    self.cptBuilder = CptBuilder(); add(self, self.cptBuilder)
+    self.imgBuilder = add(self, ImgBuilder())
+    self.cptBuilder = add(self, CptBuilder())
     addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage1_profiling, penwidth=3)
     addEdge(self, self.imgBuilder.gcpt, self.cptBuilder.stage3_checkpoint, penwidth=3)
-builder = Builder(); add(graph, builder)
+builder = add(graph, Builder())
 
-inputs = CCluster("inputs", label="", pencolor="transparent"); add(graph, inputs)
-outputs = CCluster("outputs", label="", pencolor="transparent"); add(graph, outputs)
+inputs = add(graph, CCluster("inputs", label="", pencolor="transparent"))
+outputs = add(graph, CCluster("outputs", label="", pencolor="transparent"))
 
 pkgs = addNode(inputs, "pkgs")
 addEdge(graph, pkgs, builder.imgBuilder.riscv64_cc)
@@ -95,7 +95,7 @@ class Benchmark(CCluster):
   def __init__(self, name, **args):
     CCluster.__init__(self, name, **args, bgcolor="#D5E8D4", pencolor="#82B366")
     self.run = addNode(self, "run")
-benchmark = Benchmark("benchmark"); add(inputs, benchmark)
+benchmark = add(inputs, Benchmark("benchmark"))
 addEdge(graph, benchmark.run, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.run_sh)
 addEdge(graph, benchmark, builder.imgBuilder.gcpt.opensbi.linux.initramfs)
 

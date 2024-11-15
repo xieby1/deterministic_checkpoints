@@ -1,4 +1,7 @@
 from pydot import Dot, Edge, Node, Graph, Cluster
+from typing import TypeVar
+T = TypeVar("T")
+
 def safe_set(args: dict, key: str, value):
   if key not in args: args[key] = value
 class CCluster(Cluster): # Connectable Cluster
@@ -35,9 +38,10 @@ def addCluster(g: Graph|CCluster, name, **args):
   s=CCluster(name, **args)
   g.add_subgraph(s)
   return s
-def add(g: Graph, item: Node|Edge|Graph):
+def add(g: Graph, item: T) -> T:
   if   isinstance(item, Node):     g.add_node(item)
   elif isinstance(item, Edge):     g.add_edge(item)
   elif isinstance(item, CCluster): g.add_subgraph(item)
+  else: raise Exception(f"add(g, item): unknown item type [{type(item)}]")
   return item
 
