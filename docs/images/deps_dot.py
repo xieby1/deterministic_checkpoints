@@ -1,7 +1,6 @@
-from pydot import Dot
-from common import CCluster, addNode, addEdge, add
+from common import CDot, CCluster, addNode, addEdge, add
 
-graph = Dot(label="Deterministic Checkpoint Dependency Graph", bgcolor="transparent", splines="line", compound=True)
+graph = CDot(label="Deterministic Checkpoint Dependency Graph", splines="line")
 graph.set_node_defaults(shape="box")
 graph.set_edge_defaults(color="#00000044")
 

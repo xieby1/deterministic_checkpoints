@@ -1,4 +1,4 @@
-from pydot import Edge, Node, Graph, Cluster
+from pydot import Dot, Edge, Node, Graph, Cluster
 def safe_set(args: dict, key: str, value):
   if key not in args: args[key] = value
 class CCluster(Cluster): # Connectable Cluster
@@ -8,6 +8,11 @@ class CCluster(Cluster): # Connectable Cluster
     Cluster.__init__(self, name, **args)
     self._connect_node_ = addNode(self, "_connect_node_", label="",
                                   shape="none", width=0, height=0, margin=0)
+class CDot(Dot): # Compound Dot
+  def __init__(self, *vargs, **args):
+    args["compound"] = True
+    safe_set(args, "bgcolor", "transparent")
+    Dot.__init__(self, *vargs, **args)
 
 def addNode(g: Graph|CCluster, name, **args):
   if "label" not in args: args["label"] = name
