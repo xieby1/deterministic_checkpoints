@@ -1,10 +1,5 @@
 { callPackage
 , runCommand
-
-, riscv64-cc
-, riscv64-fortran
-, riscv64-libc-static
-, riscv64-jemalloc
 }: let
   testCases = [
     "400.perlbench"
@@ -37,9 +32,7 @@
     "482.sphinx3"
     "483.xalancbmk"
   ];
-  build-all = callPackage ./build-all.nix {
-    inherit riscv64-cc riscv64-fortran riscv64-libc-static riscv64-jemalloc;
-  };
+  build-all = callPackage ./build-all.nix {};
 in builtins.listToAttrs (
   builtins.map (testcase: {
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"

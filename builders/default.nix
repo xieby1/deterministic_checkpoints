@@ -1,6 +1,7 @@
-{ pkgs,
-benchmark
+{ callPackage
+
+, benchmark
 }: let
-  gcpt = import ./imgBuilder { inherit pkgs benchmark; };
-  checkpoints = import ./cptBuilder { inherit pkgs gcpt; };
+  gcpt = callPackage ./imgBuilder { inherit benchmark; };
+  checkpoints = callPackage ./cptBuilder { inherit gcpt; };
 in checkpoints

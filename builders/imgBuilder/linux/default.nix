@@ -5,16 +5,11 @@
 , bison
 
 , riscv64-cc
-, riscv64-libc-static
-, riscv64-busybox
 , benchmark
 }: let
-  initramfs = callPackage ./initramfs {
-    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
-    inherit benchmark;
-  };
+  initramfs = callPackage ./initramfs { inherit benchmark; };
   # TODO: use overlayfs to reduce disk usage
-  common-build = callPackage ./common-build.nix {inherit riscv64-cc;};
+  common-build = callPackage ./common-build.nix {};
 in stdenv.mkDerivation {
   name = "${benchmark.name}.linux";
   src = common-build;

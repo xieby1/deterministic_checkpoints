@@ -3,13 +3,9 @@
 , callPackage
 
 , riscv64-cc
-, riscv64-libc-static
-, riscv64-busybox
 , benchmark
 }: let
-  opensbi = callPackage ../opensbi {
-    inherit riscv64-cc riscv64-libc-static riscv64-busybox benchmark;
-  };
+  opensbi = callPackage ../opensbi { inherit benchmark; };
 in stdenv.mkDerivation {
   name = "${benchmark.name}.gcpt";
 

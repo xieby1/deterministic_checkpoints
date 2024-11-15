@@ -9,8 +9,9 @@
 , git
 , zlib
 , which
-, riscv64-cc
 , SDL2
+
+, riscv64-cc
 }:
 
 let

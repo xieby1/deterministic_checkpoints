@@ -3,16 +3,11 @@
 , callPackage
 
 , riscv64-cc
-, riscv64-libc-static
-, riscv64-busybox
 , benchmark
 }: let
-  linux = callPackage ../linux {
-    inherit riscv64-cc riscv64-libc-static riscv64-busybox;
-    inherit benchmark;
-  };
+  linux = callPackage ../linux { inherit benchmark; };
   dts = callPackage ./dts {};
-  common-build = callPackage ./common-build.nix {inherit riscv64-cc dts;};
+  common-build = callPackage ./common-build.nix {inherit dts;};
 in stdenv.mkDerivation {
   name = "${benchmark.name}.opensbi";
 

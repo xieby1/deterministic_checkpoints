@@ -1,11 +1,13 @@
 { stdenv
 , fetchFromGitHub
 
+, riscv64-pkgs
 , riscv64-cc
 , riscv64-fortran
 , riscv64-libc-static
-, riscv64-libfortran
-}: stdenv.mkDerivation {
+}: let
+  riscv64-libfortran = riscv64-pkgs.gfortran.cc;
+in stdenv.mkDerivation {
   pname = "openblas";
   version = "0.3.28";
   src = fetchFromGitHub {
