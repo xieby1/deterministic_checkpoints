@@ -2,7 +2,7 @@
     url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
     sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
   }) {}
-}: rec {
+}: let
   scope = pkgs.lib.makeScope pkgs.newScope (self: rec {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
     riscv64-cc = riscv64-pkgs.stdenv.cc;
@@ -28,17 +28,17 @@
       };
     };
   });
-  spec2006 = scope.callPackage ./benchmarks/spec2006 {};
-
-  checkpointsAttrs = builtins.mapAttrs (name: benchmark:
-    scope.callPackage ./builders { inherit benchmark; }
-  ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) spec2006);
-  # TODO: rename
-  checkpoints = (pkgs.linkFarm "checkpoints" (
+in {
+  spec2006 = let
+    benchmarks = scope.callPackage ./benchmarks/spec2006 {};
+    checkpointsAttrs = builtins.mapAttrs (name: benchmark:
+      scope.callPackage ./builders { inherit benchmark; }
+    ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
+  in (pkgs.linkFarm "checkpoints" (
     pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) checkpointsAttrs
   )).overrideAttrs (old: { passthru = checkpointsAttrs; });
 
-  openblas = scope.callPackage ./benchmarks/openblas {};
-  # TODO: rename
-  checkpoints-openblas = scope.callPackage ./builders { benchmark=openblas; };
+  openblas = let
+    benchmark = scope.callPackage ./benchmarks/openblas {};
+  in scope.callPackage ./builders { inherit benchmark; };
 }
