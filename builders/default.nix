@@ -2,6 +2,8 @@
 
 , benchmark
 }: let
-  gcpt = callPackage ./imgBuilder { inherit benchmark; };
-  checkpoints = callPackage ./cptBuilder { inherit gcpt; };
-in checkpoints
+  imgBuilder = callPackage ./imgBuilder { inherit benchmark; };
+  cptBuilder = callPackage ./cptBuilder { inherit imgBuilder; };
+in cptBuilder.overrideAttrs (old: {
+  passthru = { inherit imgBuilder cptBuilder; };
+})

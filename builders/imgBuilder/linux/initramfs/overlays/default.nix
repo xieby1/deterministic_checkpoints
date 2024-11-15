@@ -27,7 +27,10 @@ let
     echo exit
     ${trapCommand}
   '';
-in runCommand name {} ''
+in runCommand name {
+  inherit before_workload qemu_trap nemu_trap;
+  inherit inittab run_sh;
+} ''
   mkdir -p $out/bin
   cp ${riscv64-busybox}/bin/busybox $out/bin/
   ln -s /bin/busybox $out/init

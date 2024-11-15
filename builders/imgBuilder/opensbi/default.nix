@@ -59,4 +59,5 @@ in stdenv.mkDerivation {
   installPhase = ''
     cp build/platform/generic/firmware/fw_payload.bin $out
   '';
+  passthru = { inherit linux dts common-build; };
 }

@@ -27,7 +27,9 @@ let
     nod /dev/null     644 0 0 c 1 3
   '';
   gen_init_cpio = callPackage ./gen_init_cpio {};
-in runCommand name {} ''
+in runCommand name {
+  inherit cpio_list gen_init_cpio;
+} ''
   mkdir -p $out
   ${gen_init_cpio}/bin/gen_init_cpio -t 0 ${cpio_list} > $out/${name}
 ''

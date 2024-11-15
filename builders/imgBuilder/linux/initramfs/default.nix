@@ -10,7 +10,9 @@
     # TODO: check if `run` doest not exist, throw an error
     benchmark-run = benchmark.run;
   };
-in runCommand "${benchmark.name}.cpio" {} ''
+in runCommand "${benchmark.name}.cpio" {
+  inherit base overlays;
+} ''
   cp ${base}/init.cpio $out
   chmod +w $out
   cd ${benchmark}

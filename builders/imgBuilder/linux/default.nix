@@ -37,4 +37,5 @@ in stdenv.mkDerivation {
   installPhase = ''
     cp arch/riscv/boot/Image $out
   '';
+  passthru = { inherit initramfs common-build; };
 }

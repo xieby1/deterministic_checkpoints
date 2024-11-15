@@ -1,10 +1,11 @@
 { callPackage
 
-, gcpt
+, imgBuilder
 }: let
   # TODO: move folders to cptBuilder/
   qemu = callPackage ./qemu {};
   nemu = callPackage ./nemu {};
+  gcpt = imgBuilder.gcpt;
   stage1-profiling = callPackage ./1.profiling.nix {
     inherit qemu nemu gcpt;
   };

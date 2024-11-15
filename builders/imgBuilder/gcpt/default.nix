@@ -31,4 +31,5 @@ in stdenv.mkDerivation {
     installPhase = ''
         cp build/gcpt.bin $out
     '';
+    passthru = { inherit opensbi; };
 }
