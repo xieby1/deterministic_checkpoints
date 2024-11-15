@@ -1,5 +1,5 @@
 # Summary
 
-# 确定性切片（deterministic_checkpoints）
+# 确定性负载（Deterload）
 
 * [简介（Intro）](./index.md)

@@ -1,5 +1,5 @@
 let
-  name = "deterministic_checkpoints";
+  name = "Deterload";
   pkgs = import <nixpkgs> {};
   my-python3 = pkgs.python3.withPackages (python-pkgs: [
     # for docs

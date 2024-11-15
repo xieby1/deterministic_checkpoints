@@ -3,7 +3,7 @@ authors = ["xieby1"]
 language = "en"
 multilingual = false
 src = "docs/"
-title = "🪚确定性切片（deterministic_checkpoints）❄️"
+title = "❄ 确定性负载（Deterload）❄"
 
 [output.html]
-git-repository-url = "https://github.com/xieby1/deterministic_checkpoints"
+git-repository-url = "https://github.com/OpenXiangShan/Deterload"

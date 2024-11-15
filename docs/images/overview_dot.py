@@ -1,6 +1,6 @@
 from common import CDot, CCluster, add, addNode, addEdge, set_colors
 
-graph = CDot(label="Deterministic Checkpoint\nWorkflow Overview")
+graph = CDot(label="Deterload\nWorkflow Overview")
 
 benchmark = addNode(graph, "benchmark")
 set_colors.benchmark(benchmark)

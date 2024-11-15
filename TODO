@@ -1,6 +1,5 @@
 * take checkpoint for every input and every testCase
 * align generated checkpoint paths to old ones
-* name: deterministic_checkpoints: dckpts
 * rename xxx.nix => default.nix
 * add meta
 * use native jemalloc

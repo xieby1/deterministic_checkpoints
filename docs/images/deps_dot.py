@@ -1,6 +1,6 @@
 from common import CDot, CCluster, addNode, addEdge, add, set_colors
 
-graph = CDot(label="Deterministic Checkpoint Dependency Graph", splines="line")
+graph = CDot(label="Deterload Dependency Graph", splines="line")
 graph.set_node_defaults(margin=0)
 
 class ImgBuilder(CCluster):
