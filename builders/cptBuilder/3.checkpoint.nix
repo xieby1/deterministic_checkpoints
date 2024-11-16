@@ -1,7 +1,7 @@
 { runCommand
 , lib
 
-, config
+, dconfig
 , qemu
 , nemu
 , gcpt
@@ -11,7 +11,7 @@ let
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
     "-bios ${gcpt}"
-    "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${toString config.intervals},output-base-dir=$out,config-name=${config.workload},checkpoint-mode=SimpointCheckpoint"
+    "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${toString dconfig.intervals},output-base-dir=$out,config-name=${dconfig.workload},checkpoint-mode=SimpointCheckpoint"
     "-nographic"
     "-m 8G"
     "-smp 1"
@@ -27,18 +27,18 @@ let
     "-C checkpoint"
     "-w ."
     "-S ${stage2-cluster}"
-    "--cpt-interval ${toString config.intervals}"
-    "--checkpoint-format ${toString config.checkpoint_format}"
+    "--cpt-interval ${toString dconfig.intervals}"
+    "--checkpoint-format ${toString dconfig.checkpoint_format}"
   ];
 
 in runCommand "${lib.removeSuffix ".2_cluster" stage2-cluster.name}.3_checkpoint" {} ''
   mkdir -p $out
 
- ${if config.simulator == "qemu" then ''
+ ${if dconfig.simulator == "qemu" then ''
     echo "Executing QEMU command: ${builtins.toString qemuCommand}"
-    ${builtins.toString qemuCommand} | tee $out/${config.checkpoint_log}
+    ${builtins.toString qemuCommand} | tee $out/${dconfig.checkpoint_log}
   '' else ''
     echo "Executing NEMU command: ${builtins.toString nemuCommand}"
-    ${builtins.toString nemuCommand} | tee $out/${config.checkpoint_log}
+    ${builtins.toString nemuCommand} | tee $out/${dconfig.checkpoint_log}
   ''}
 ''

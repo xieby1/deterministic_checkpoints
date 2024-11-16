@@ -28,7 +28,7 @@
         hostPlatform = pkgs.stdenv.hostPlatform;
       };
     };
-    config = pkgs.config // import ./config.nix // args;
+    dconfig = import ./config.nix // args;
   });
 in {
   spec2006 = let

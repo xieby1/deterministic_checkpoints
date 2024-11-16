@@ -1,6 +1,6 @@
 { callPackage
 , runCommand
-, config
+, dconfig
 }: let
   testCases = [
     "400.perlbench"
@@ -34,7 +34,7 @@
     "483.xalancbmk"
   ];
   build-all = callPackage ./build-all.nix {
-    config = import ./config.nix // config;
+    dconfig = import ./config.nix // dconfig;
   };
 in builtins.listToAttrs (
   builtins.map (testcase: {
