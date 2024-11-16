@@ -6,10 +6,11 @@
 } @ args: let
   scope = pkgs.lib.makeScope pkgs.newScope (self: rec {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
-    riscv64-cc = riscv64-pkgs.stdenv.cc;
-    riscv64-libc-static = riscv64-pkgs.stdenv.cc.libc.static;
+    riscv64-stdenv = riscv64-pkgs."${dconfig.cc}Stdenv";
+    riscv64-cc = riscv64-stdenv.cc;
+    riscv64-libc-static = riscv64-stdenv.cc.libc.static;
     riscv64-fortran = riscv64-pkgs.wrapCCWith {
-      cc = riscv64-pkgs.stdenv.cc.cc.override {
+      cc = riscv64-stdenv.cc.cc.override {
         name = "gfortran";
         langFortran = true;
         langCC = false;
