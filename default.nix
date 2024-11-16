@@ -1,6 +1,6 @@
 { pkgs ? import (fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
-    sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
+    url = "https://github.com/NixOS/nixpkgs/tarball/release-24.05";
+    sha256 = "sha256:08ksshv1z4y0dchqrd2j6ikdgna6zz9yqral0zkl3rfbfsiv3q81";
   }) {}
 , ...
 } @ args: let
@@ -8,13 +8,7 @@
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
     riscv64-cc = riscv64-pkgs.stdenv.cc;
     riscv64-libc-static = riscv64-pkgs.stdenv.cc.libc.static;
-    riscv64-fortran = let
-      pkgs2311 = import (fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/tarball/release-23.11";
-        sha256 = "sha256:1f5d2g1p6nfwycpmrnnmc2xmcszp804adp16knjvdkj8nz36y1fg";
-      }) {};
-    # TODO: Why pkgs 24.05 gfortran does not work, but 23.11 works?
-    in pkgs2311.pkgsCross.riscv64.wrapCCWith {
+    riscv64-fortran = riscv64-pkgs.wrapCCWith {
       cc = riscv64-pkgs.stdenv.cc.cc.override {
         name = "gfortran";
         langFortran = true;
@@ -27,6 +21,11 @@
       stdenvNoCC = riscv64-pkgs.stdenvNoCC.override {
         hostPlatform = pkgs.stdenv.hostPlatform;
       };
+      # Beginning from 24.05, wrapCCWith receive `runtimeShell`.
+      # If leave it empty, the default uses riscv64-pkgs.runtimeShell,
+      # thus executing the sheBang will throw error:
+      #   `cannot execute: required file not found`.
+      runtimeShell = pkgs.runtimeShell;
     };
     dconfig = import ./config.nix // args;
     traceDConfig = dconfig: name: builtins.trace
