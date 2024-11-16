@@ -3,7 +3,8 @@
   #   * https://github.com/llvm/llvm-project/issues/109966
   #   * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=116064
   cc = "gcc13";
-  simulator = "nemu";       # nemu or qemu
+  # TODO: nemu is not deterministic
+  simulator = "qemu";       # nemu or qemu
   intervals = 20000000;
   workload = "miao";
   # TODO: remove *_log

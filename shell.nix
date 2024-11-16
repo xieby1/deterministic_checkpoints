@@ -15,8 +15,8 @@ let
     * Configure by CLI:
       * `nom-build ... --arg <key> <value> ...`
       * `nom-build ... --argstr <key> <strvalue> ...`
-      * E.g: Generate spec2006 checkpoints using given source code, by qemu, in test size:
-        * `nom-build -A spec2006 --arg src ~/Codes/spec2006.tar.gz --argstr simulator qemu --argstr size test`
+      * E.g: Generate spec2006 checkpoints using given source code, by nemu, in test size:
+        * `nom-build -A spec2006 --arg src ~/Codes/spec2006.tar.gz --argstr simulator nemu --argstr size test`
     * Configure by global config file: edit `./config.nix`
     * Configure by per-benchmark config file: edit `./benchmarks/*/config.nix`
 
