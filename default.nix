@@ -1,6 +1,6 @@
 { pkgs ? import (fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/tarball/release-24.05";
-    sha256 = "sha256:08ksshv1z4y0dchqrd2j6ikdgna6zz9yqral0zkl3rfbfsiv3q81";
+    sha256 = "sha256:1ys916f64hyvlakx4575dg07d1rxdiy47a5pcv0wb6ghis5fagx5";
   }) {}
 , ...
 } @ args: let
