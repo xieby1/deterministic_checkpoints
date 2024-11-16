@@ -5,5 +5,8 @@ multilingual = false
 src = "docs/"
 title = "❄ 确定性负载（Deterload）❄"
 
+[build]
+extra-watch-dirs = ["."]
+
 [output.html]
 git-repository-url = "https://github.com/OpenXiangShan/Deterload"

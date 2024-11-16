@@ -1,10 +1,10 @@
 .NOTINTERMEDIATE:
 
 PYSVGs=$(subst _dot.py,_py.svg,$(shell find docs/ -name "*_dot.py"))
-doc: $(wildcard docs/*.md) ${PYSVGs}
+doc: $(shell find . -name "*.md") ${PYSVGs}
 	mdbook build
 
-%_py.dot: %_dot.py docs/images/common.py
+%_py.dot: %_dot.py docs/builders/images/common.py
 	python3 $<
 %.svg: %.dot
 	dot -Tsvg $< -o $@
