@@ -29,6 +29,9 @@
       };
     };
     dconfig = import ./config.nix // args;
+    traceDConfig = dconfig: name: builtins.trace
+      "🧾 ${name}'s dconfig = ${pkgs.lib.generators.toPretty {} dconfig} 😺"
+      name;
   });
 in {
   spec2006 = let

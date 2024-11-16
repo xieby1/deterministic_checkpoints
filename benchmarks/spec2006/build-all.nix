@@ -4,6 +4,7 @@
 , libxcrypt-legacy
 
 , dconfig
+, traceDConfig
 , riscv64-pkgs
 , riscv64-cc
 , riscv64-fortran
@@ -33,7 +34,7 @@ let
     hash = "sha256-qNxmM9Dmobr6fvTZapacu8jngcBPRbybwayTi7CZGd0=";
   };
 in stdenv.mkDerivation {
-  name = "spec2006exe";
+  name = traceDConfig dconfig "spec2006exe";
   system = "x86_64-linux";
 
   srcs = [
