@@ -28,7 +28,9 @@ let
   '';
   gen_init_cpio = callPackage ./gen_init_cpio {};
 in runCommand name {
-  inherit cpio_list gen_init_cpio;
+  passthru = {
+    inherit cpio_list gen_init_cpio;
+  };
 } ''
   mkdir -p $out
   ${gen_init_cpio}/bin/gen_init_cpio -t 0 ${cpio_list} > $out/${name}

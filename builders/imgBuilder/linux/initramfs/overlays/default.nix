@@ -28,8 +28,10 @@ let
     ${trapCommand}
   '';
 in runCommand name {
-  inherit before_workload qemu_trap nemu_trap;
-  inherit inittab run_sh;
+  passthru = {
+    inherit before_workload qemu_trap nemu_trap;
+    inherit inittab run_sh;
+  };
 } ''
   mkdir -p $out/bin
   cp ${riscv64-busybox}/bin/busybox $out/bin/

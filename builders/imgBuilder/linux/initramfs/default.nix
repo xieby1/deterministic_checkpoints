@@ -11,7 +11,9 @@
     benchmark-run = benchmark.run;
   };
 in runCommand "${benchmark.name}.cpio" {
-  inherit base overlays;
+  passthru = {
+    inherit base overlays;
+  };
 } ''
   cp ${base}/init.cpio $out
   chmod +w $out
