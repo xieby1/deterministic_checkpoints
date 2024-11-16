@@ -24,9 +24,12 @@ let
 
     * Generate the checkpoints for a given <benchmark> into `result/`:
       * `nom-build -A <benchmark>`
-      * `nom-build -A spec2006`         # all spec2006 testcases
-      * `nom-build -A spec2006.403_gcc` # only 403_gcc
-      * `nom-build -A openblas`
+      * E.g: Generate checkpoints for all spec2006 testcases:
+        * `nom-build -A spec2006`
+      * E.g: Generate checkpoints only for spec2006 403_gcc testcase:
+        * `nom-build -A spec2006.403_gcc`
+      * E.g: Generate checkpoints for openblas:
+        * `nom-build -A openblas`
     * Generate the checkpoints for a given <benchmark> into a dedicated <folder>:
       * `nom-build -A <benchmark> -o <folder>`
 
