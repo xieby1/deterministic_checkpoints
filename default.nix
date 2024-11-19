@@ -1,6 +1,7 @@
+# pin to latest nixos-24.05
 { pkgs ? import (fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/tarball/release-24.05";
-    sha256 = "sha256:1ys916f64hyvlakx4575dg07d1rxdiy47a5pcv0wb6ghis5fagx5";
+    url = "https://github.com/NixOS/nixpkgs/archive/e8c38b73aeb218e27163376a2d617e61a2ad9b59.tar.gz";
+    sha256 = "1n6gdjny8k5rwkxh6sp1iwg1y3ni1pm7lvh9sisifgjb18jdvzbm";
   }) {}
 , ...
 } @ args: let
