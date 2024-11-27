@@ -2,6 +2,7 @@ name: build-deterload
 on: [push]
 jobs:
   build-deterload:
+    timeout-minutes: 2880
     runs-on: [self-hosted, Linux, X64, nix]
     permissions:
       contents: write
