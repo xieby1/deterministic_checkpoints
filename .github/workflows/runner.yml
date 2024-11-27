@@ -8,3 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: nix-build -A openblas
+    - run: nix-build -A spec2006 --arg src /nfs/share/home/spec2006.tar.gz -j29
