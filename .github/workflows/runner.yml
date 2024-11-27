@@ -1,0 +1,10 @@
+name: build-deterload
+on: [push]
+jobs:
+  build-deterload:
+    runs-on: [self-hosted, Linux, X64, nix]
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - run: nix-build -A openblas
