@@ -6,3 +6,7 @@
 * split spec2006 into spec2006make spec2006run
 * clean *.py
 * clean README
+* support dynamically linked benchmark
+* linux-common overlay to reduce disk usage pressure
+  * fuse-overlayfs not work in nix sandbox: https://discourse.nixos.org/t/using-fuse-inside-nix-derivation/8534
+  * proot currently not support cow: https://github.com/proot-me/proot/pull/96
