@@ -1,7 +1,8 @@
 { callPackage
 
 , imgBuilder
-}: let
+, ...
+}@args: let
   # TODO: move folders to cptBuilder/
   qemu = callPackage ./qemu {};
   nemu = callPackage ./nemu {};
@@ -10,9 +11,9 @@
     inherit qemu nemu gcpt;
   };
   simpoint = callPackage ./simpoint {};
-  stage2-cluster = callPackage ./2.cluster.nix {
+  stage2-cluster = callPackage ./2.cluster.nix ({
     inherit simpoint stage1-profiling;
-  };
+  } // args);
   stage3-checkpoint = callPackage ./3.checkpoint.nix {
     inherit qemu nemu gcpt stage2-cluster;
   };

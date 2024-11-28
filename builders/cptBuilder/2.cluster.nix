@@ -1,11 +1,10 @@
 { runCommand
 , lib
 
-# TODO:
-# maxK = if testCase == "483.xalancbmk" then "100" else "30";
 , maxK ? "30"
 , simpoint
 , stage1-profiling
+, ...
 }: runCommand "${lib.removeSuffix ".1_profiling" stage1-profiling.name}.2_cluster" {} (''
   mkdir -p $out
 '' + (builtins.toString [

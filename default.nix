@@ -38,7 +38,10 @@ in {
   spec2006 = let
     benchmarks = scope.callPackage ./benchmarks/spec2006 {};
     checkpointsAttrs = builtins.mapAttrs (name: benchmark:
-      scope.callPackage ./builders { inherit benchmark; }
+      scope.callPackage ./builders (
+        { inherit benchmark; } //
+        (pkgs.lib.optionalAttrs (name=="483_xalancbmk") { maxK="100"; })
+      )
     ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
   in (pkgs.linkFarm "checkpoints" (
     pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) checkpointsAttrs
