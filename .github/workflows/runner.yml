@@ -4,6 +4,9 @@ on:
     branches:
       # push to data branch will not trigger this workflow
       - main
+    paths:
+      # changes in docs/ will not trigger this workflow
+      - "!docs/**"
 jobs:
   build-deterload:
     timeout-minutes: 2880
