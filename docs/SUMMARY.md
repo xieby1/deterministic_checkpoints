@@ -7,3 +7,4 @@
   * [SPEC CPU 2006](./benchmarks/spec2006.md)
 * [💽运行镜像（Running Images）](./running/index.md)
   * [GEM5](./running/gem5.md)
+* [📊构建结果（Build Results）](./data/index.md)

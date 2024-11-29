@@ -10,4 +10,5 @@ backup*
 book
 *_py.dot
 *_py.svg
+*.html
 __pycache__

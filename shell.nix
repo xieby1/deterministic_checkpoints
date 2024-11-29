@@ -4,6 +4,9 @@ let
   my-python3 = pkgs.python3.withPackages (python-pkgs: [
     # for docs
     python-pkgs.pydot
+    python-pkgs.plotly
+    python-pkgs.pandas
+    python-pkgs.ipython
   ]);
   h_content = builtins.toFile "h_content" ''
     # ${pkgs.lib.toUpper "${name} usage tips"}
