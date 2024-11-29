@@ -1,5 +1,23 @@
 # 📊构建结果（Build Results）
 
+下面的表格展示了Deterload的构建结果，具体说明如下：
+
+* `Date`行表示构建开始的时间，格式为年月日时分秒(yymmddhhmmss)。
+  各列按照`Date`降序排列（最新排最前面）。
+* `Commit`行显示每次构建对应的Git commit的哈希值。
+* `result/`行及其下方的行表示构建结果的Nix store哈希值。
+  每个单元格都用颜色标记，不同的颜色表示不同的哈希值。
+  通过这种颜色标记，可以轻松看出多次构建之间是否保持了**确定性**。
+
+The tables below demonstrate the build results of Deterload, with the following details:
+
+* The `Date` row indicates the build start time in yymmddhhmmss format.
+  Columns are sorted by `Date` in descending order (most recent first).
+* The `Commit` row displays the Git commit hash associated with each build.
+* The `result/` row and the subsequent rows indicates the Nix store hashes of build results.
+  Each cell is color-coded, with different colors indicating distinct hash values.
+  This color coding makes it straightforward to verify **deterministic** build across multiple builds.
+
 ## SPEC2006
 
 <div id="spec2006Table"></div>

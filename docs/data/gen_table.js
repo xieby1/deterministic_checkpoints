@@ -39,6 +39,7 @@ function gen_table(div_id, csv_url) { Papa.parse(csv_url, {
       type: "table",
       header: {
         values: headerValues,
+        align: "left",
         font: {family: "mono"},
         height: rowHeight,
       },
