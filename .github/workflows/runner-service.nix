@@ -24,7 +24,7 @@
     hash = "sha256-B2LrDa2sYmFsKpeizJR2Pz0/bajeWBqJ032pgB05CAU=";
   } + "/scripts/pkgs/github-runner.nix") {
     inherit pkgs;
-    extraPodmanOpts = ["-v ${spec2006src}:${spec2006src}:ro"];
+    extraPodmanOpts = ["-v ${spec2006src}:/${builtins.baseNameOf spec2006src}:ro"];
     extraPkgsInPATH = [pkgs.git];
   };
   run-ephemeral = pkgs.writeShellScriptBin name ''
@@ -37,7 +37,7 @@
     # https://unix.stackexchange.com/questions/13466/can-grep-output-only-specified-groupings-that-match
     runner_token=$(echo $resp | grep -oP '"token":\s*"\K[^"]*')
     ${runner} \
-      --labels 'self-hosted,Linux,X64,nix' \
+      --labels 'self-hosted,Linux,X64,nix,spec2006' \
       --ephemeral \
       --url https://github.com/OpenXiangShan/Deterload \
       --token $runner_token
