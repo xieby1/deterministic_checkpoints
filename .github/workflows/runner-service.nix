@@ -1,3 +1,4 @@
+# TODO: remove systemd, instead of use pueue or other lightweight manager
 # Usage:
 #   1. build service: `nix-build runner-service.nix --argstr spec2006src <SPEC2006SRC> --argstr github_token <GITHUB_TOKEN>`
 #     * The GitHub token (valid for 366 days, limited by OpenXiangShan) is needed to
@@ -19,13 +20,14 @@
   runner = import (pkgs.fetchFromGitHub {
     owner = "xieby1";
     repo = "nix_config";
-    rev = "402ff6218615ca8ee61dc9a5e9147d1504fd8919";
-    hash = "sha256-AEUkkkcj6has+1RD7eFvRsH6gZB5PzYjU8Dn/30LDqA=";
+    rev = "3f08da6e040d2004246922b4f532d350cf5ce836";
+    hash = "sha256-B2LrDa2sYmFsKpeizJR2Pz0/bajeWBqJ032pgB05CAU=";
   } + "/scripts/pkgs/github-runner.nix") {
     inherit pkgs;
-    podmanExtraOpts = ["-v ${spec2006src}:${spec2006src}:ro"];
+    extraPodmanOpts = ["-v ${spec2006src}:${spec2006src}:ro"];
+    extraPkgsInPATH = [pkgs.git];
   };
-  run = pkgs.writeShellScript "run" ''
+  run-ephemeral = pkgs.writeShellScriptBin name ''
     resp=$(curl -L \
       -X POST \
       -H "Accept: application/vnd.github+json" \
@@ -34,24 +36,10 @@
       Https://api.github.com/repos/OpenXiangShan/Deterload/actions/runners/registration-token)
     # https://unix.stackexchange.com/questions/13466/can-grep-output-only-specified-groupings-that-match
     runner_token=$(echo $resp | grep -oP '"token":\s*"\K[^"]*')
-    ${runner}/bin/github-runner-nix \
+    ${runner} \
       --labels 'self-hosted,Linux,X64,nix' \
       --ephemeral \
       --url https://github.com/OpenXiangShan/Deterload \
       --token $runner_token
   '';
-in pkgs.writeTextFile {
-  name = "${name}.service";
-  text = ''
-    [Install]
-    WantedBy=default.target
-
-    [Service]
-    ExecStart=${run}
-    Restart=always
-
-    [Unit]
-    After=network.target
-    Description=Auto start ${name}
-  '';
-}
+in run-ephemeral

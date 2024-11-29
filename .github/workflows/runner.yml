@@ -1,5 +1,9 @@
 name: build-deterload
-on: [push]
+on:
+  push:
+    branches:
+      # push to data branch will not trigger this workflow
+      - main
 jobs:
   build-deterload:
     timeout-minutes: 2880
@@ -8,5 +12,19 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v4
-    - run: nix-build -A openblas
-    - run: nix-build -A spec2006 --arg src /nfs/share/home/spec2006.tar.gz -j29
+    - run: nix-build -A openblas -o result-openblas
+    - run: nix-build -A spec2006 --arg src /nfs/share/home/spec2006.tar.gz -j29 -o result-spec2006
+    - run: |
+        git rev-parse HEAD > /tmp/rev
+        (date +%y%m%d%H%M%S && cat /tmp/rev && readlink result-openblas) | tr '\n' ',' > /tmp/openblas.txt
+        (date +%y%m%d%H%M%S && cat /tmp/rev && for i in result-spec2006 result-spec2006/*; do readlink $i; done) | tr '\n' ',' > /tmp/spec2006.txt
+    - uses: actions/checkout@v4
+      with:
+        ref: data
+    - run: |
+        cat openblas.txt >> /tmp/openblas.txt; mv /tmp/openblas.txt openblas.txt; git add openblas.txt
+        cat spec2006.txt >> /tmp/spec2006.txt; mv /tmp/spec2006.txt spec2006.txt; git add spec2006.txt
+        git config --global user.name xieby1Runner
+        git config --global user.email "miao@wang.zhi"
+        git commit -m "update data for git commit $(cat /tmp/rev)"
+        git push
