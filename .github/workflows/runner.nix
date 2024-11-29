@@ -1,17 +1,11 @@
-# TODO: remove systemd, instead of use pueue or other lightweight manager
-# Usage:
-#   1. build service: `nix-build runner-service.nix --argstr spec2006src <SPEC2006SRC> --argstr github_token <GITHUB_TOKEN>`
-#     * The GitHub token (valid for 366 days, limited by OpenXiangShan) is needed to
-#       retrieve the runner token (only valid for one hour, limited by GitHub).
-#       https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-a-registration-token-for-a-repository
-#       > The fine-grained token must have the following permission set:
-#       > "Administration" repository permissions (write)
-#     * Generate the github token here:
-#       https://github.com/settings/tokens?type=beta
-#   2. Copy generate file `result` to ~/.config/systemd/user/${name}.service
-#   3. Start this service: `systemctl --user start ${name}.service
-#   *. Inspect the status of this service: `systemctl --user status ${name}.service`
-#   *. Inspect the output of this service: `journalctl --user -f -u ${name}.service`
+# Usage: `nix-build runner.nix --argstr spec2006src <SPEC2006SRC> --argstr github_token <GITHUB_TOKEN>`
+# * The GitHub token (valid for 366 days, limited by OpenXiangShan) is needed to
+#   retrieve the runner token (only valid for one hour, limited by GitHub).
+#   https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-a-registration-token-for-a-repository
+#   > The fine-grained token must have the following permission set:
+#   > "Administration" repository permissions (write)
+# * Generate the github token here:
+#   https://github.com/settings/tokens?type=beta
 { pkgs ? import <nixpkgs> {}
 , spec2006src
 , github_token
