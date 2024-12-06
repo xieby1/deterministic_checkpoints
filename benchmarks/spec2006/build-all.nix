@@ -3,12 +3,12 @@
 , fetchFromGitHub
 , libxcrypt-legacy
 
-, dconfig
-, traceDConfig
 , riscv64-pkgs
 , riscv64-cc
 , riscv64-fortran
 , riscv64-libc-static
+, src
+, size ? "ref" # "ref" or "test"
 }:
 let
   customJemalloc = riscv64-pkgs.jemalloc.overrideAttrs (oldAttrs: {
@@ -34,11 +34,11 @@ let
     hash = "sha256-qNxmM9Dmobr6fvTZapacu8jngcBPRbybwayTi7CZGd0=";
   };
 in stdenv.mkDerivation {
-  name = traceDConfig dconfig "spec2006exe";
+  name = "spec2006exe";
   system = "x86_64-linux";
 
   srcs = [
-    dconfig.src
+    src
     CPU2006LiteWrapper
   ];
   sourceRoot = ".";
@@ -103,8 +103,8 @@ in stdenv.mkDerivation {
       pushd $WORK_DIR
       mkdir -p run
       if [ -d data/all/input ];        then cp -r data/all/input/*     run/; fi
-      if [ -d data/${dconfig.size}/input ];    then cp -r data/${dconfig.size}/input/* run/; fi
-      if [ -f extra-data/${dconfig.size}.sh ]; then sh extra-data/${dconfig.size}.sh       ; fi
+      if [ -d data/${size}/input ];    then cp -r data/${size}/input/* run/; fi
+      if [ -f extra-data/${size}.sh ]; then sh extra-data/${size}.sh       ; fi
 
       mkdir -p $out/$WORK_DIR/run/
       cp -r run/* $out/$WORK_DIR/run/
@@ -113,7 +113,7 @@ in stdenv.mkDerivation {
       # E.g.: 481.wrf/run-ref.sh
       #   before replace: [run-ref.h]: $APP > rsl.out.0000
       #   after replace:     [run.sh]: ./481.wrf > rsl.out.0000
-      sed 's,\$APP,./'$WORK_DIR',' run-${dconfig.size}.sh > $out/$WORK_DIR/run/run-spec.sh
+      sed 's,\$APP,./'$WORK_DIR',' run-${size}.sh > $out/$WORK_DIR/run/run-spec.sh
       popd
     done
 

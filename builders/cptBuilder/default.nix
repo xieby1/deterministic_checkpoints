@@ -1,25 +1,14 @@
-{ callPackage
-
-, imgBuilder
-, ...
-}@args: let
-  # TODO: move folders to cptBuilder/
-  qemu = callPackage ./qemu {};
-  nemu = callPackage ./nemu {};
-  gcpt = imgBuilder.gcpt;
-  stage1-profiling = callPackage ./1.profiling.nix {
-    inherit qemu nemu gcpt;
-  };
-  simpoint = callPackage ./simpoint {};
-  stage2-cluster = callPackage ./2.cluster.nix ({
-    inherit simpoint stage1-profiling;
-  } // args);
-  stage3-checkpoint = callPackage ./3.checkpoint.nix {
-    inherit qemu nemu gcpt stage2-cluster;
-  };
+{ benchmark
+, build-stage3-checkpoint
+}: let
+  stage3-checkpoint = build-stage3-checkpoint benchmark;
+  stage2-cluster = stage3-checkpoint.stage2-cluster;
+  stage1-profiling = stage2-cluster.stage1-profiling;
 in stage3-checkpoint.overrideAttrs (old: {
   passthru = {
-    inherit qemu nemu simpoint;
     inherit stage1-profiling stage2-cluster stage3-checkpoint;
+    qemu = stage1-profiling.qemu;
+    nemu = stage1-profiling.nemu;
+    simpoint = stage2-cluster.simpoint;
   };
 })

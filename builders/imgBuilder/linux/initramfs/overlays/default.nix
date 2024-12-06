@@ -1,16 +1,15 @@
 { writeText
 , runCommand
-, callPackage
 
-, dconfig
 , riscv64-pkgs
+, before_workload
+, qemu_trap
+, nemu_trap
+, trapCommand ? "qemu_trap" # "nemu_trap" or "qemu_trap"
 , benchmark-run
 }:
 let
   name = "initramfs-overlays";
-  before_workload = callPackage ./before_workload {};
-  qemu_trap = callPackage ./qemu_trap {};
-  nemu_trap = callPackage ./nemu_trap {};
   riscv64-busybox = riscv64-pkgs.busybox.override {
     enableStatic = true;
     useMusl = true;
@@ -19,7 +18,6 @@ let
     ::sysinit:/bin/busybox --install -s
     /dev/console::sysinit:-/bin/sh /bin/run.sh
   '';
-  trapCommand = if dconfig.simulator == "nemu" then "nemu_trap" else "qemu_trap";
   run_sh = writeText "run.sh" ''
     before_workload
     echo start

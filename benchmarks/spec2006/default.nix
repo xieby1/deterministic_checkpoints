@@ -1,6 +1,6 @@
-{ callPackage
-, runCommand
-, dconfig
+{ runCommand
+
+, build-all
 }: let
   testCases = [
     "400.perlbench"
@@ -33,9 +33,6 @@
     "482.sphinx3"
     "483.xalancbmk"
   ];
-  build-all = callPackage ./build-all.nix {
-    dconfig = import ./config.nix // dconfig;
-  };
 in builtins.listToAttrs (
   builtins.map (testcase: {
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"

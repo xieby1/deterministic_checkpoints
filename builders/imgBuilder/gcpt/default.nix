@@ -1,12 +1,10 @@
 { stdenv
 , fetchFromGitHub
-, callPackage
 
 , riscv64-cc
 , benchmark
-}: let
-  opensbi = callPackage ../opensbi { inherit benchmark; };
-in stdenv.mkDerivation {
+, opensbi
+}: stdenv.mkDerivation {
   name = "${benchmark.name}.gcpt";
 
     src = fetchFromGitHub {

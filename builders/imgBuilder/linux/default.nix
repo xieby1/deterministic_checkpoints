@@ -1,16 +1,14 @@
 { stdenv
-, callPackage
 , bc
 , flex
 , bison
 
 , riscv64-cc
 , benchmark
-}: let
-  initramfs = callPackage ./initramfs { inherit benchmark; };
+, initramfs
   # TODO: use overlayfs to reduce disk usage
-  common-build = callPackage ./common-build.nix {};
-in stdenv.mkDerivation {
+, common-build
+}: stdenv.mkDerivation {
   name = "${benchmark.name}.linux";
   src = common-build;
   buildInputs = [
