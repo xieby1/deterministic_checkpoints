@@ -8,7 +8,7 @@
 , riscv64-fortran
 , riscv64-libc-static
 , src
-, size ? "ref" # "ref" or "test"
+, size
 }:
 let
   customJemalloc = riscv64-pkgs.jemalloc.overrideAttrs (oldAttrs: {

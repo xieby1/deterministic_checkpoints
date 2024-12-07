@@ -38,17 +38,13 @@ let
 in {
   # TODO: 483_xalancbmk maxK="100"
   spec2006 = let
-    # TODO: spec2006-build-all is an inner package, remove it from here
-    spec2006-build-all = riscv64-scope.callPackage ./benchmarks/spec2006/build-all.nix {
+    benchmarks = riscv64-scope.callPackage ./benchmarks/spec2006 {
       src = if args ? spec2006-src
         then args.spec2006-src
         else throw ''
           Please specify the path of spec2006, for example:
             nix-build ... --arg spec2006-src /path/of/spec2006.tar.gz ...
         '';
-    };
-    benchmarks = riscv64-scope.callPackage ./benchmarks/spec2006 {
-      build-all = spec2006-build-all;
     };
     attrs = builtins.mapAttrs (name: benchmark:
       build { inherit benchmark; }
