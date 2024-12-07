@@ -34,11 +34,12 @@ let
   riscv64-scope = pkgs.lib.makeScope pkgs.newScope (self: {
     inherit riscv64-pkgs riscv64-stdenv riscv64-cc riscv64-libc-static riscv64-fortran;
   });
+  callPackage = riscv64-scope.callPackage;
   build = import ./builders { inherit riscv64-scope; };
 in {
   # TODO: 483_xalancbmk maxK="100"
   spec2006 = let
-    benchmarks = riscv64-scope.callPackage ./benchmarks/spec2006 {
+    benchmarks = callPackage ./benchmarks/spec2006 {
       src = if args ? spec2006-src
         then args.spec2006-src
         else throw ''
@@ -54,6 +55,6 @@ in {
   )).overrideAttrs (old: { passthru = attrs; });
 
   openblas = let
-    benchmark = riscv64-scope.callPackage ./benchmarks/openblas {};
+    benchmark = callPackage ./benchmarks/openblas {};
   in build { inherit benchmark; };
 }
