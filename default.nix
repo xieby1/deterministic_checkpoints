@@ -37,7 +37,6 @@ let
   callPackage = riscv64-scope.callPackage;
   build = callPackage ./builders {};
 in {
-  # TODO: 483_xalancbmk maxK="100"
   spec2006 = let
     benchmarks = callPackage ./benchmarks/spec2006 {
       src = if args ? spec2006-src
@@ -47,9 +46,12 @@ in {
             nix-build ... --arg spec2006-src /path/of/spec2006.tar.gz ...
         '';
     };
-    attrs = builtins.mapAttrs (name: benchmark:
-      build { inherit benchmark; }
-    ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
+    attrs = builtins.mapAttrs (name: benchmark: build {
+      inherit benchmark;
+      overlay = if name=="483_xalancbmk" then (self: super: {
+        stage2-cluster = super.stage2-cluster.override {maxK="100";};
+      }) else (self: super: {});
+    }) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
   in (pkgs.linkFarm "checkpoints" (
     pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) attrs
   )).overrideAttrs (old: { passthru = attrs; });
