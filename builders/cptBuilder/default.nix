@@ -1,7 +1,4 @@
-{ benchmark
-, build-stage3-checkpoint
-}: let
-  stage3-checkpoint = build-stage3-checkpoint benchmark;
+{ stage3-checkpoint }: let
   stage2-cluster = stage3-checkpoint.stage2-cluster;
   stage1-profiling = stage2-cluster.stage1-profiling;
 in stage3-checkpoint.overrideAttrs (old: {
