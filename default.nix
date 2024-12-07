@@ -35,7 +35,7 @@ let
     inherit riscv64-pkgs riscv64-stdenv riscv64-cc riscv64-libc-static riscv64-fortran;
   });
   callPackage = riscv64-scope.callPackage;
-  build = import ./builders { inherit riscv64-scope; };
+  build = callPackage ./builders {};
 in {
   # TODO: 483_xalancbmk maxK="100"
   spec2006 = let
