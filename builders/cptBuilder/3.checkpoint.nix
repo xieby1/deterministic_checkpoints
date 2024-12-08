@@ -1,17 +1,21 @@
 { runCommand
 , lib
 
-, dconfig
 , qemu
 , nemu
-, gcpt
+, img
 , stage2-cluster
+, intervals ? "20000000"
+, workload ? "miao"
+, checkpoint_format ? "zstd" # gz or zstd, qemu only support zstd compressed
+, simulator ? "qemu" # nemu or qemu
+, checkpoint_log ? "checkpoint.log"
 }:
 let
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
-    "-bios ${gcpt}"
-    "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${toString dconfig.intervals},output-base-dir=$out,config-name=${dconfig.workload},checkpoint-mode=SimpointCheckpoint"
+    "-bios ${img}"
+    "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${intervals},output-base-dir=$out,config-name=${workload},checkpoint-mode=SimpointCheckpoint"
     "-nographic"
     "-m 8G"
     "-smp 1"
@@ -21,24 +25,26 @@ let
 
   nemuCommand = [
     "${nemu}/bin/riscv64-nemu-interpreter"
-    "${gcpt}"
+    "${img}"
     "-b"
     "-D $out"
     "-C checkpoint"
     "-w ."
     "-S ${stage2-cluster}"
-    "--cpt-interval ${toString dconfig.intervals}"
-    "--checkpoint-format ${toString dconfig.checkpoint_format}"
+    "--cpt-interval ${intervals}"
+    "--checkpoint-format ${checkpoint_format}"
   ];
 
-in runCommand "${lib.removeSuffix ".2_cluster" stage2-cluster.name}.3_checkpoint" {} ''
+in runCommand "${lib.removeSuffix ".2_cluster" stage2-cluster.name}.3_checkpoint" {
+  passthru = { inherit qemu nemu img stage2-cluster; };
+} ''
   mkdir -p $out
 
- ${if dconfig.simulator == "qemu" then ''
+ ${if simulator == "qemu" then ''
     echo "Executing QEMU command: ${builtins.toString qemuCommand}"
-    ${builtins.toString qemuCommand} | tee $out/${dconfig.checkpoint_log}
+    ${builtins.toString qemuCommand} | tee $out/${checkpoint_log}
   '' else ''
     echo "Executing NEMU command: ${builtins.toString nemuCommand}"
-    ${builtins.toString nemuCommand} | tee $out/${dconfig.checkpoint_log}
+    ${builtins.toString nemuCommand} | tee $out/${checkpoint_log}
   ''}
 ''

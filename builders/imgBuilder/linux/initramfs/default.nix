@@ -1,15 +1,11 @@
 { runCommand
-, callPackage
 , cpio
 
 , benchmark
+, base
+, overlays
 }: let
   cpioPatched = cpio.overrideAttrs (old: { patches = [./cpio_reset_timestamp.patch]; });
-  base = callPackage ./base {};
-  overlays = callPackage ./overlays {
-    # TODO: check if `run` doest not exist, throw an error
-    benchmark-run = benchmark.run;
-  };
 in runCommand "${benchmark.name}.cpio" {
   passthru = {
     inherit base overlays;

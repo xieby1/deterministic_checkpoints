@@ -1,15 +1,13 @@
 { stdenv
 , python3
-, callPackage
 
 , riscv64-cc
-, benchmark
-}: let
-  linux = callPackage ../linux { inherit benchmark; };
-  dts = callPackage ./dts {};
-  common-build = callPackage ./common-build.nix {inherit dts;};
-in stdenv.mkDerivation {
-  name = "${benchmark.name}.opensbi";
+, rmExt
+, linux
+, dts
+, common-build
+}: stdenv.mkDerivation {
+  name = "${rmExt linux.name}.opensbi";
 
   src = common-build;
 

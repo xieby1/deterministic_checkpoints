@@ -1,6 +1,7 @@
 { writeText
 , runCommand
-, callPackage
+
+, gen_init_cpio
 }:
 let
   name = "init.cpio";
@@ -26,7 +27,6 @@ let
     nod /dev/console  644 0 0 c 5 1
     nod /dev/null     644 0 0 c 1 3
   '';
-  gen_init_cpio = callPackage ./gen_init_cpio {};
 in runCommand name {
   passthru = {
     inherit cpio_list gen_init_cpio;

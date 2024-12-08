@@ -4,8 +4,9 @@
 , maxK ? "30"
 , simpoint
 , stage1-profiling
-, ...
-}: runCommand "${lib.removeSuffix ".1_profiling" stage1-profiling.name}.2_cluster" {} (''
+}: runCommand "${lib.removeSuffix ".1_profiling" stage1-profiling.name}.2_cluster" {
+  passthru = { inherit simpoint stage1-profiling; };
+} (''
   mkdir -p $out
 '' + (builtins.toString [
   "${simpoint}/bin/simpoint"

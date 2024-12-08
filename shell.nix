@@ -15,23 +15,21 @@ let
     * Configure by CLI:
       * `nom-build ... --arg <key> <value> ...`
       * `nom-build ... --argstr <key> <strvalue> ...`
-      * E.g: Generate spec2006 checkpoints using given source code, by nemu, in test size:
-        * `nom-build -A spec2006 --arg src ~/Codes/spec2006.tar.gz --argstr simulator nemu --argstr size test`
-    * Configure by global config file: edit `./config.nix`
-    * Configure by per-benchmark config file: edit `./benchmarks/*/config.nix`
+      * E.g: Generate spec2006 checkpoints using given source code:
+        * `nom-build --arg spec2006-src <PATH_TO_SPEC2006> -A spec2006-cpt`
 
     ## Generation
 
     * Generate the checkpoints for a given <benchmark> into `result/`:
       * `nom-build -A <benchmark>`
       * E.g: Generate checkpoints for all spec2006 testcases:
-        * `nom-build -A spec2006`
+        * `nom-build -A spec2006.cpt`
       * E.g: Generate checkpoints only for spec2006 403_gcc testcase:
-        * `nom-build -A spec2006.403_gcc`
+        * `nom-build -A spec2006.403_gcc.cpt`
       * E.g: Generate checkpoints for openblas:
-        * `nom-build -A openblas`
+        * `nom-build -A openblas.cpt`
     * Generate the checkpoints for a given <benchmark> into a dedicated <folder>:
-      * `nom-build -A <benchmark> -o <folder>`
+      * `nom-build -A <benchmark>.cpt -o <folder>`
 
     ## Documentation
 

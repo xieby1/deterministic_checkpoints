@@ -1,8 +1,6 @@
 { stdenv
 , fetchFromGitHub
 
-, dconfig
-, traceDConfig
 , riscv64-pkgs
 , riscv64-cc
 , riscv64-fortran
@@ -10,7 +8,7 @@
 }: let
   riscv64-libfortran = riscv64-pkgs.gfortran.cc;
 in stdenv.mkDerivation {
-  pname = traceDConfig dconfig "openblas";
+  pname = "openblas";
   version = "0.3.28";
   src = fetchFromGitHub {
     owner = "OpenMathLib";

@@ -1,46 +1,51 @@
 { runCommand
 , lib
 
-, dconfig
 , qemu
 , nemu
-, gcpt
+, img
+, workload ? "miao"
+, intervals ? "20000000"
+, simulator ? "qemu" # "qemu" or "nemu"
+, profiling_log ? "profiling.log"
 }:
 let
-  name = "${lib.removeSuffix ".gcpt" gcpt.name}.1_profiling";
+  name = "${lib.removeSuffix ".gcpt" img.name}.1_profiling";
 
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
-    "-bios ${gcpt}"
+    "-bios ${img}"
     "-M nemu"
     "-nographic"
     "-m 8G"
     "-smp 1"
     "-cpu rv64,v=true,vlen=128,h=false,sv39=true,sv48=false,sv57=false,sv64=false"
-    "-plugin ${qemu}/lib/libprofiling.so,workload=${dconfig.workload},intervals=${toString dconfig.intervals},target=$out"
+    "-plugin ${qemu}/lib/libprofiling.so,workload=${workload},intervals=${intervals},target=$out"
     "-icount shift=0,align=off,sleep=off"
   ];
 
   nemuCommand = [
     "${nemu}/bin/riscv64-nemu-interpreter"
-    "${gcpt}"
+    "${img}"
     "-b"
     "-D $out"
     "-C ${name}"
-    "-w ${dconfig.workload}"
+    "-w ${workload}"
     "--simpoint-profile"
-    "--cpt-interval ${toString dconfig.intervals}"
+    "--cpt-interval ${intervals}"
   ];
 
-in runCommand name {} ''
+in runCommand name {
+  passthru = { inherit qemu nemu img; };
+} ''
   mkdir -p $out
 
-  ${if dconfig.simulator == "qemu" then ''
+  ${if simulator == "qemu" then ''
     echo ${builtins.toString qemuCommand}
-    ${builtins.toString qemuCommand} | tee $out/${dconfig.profiling_log}
+    ${builtins.toString qemuCommand} | tee $out/${profiling_log}
   '' else ''
     echo ${builtins.toString nemuCommand}
-    ${builtins.toString nemuCommand} | tee $out/${dconfig.profiling_log}
-    cp $out/${name}/${dconfig.workload}/simpoint_bbv.gz $out/
+    ${builtins.toString nemuCommand} | tee $out/${profiling_log}
+    cp $out/${name}/${workload}/simpoint_bbv.gz $out/
   ''}
 ''
