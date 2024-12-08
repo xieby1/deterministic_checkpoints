@@ -1,0 +1,9 @@
+--- a/spec2006/benchspec/CPU2006/483.xalancbmk/src/xercesc/util/NameIdPool.hpp
++++ b/spec2006/benchspec/CPU2006/483.xalancbmk/src/xercesc/util/NameIdPool.hpp
+@@ -329,7 +329,7 @@ private :
+     // -----------------------------------------------------------------------
+     unsigned int            fCurIndex;
+     NameIdPool<TElem>*      fToEnum;
+-    MemoryManager* const    fMemoryManager;
++    MemoryManager*          fMemoryManager;
+ };

@@ -50,7 +50,7 @@ in stdenv.mkDerivation {
     customJemalloc
   ];
 
-  patchPhase = ''
+  prePatch = ''
     # Delete the test.t subtestcase in spec2006 400.perlbench using test input.
     # Details:
     #   Due to the timer interrupt is disabled,
@@ -60,6 +60,7 @@ in stdenv.mkDerivation {
     #   * [before_workload](https://github.com/OpenXiangShan/riscv-rootfs/blob/03bdc9553ed9db132844b1e314485d465667eabd/apps/before_workload/before_workload.c#L15)
     sed -i '/sleep.t/d' ./spec2006/benchspec/CPU2006/400.perlbench/data/test/input/test.pl
   '';
+  patches = [ ./483.xalancbmk.patch ];
 
   configurePhase = let
     rpath = lib.makeLibraryPath [

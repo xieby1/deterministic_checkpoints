@@ -7,10 +7,7 @@
 let
   riscv64-scope = pkgs.lib.makeScope pkgs.newScope (self: {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
-    # TODO: gcc14 have a bug to compile spec2006 & spec2017's xalan
-    #   * https://github.com/llvm/llvm-project/issues/109966
-    #   * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=116064
-    riscv64-stdenv = self.riscv64-pkgs.gcc13Stdenv;
+    riscv64-stdenv = self.riscv64-pkgs.gcc14Stdenv;
     riscv64-cc = self.riscv64-stdenv.cc;
     riscv64-libc-static = self.riscv64-stdenv.cc.libc.static;
     riscv64-fortran = self.riscv64-pkgs.wrapCCWith {
