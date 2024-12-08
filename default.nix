@@ -32,6 +32,9 @@ let
       #   `cannot execute: required file not found`.
       runtimeShell = pkgs.runtimeShell;
     };
+    rmExt = name: builtins.concatStringsSep "."
+      (pkgs.lib.init
+        (pkgs.lib.splitString "." name));
   });
   callPackage = riscv64-scope.callPackage;
   build = callPackage ./builders {};

@@ -2,10 +2,10 @@
 , fetchFromGitHub
 
 , riscv64-cc
-, benchmark
+, rmExt
 , opensbi
 }: stdenv.mkDerivation {
-  name = "${benchmark.name}.gcpt";
+  name = "${rmExt opensbi.name}.gcpt";
 
     src = fetchFromGitHub {
         owner = "OpenXiangShan";

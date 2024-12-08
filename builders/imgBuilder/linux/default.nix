@@ -4,12 +4,12 @@
 , bison
 
 , riscv64-cc
-, benchmark
+, rmExt
 , initramfs
   # TODO: use overlayfs to reduce disk usage
 , common-build
 }: stdenv.mkDerivation {
-  name = "${benchmark.name}.linux";
+  name = "${rmExt initramfs.name}.linux";
   src = common-build;
   buildInputs = [
     bc

@@ -26,7 +26,7 @@
 
   linux-common-build = callPackage ./imgBuilder/linux/common-build.nix {};
   linux = callPackage ./imgBuilder/linux {
-    inherit benchmark initramfs;
+    inherit initramfs;
     common-build = linux-common-build;
   };
 
@@ -35,11 +35,11 @@
     inherit dts;
   };
   opensbi = callPackage ./imgBuilder/opensbi {
-    inherit benchmark dts linux;
+    inherit dts linux;
     common-build = opensbi-common-build;
   };
   gcpt = callPackage ./imgBuilder/gcpt {
-    inherit benchmark opensbi;
+    inherit opensbi;
   };
   img = callPackage ./imgBuilder {
     inherit gcpt;

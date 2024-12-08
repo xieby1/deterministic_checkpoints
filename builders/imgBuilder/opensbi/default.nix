@@ -2,12 +2,12 @@
 , python3
 
 , riscv64-cc
-, benchmark
+, rmExt
 , linux
 , dts
 , common-build
 }: stdenv.mkDerivation {
-  name = "${benchmark.name}.opensbi";
+  name = "${rmExt linux.name}.opensbi";
 
   src = common-build;
 
