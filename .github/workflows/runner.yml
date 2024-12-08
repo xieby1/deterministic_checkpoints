@@ -6,6 +6,7 @@ on:
       - main
     paths:
       # changes in docs/ will not trigger this workflow
+      - "**"
       - "!docs/**"
 jobs:
   build-deterload:
@@ -15,8 +16,8 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v4
-    - run: nix-build -A openblas -o result-openblas
-    - run: nix-build -A spec2006 --arg src $(ls -d /spec2006* | head -n1) -j29 -o result-spec2006
+    - run: nix-build -A openblas.cpt -o result-openblas
+    - run: nix-build -A spec2006.cpt --arg spec2006-src $(ls -d /spec2006* | head -n1) -j29 -o result-spec2006
     - run: |
         git rev-parse HEAD > /tmp/rev
         (date +%y%m%d%H%M%S && cat /tmp/rev && readlink result-openblas) | tr '\n' ',' > /tmp/openblas.txt
