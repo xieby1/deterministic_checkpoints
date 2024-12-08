@@ -46,15 +46,20 @@ in {
             nix-build ... --arg spec2006-src /path/of/spec2006.tar.gz ...
         '';
     };
-    attrs = builtins.mapAttrs (name: benchmark: build {
+    spec2006-bare = builtins.mapAttrs (name: benchmark: build {
       inherit benchmark;
       overlay = if name=="483_xalancbmk" then (self: super: {
         stage2-cluster = super.stage2-cluster.override {maxK="100";};
       }) else (self: super: {});
     }) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
-  in (pkgs.linkFarm "checkpoints" (
-    pkgs.lib.mapAttrsToList ( name: path: {inherit name path; } ) attrs
-  )).overrideAttrs (old: { passthru = attrs; });
+  in spec2006-bare // {
+    # TODO: add other attrs into spec2006-bare
+    cpt = pkgs.linkFarm "checkpoints" (
+      pkgs.lib.mapAttrsToList (testCase: buildResult: {
+        name = testCase;
+        path = buildResult.cpt;
+    }) spec2006-bare);
+  };
 
   openblas = let
     benchmark = callPackage ./benchmarks/openblas {};
