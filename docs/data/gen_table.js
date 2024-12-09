@@ -18,7 +18,8 @@ function gen_table(div_id, csv_url) { Papa.parse(csv_url, {
     // https://www.geeksforgeeks.org/how-to-create-hash-from-string-in-javascript/
     function hash(str) {
       return str.split('').reduce((hash, char) =>
-        {return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;}, 0);}
+        {return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;}, 0)
+          - 1;} // make the empty string color white (return -1 (255))
     function color(i) { return `rgb(${i&0xff},${(i>>8)&0xff},${(i>>16)&0xff})` }
     cellsColors = cellsValues.map(row => row.map(ele => color(hash(ele))))
     cellsColors[0] = Array(cellsColors.length).fill("white")
