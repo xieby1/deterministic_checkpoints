@@ -44,10 +44,9 @@ let
     /*attrValueNames {a={x=1;y=2;z=3;}; b={x=11;y=22;z=33;}; c={x=0;y=0;z=0;};}
       returns ["x" "y" "z"] */
     attrValueNames = attr: builtins.attrNames (builtins.head (builtins.attrValues attr));
-    compatibleName = name: if name=="cpt" then "checkpoints" else name;
   in mapToAttrs (name/*represents the name in builders/default.nix, like img, cpt, ...*/: {
     inherit name;
-    value = pkgs.linkFarm (compatibleName name) (
+    value = pkgs.linkFarm name (
       pkgs.lib.mapAttrsToList (testCase: buildResult: {
         name = testCase;
         path = buildResult."${name}";
