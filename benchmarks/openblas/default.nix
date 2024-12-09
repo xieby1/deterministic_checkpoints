@@ -5,6 +5,9 @@
 , riscv64-cc
 , riscv64-fortran
 , riscv64-libc-static
+  # TARGET=RISCV64_GENERIC: vector disabled
+  # TARGET=RISCV64_ZVL128B: vector enabled
+, TARGET ? "RISCV64_GENERIC"
 }: let
   riscv64-libfortran = riscv64-pkgs.gfortran.cc;
 in stdenv.mkDerivation {
@@ -36,7 +39,7 @@ in stdenv.mkDerivation {
       "FC=${riscv64-fortran}/bin/riscv64-unknown-linux-gnu-gfortran"
 
       "BINARY=64"
-      "TARGET=RISCV64_GENERIC"
+      "TARGET=${TARGET}"
       "DYNAMIC_ARCH=false"
       "CROSS=true"
       "HOSTCC=cc"
