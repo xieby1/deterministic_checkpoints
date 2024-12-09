@@ -66,7 +66,7 @@ nix-shell
 
 # 用10个线程为<benchmark>生成切片，切片存于result/：
 # Generate checkpoints for <benchmark> using 10 threads, saved in result/:
-nom-build -A <benchmark> -j10
+nom-build -A <benchmark>.cpt -j10
 
 # 显示帮助信息：
 # Display help information:
