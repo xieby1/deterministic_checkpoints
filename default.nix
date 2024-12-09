@@ -35,6 +35,24 @@ let
   });
   callPackage = riscv64-scope.callPackage;
   build = callPackage ./builders {};
+  /*weave {a={x=drv0;y=drv1;z=drv2;}; b={x=drv3;y=drv4;z=drv5;}; c={x=drv6;y=drv7;z=drv8;};}
+    returns {x=linkFarm [drv0 drv3 drv6]; y=[drv1 drv4 drv7]; z=[drv2 drv5 drv8];}*/
+  weave = attrs-drvs: let
+    /*mapToAttrs (name: {inherit name; value=...}) ["a", "b", "c", ...]
+      returns {x=value0; b=value1; c=value2; ...} */
+    mapToAttrs = func: list: builtins.listToAttrs (builtins.map func list);
+    /*attrValueNames {a={x=1;y=2;z=3;}; b={x=11;y=22;z=33;}; c={x=0;y=0;z=0;};}
+      returns ["x" "y" "z"] */
+    attrValueNames = attr: builtins.attrNames (builtins.head (builtins.attrValues attr));
+    compatibleName = name: if name=="cpt" then "checkpoints" else name;
+  in mapToAttrs (name/*represents the name in builders/default.nix, like img, cpt, ...*/: {
+    inherit name;
+    value = pkgs.linkFarm (compatibleName name) (
+      pkgs.lib.mapAttrsToList (testCase: buildResult: {
+        name = testCase;
+        path = buildResult."${name}";
+      }) attrs-drvs);
+  }) (attrValueNames attrs-drvs);
 in {
   spec2006 = let
     benchmarks = callPackage ./benchmarks/spec2006 {
@@ -51,14 +69,7 @@ in {
         stage2-cluster = super.stage2-cluster.override {maxK="100";};
       }) else (self: super: {});
     }) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
-  in spec2006-bare // {
-    # TODO: add other attrs into spec2006-bare
-    cpt = pkgs.linkFarm "checkpoints" (
-      pkgs.lib.mapAttrsToList (testCase: buildResult: {
-        name = testCase;
-        path = buildResult.cpt;
-    }) spec2006-bare);
-  };
+  in spec2006-bare // (weave spec2006-bare);
 
   openblas = let
     benchmark = callPackage ./benchmarks/openblas {};
