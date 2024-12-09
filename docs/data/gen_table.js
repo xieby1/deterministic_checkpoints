@@ -8,7 +8,7 @@ function gen_table(div_id, csv_url) { Papa.parse(csv_url, {
       m = ele.match(/[0-9]+\.[^\.]+/)
       return m ? m[0] : ""
     })
-    indexcol[0]="Date"; indexcol[1]="Commit"; indexcol[2]="result/";
+    indexcol[0]="Date"; indexcol[1]="Commit"; indexcol[2]="Note"; indexcol[3]="result/";
     data = [indexcol].concat(data)
 
     headerValues = data.map(row => row[0])
