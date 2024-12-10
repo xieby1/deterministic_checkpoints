@@ -3,6 +3,7 @@
 , callPackage
 , src
 , size ? "ref" # "ref" or "test"
+, enableVector ? false
 }: let
   testCases = [
     "400.perlbench"
@@ -35,7 +36,7 @@
     "482.sphinx3"
     "483.xalancbmk"
   ];
-  build-all = callPackage ./build-all.nix { inherit src size; };
+  build-all = callPackage ./build-all.nix { inherit src size enableVector; };
 in builtins.listToAttrs (
   builtins.map (testcase: {
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"
