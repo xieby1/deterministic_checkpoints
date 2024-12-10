@@ -71,7 +71,7 @@ in rec {
         stage2-cluster = super.stage2-cluster.override {maxK="100";};
       }) else (self: super: {}))
     ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
-  in bare // (tools.weave bare) // {inherit benchmarks;};
+  in bare // (tools.weave bare);
 
   openblas = let
     benchmark = callPackage ./benchmarks/openblas {};

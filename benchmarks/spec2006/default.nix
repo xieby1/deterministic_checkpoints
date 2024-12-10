@@ -1,6 +1,4 @@
-{ runCommand
-
-, callPackage
+{ callPackage
 , src
 , size ? "ref" # "ref" or "test"
 , enableVector ? false
@@ -36,20 +34,10 @@
     "482.sphinx3"
     "483.xalancbmk"
   ];
-  build-all = callPackage ./build-all.nix { inherit src size enableVector; };
 in builtins.listToAttrs (
-  builtins.map (testcase: {
+  builtins.map (testCase: {
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"
-    name = builtins.replaceStrings ["."] ["_"] testcase;
-    value = (runCommand "${testcase}" {
-      # sh script to run a testcase
-      run = ''
-        cd /run
-        sh ./run-spec.sh
-      '';
-    } ''
-      mkdir -p $out
-      cp -r ${build-all}/${testcase}/* $out/
-    '');
+    name = builtins.replaceStrings ["."] ["_"] testCase;
+    value = callPackage ./build-one.nix { inherit src size enableVector testCase; };
   }) testCases
 )
