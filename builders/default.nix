@@ -1,9 +1,8 @@
 { lib
 , callPackage
 }:
-{ benchmark
-, overlay ? (self: super: {})
-}: let allPackages = self: super: with self; {
+# TODO: remove with self
+{ benchmark }: lib.makeScope lib.callPackageWith (self: with self; {
   inherit benchmark;
   gen_init_cpio = callPackage ./imgBuilder/linux/initramfs/base/gen_init_cpio {};
   initramfs_base = callPackage ./imgBuilder/linux/initramfs/base {
@@ -15,11 +14,11 @@
   qemu_trap = callPackage ./imgBuilder/linux/initramfs/overlays/qemu_trap {};
   initramfs_overlays = callPackage ./imgBuilder/linux/initramfs/overlays {
     inherit before_workload qemu_trap nemu_trap;
-    benchmark-run = benchmark.run;
+    benchmark-run = self.benchmark.run;
   };
 
   initramfs = callPackage ./imgBuilder/linux/initramfs {
-    inherit benchmark;
+    inherit (self) benchmark;
     base = initramfs_base;
     overlays = initramfs_overlays;
   };
@@ -59,10 +58,5 @@
   };
   cpt = callPackage ./cptBuilder {
     inherit stage3-checkpoint;
-  };};
-  # refer to <nixpkgs>/pkgs/top-level/stage.nix
-  toFix = lib.foldl' (lib.flip lib.extends) (self: {}) [
-    allPackages
-    overlay
-  ];
-in lib.fix toFix
+  };
+})
