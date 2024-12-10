@@ -14,7 +14,7 @@ class Builder(CCluster):
 builder = add(graph, Builder())
 addEdge(graph, benchmark, builder.imgBuilder)
 
-checkpoints = addNode(graph, "checkpoints"); set_colors.checkpoints(checkpoints)
-addEdge(graph, builder.cptBuilder, checkpoints)
+output = addNode(graph, "output"); set_colors.output(output)
+addEdge(graph, builder.cptBuilder, output)
 
 graph.write(__file__.replace("_dot.py", "_py.dot"))

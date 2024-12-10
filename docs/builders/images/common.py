@@ -24,7 +24,7 @@ def addNode(g: Graph|CCluster, name, **args):
   n = Node(g.get_name()+name, **args)
   g.add_node(n)
   return n
-def addEdge(g: Graph, n1: Node|CCluster, n2: Node|CCluster, **args):
+def addEdge(g: Graph, n1: Node|CCluster, n2: Node|CCluster, **args) -> Edge:
   # auto edge color
   if isinstance(n1, Node)  and n1.get("color"):    safe_set(args, "color", n1.get("color"))
   if isinstance(n1, Graph) and n1.get("pencolor"): safe_set(args, "color", n1.get("pencolor"))
@@ -35,7 +35,9 @@ def addEdge(g: Graph, n1: Node|CCluster, n2: Node|CCluster, **args):
   else: l = n1
   if isinstance(n2, CCluster): r = n2._connect_node_; args["lhead"] = n2.get_name()
   else: r = n2
-  g.add_edge(Edge(l.get_name(), r.get_name(), **args))
+  e = Edge(l.get_name(), r.get_name(), **args)
+  g.add_edge(e)
+  return e
 def addCluster(g: Graph|CCluster, name, **args):
   s=CCluster(name, **args)
   g.add_subgraph(s)
@@ -61,5 +63,5 @@ class _Colors_:
   def imgBuilder (self, item: Node|Graph): self.set(item, "#CCE5FF", "#666666")
   def cptBuilder (self, item: Node|Graph): self.set(item, "#F8CECC", "#B85450")
   def gcpt       (self, item: Node|Graph): self.set(item, "#DAE8FC", "#6C8EBF")
-  def checkpoints(self, item: Node|Graph): self.set(item, "#FFE6CC", "#D79B00")
+  def output     (self, item: Node|Graph): self.set(item, "#FFE6CC", "#D79B00")
 set_colors = _Colors_()
