@@ -154,6 +154,10 @@ addFlatEdge(graph, builder.cptBuilder.stage2_cluster, output.stage2_cluster)
 addFlatEdge(graph, builder.cptBuilder.stage3_checkpoint, output.stage3_checkpoint)
 addFlatEdge(graph, builder.cptBuilder.stage3_checkpoint, output.cpt)
 
+overrideScope = addNode(outputs, "overrideScope", shape="oval", color="black", penwidth=2, fontsize=20)
+addEdge(outputs, overrideScope, output, constraint=False)
+addEdge(outputs, output.dts, overrideScope, color="transparent")
+
 # Tweaks
 addEdge(graph, builder.imgBuilder, builder.cptBuilder.qemu, color="transparent")
 for i in range(5):
