@@ -120,6 +120,9 @@ class Output(CCluster):
     self.stage2_cluster = addNode(self._level3_, "stage2-cluster"); set_colors.cptBuilder(self.stage2_cluster)
     self.stage3_checkpoint = addNode(self._level3_, "stage3-checkpoint"); set_colors.cptBuilder(self.stage3_checkpoint)
     self.cpt = addNode(self._level3_, "cpt"); set_colors.cptBuilder(self.cpt)
+    cpt_e = addEdge(self._level3_, self.stage3_checkpoint, self.cpt, constraint=False, dir="none")
+    cpt_e.set("color", f"{cpt_e.get('color')}:transparent:{cpt_e.get('color')}")
+
 
 output = add(outputs, Output("output"))
 addEdge(graph, builder.cptBuilder.stage3_checkpoint, output)
