@@ -4,7 +4,7 @@
   }) {}
   , ...
 } @ args:
-let
+pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
   riscv64-scope = pkgs.lib.makeScope pkgs.newScope (self: {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
     riscv64-stdenv = self.riscv64-pkgs.gcc14Stdenv;
@@ -33,9 +33,8 @@ let
       (pkgs.lib.init
         (pkgs.lib.splitString "." name));
   });
-  callPackage = riscv64-scope.callPackage;
-  build = callPackage ./builders {};
-in rec {
+
+  build = ds.riscv64-scope.callPackage ./builders {};
   tools = {
     /*weave {a={x=drv0;y=drv1;z=drv2;}; b={x=drv3;y=drv4;z=drv5;}; c={x=drv6;y=drv7;z=drv8;};}
       returns {x=linkFarm [drv0 drv3 drv6]; y=linkFarm [drv1 drv4 drv7]; z=linkFarm [drv2 drv5 drv8];}*/
@@ -57,7 +56,7 @@ in rec {
   };
 
   spec2006 = let
-    benchmarks = callPackage ./benchmarks/spec2006 {
+    benchmarks = ds.riscv64-scope.callPackage ./benchmarks/spec2006 {
       src = if args ? spec2006-src
         then args.spec2006-src
         else throw ''
@@ -66,14 +65,14 @@ in rec {
         '';
     };
     bare = builtins.mapAttrs (name: benchmark:
-      (build { inherit benchmark; }).overrideScope (
+      (ds.build { inherit benchmark; }).overrideScope (
         if name=="483_xalancbmk" then (self: super: {
         stage2-cluster = super.stage2-cluster.override {maxK="100";};
       }) else (self: super: {}))
     ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
-  in bare // (tools.weave bare);
+  in bare // (ds.tools.weave bare);
 
   openblas = let
-    benchmark = callPackage ./benchmarks/openblas {};
-  in build { inherit benchmark; };
-}
+    benchmark = ds.riscv64-scope.callPackage ./benchmarks/openblas {};
+  in ds.build { inherit benchmark; };
+})
