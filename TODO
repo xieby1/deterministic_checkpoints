@@ -1,11 +1,4 @@
-* take checkpoint for every input and every testCase
-* align generated checkpoint paths to old ones
-* rename xxx.nix => default.nix
-* add meta
-* use native jemalloc
-* split spec2006 into spec2006make spec2006run
 * clean *.py
-* clean README
 * support dynamically linked benchmark
 * linux-common overlay to reduce disk usage pressure
   * fuse-overlayfs not work in nix sandbox: https://discourse.nixos.org/t/using-fuse-inside-nix-derivation/8534
