@@ -17,6 +17,7 @@ let
       * `nom-build ... --argstr <key> <strvalue> ...`
       * E.g: Generate spec2006 checkpoints using given source code:
         * `nom-build --arg spec2006-src <PATH_TO_SPEC2006> -A spec2006-cpt`
+    * Configure by a file: see `examples/`
 
     ## Generation
 
