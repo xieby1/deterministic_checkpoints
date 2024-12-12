@@ -5,6 +5,15 @@
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , enableVector ? false
 , cpt-maxK ? "30"
+# cpt-maxK for each benchmark
+# How to get the benchmark name:
+# Use command: `nix-instantiate --eval -A <benchmark>.benchmark.pname/name`
+# Try `pname` first, if not available then use `name`. Examples:
+# * Using pname: `nix-instantiate --eval -A openblas.benchmark.pname`
+# * Using name: `nix-instantiate --eval -A spec2006.483_xalancbmk.benchmark.name`
+, cpt-maxK-bmk ? {
+    "483.xalancbmk" = "100";
+  }
 , cpt-intervals ? "20000000"
 , cpt-simulator ? "qemu"
 , cpt-format ? "zstd"
@@ -14,6 +23,7 @@ assert pkgs.lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
 assert pkgs.lib.assertMsg (if cpt-simulator=="qemu" then cpt-format=="zstd" else true) "qemu only support cpt-format: zstd";
 let
   raw = import ./raw.nix { inherit pkgs; };
+  getName = p: if (p?pname) then p.pname else p.name;
 in raw.overrideScope (r-self: r-super: {
   build = benchmark: (r-super.build benchmark).overrideScope (b-self: b-super: {
     stage1-profiling = b-super.stage1-profiling.override {
@@ -21,7 +31,9 @@ in raw.overrideScope (r-self: r-super: {
       simulator = cpt-simulator;
     };
     stage2-cluster = b-super.stage2-cluster.override {
-      maxK = cpt-maxK;
+      maxK = if (cpt-maxK-bmk ? "${getName benchmark}")
+        then cpt-maxK-bmk."${getName benchmark}"
+        else cpt-maxK;
     };
     stage3-checkpoint = b-super.stage3-checkpoint.override {
       intervals = cpt-intervals;
@@ -37,9 +49,6 @@ in raw.overrideScope (r-self: r-super: {
         inherit enableVector;
         src = spec2006-src;
       };
-      stage2-cluster = super.stage2-cluster.override (pkgs.lib.optionalAttrs (n=="483_xalancbmk") {
-        maxK = "100";
-      });
     })) bare;
   in bare-overrided // (r-super.tools.weave bare-overrided);
 
