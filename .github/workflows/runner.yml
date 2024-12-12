@@ -20,9 +20,9 @@ jobs:
     - run: nix-build -A spec2006.cpt --arg spec2006-src $(ls -d /spec2006* | head -n1) -j29 -o result-spec2006
     - run: |
         git rev-parse HEAD > /tmp/rev
-        (date +%y%m%d%H%M%S && cat /tmp/rev && echo && readlink result-openblas) | tr '\n' ',' > /tmp/openblas.txt
+        (TZ=UTC-8 date +%y%m%d%H%M%S && cat /tmp/rev && echo && readlink result-openblas) | tr '\n' ',' > /tmp/openblas.txt
         echo >> /tmp/openblas.txt # add a newline
-        (date +%y%m%d%H%M%S && cat /tmp/rev && echo && for i in result-spec2006 result-spec2006/*; do readlink $i; done) | tr '\n' ',' > /tmp/spec2006.txt
+        (TZ=UTC-8 date +%y%m%d%H%M%S && cat /tmp/rev && echo && for i in result-spec2006 result-spec2006/*; do readlink $i; done) | tr '\n' ',' > /tmp/spec2006.txt
         echo >> /tmp/spec2006.txt # add a newline
     - uses: actions/checkout@v4
       with:
