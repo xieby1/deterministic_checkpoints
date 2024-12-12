@@ -12,8 +12,6 @@
 , cpt-format ? "zstd"
 }:
 let
-  # TODO: remove, use pkgs.lib
-  lib = import <nixpkgs/lib>;
   deterload = import ./. {
     inherit pkgs spec2006-src;
   };
@@ -31,7 +29,7 @@ in deterload.overrideScope (d-self: d-super: {
   });
 
   spec2006 = let
-    bare = lib.filterAttrs (n: v: builtins.match "[0-9][0-9][0-9]_.*" n != null) d-super.spec2006;
+    bare = pkgs.lib.filterAttrs (n: v: builtins.match "[0-9][0-9][0-9]_.*" n != null) d-super.spec2006;
     bare-overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
       benchmark = super.benchmark.override { inherit enableVector; };
     })) bare;
