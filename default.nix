@@ -4,8 +4,7 @@
   }) {}
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , enableVector ? false
-# TODO: figure out how to elegantly set 483_xalancbmk maxK=100
-#, maxK ? 30
+, cpt-maxK ? "30"
 , cpt-intervals ? "20000000"
 , cpt-simulator ? "qemu"
 , cpt-format ? "zstd"
@@ -21,6 +20,9 @@ in raw.overrideScope (r-self: r-super: {
       intervals = cpt-intervals;
       simulator = cpt-simulator;
     };
+    stage2-cluster = b-super.stage2-cluster.override {
+      maxK = cpt-maxK;
+    };
     stage3-checkpoint = b-super.stage3-checkpoint.override {
       intervals = cpt-intervals;
       simulator = cpt-simulator;
@@ -35,6 +37,9 @@ in raw.overrideScope (r-self: r-super: {
         inherit enableVector;
         src = spec2006-src;
       };
+      stage2-cluster = super.stage2-cluster.override (pkgs.lib.optionalAttrs (n=="483_xalancbmk") {
+        maxK = "100";
+      });
     })) bare;
   in bare-overrided // (r-super.tools.weave bare-overrided);
 

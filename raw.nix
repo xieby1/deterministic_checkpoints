@@ -56,12 +56,8 @@ pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
 
   spec2006 = let
     benchmarks = ds.riscv64-scope.callPackage ./benchmarks/spec2006 {};
-    bare = builtins.mapAttrs (name: benchmark:
-      (ds.build benchmark).overrideScope (
-        if name=="483_xalancbmk" then (self: super: {
-        stage2-cluster = super.stage2-cluster.override {maxK="100";};
-      }) else (self: super: {}))
-    ) (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
+    bare = builtins.mapAttrs (name: benchmark: (ds.build benchmark))
+      (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
   in bare // (ds.tools.weave bare);
 
   openblas = let
