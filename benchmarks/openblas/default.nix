@@ -5,9 +5,8 @@
 , riscv64-cc
 , riscv64-fortran
 , riscv64-libc-static
-  # TARGET=RISCV64_GENERIC: vector disabled
-  # TARGET=RISCV64_ZVL128B: vector enabled
-, TARGET ? "RISCV64_GENERIC"
+, enableVector ? false
+, TARGET ? if enableVector then "RISCV64_ZVL128B" else "RISCV64_GENERIC"
 }: let
   riscv64-libfortran = riscv64-pkgs.gfortran.cc;
 in stdenv.mkDerivation {

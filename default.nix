@@ -1,8 +1,8 @@
-{ pkgs ? import (fetchTarball {
+{ pkgs ? import (fetchTarball { # TODO: remove, as it move into examples.nix
     url = "https://github.com/NixOS/nixpkgs/archive/e8c38b73aeb218e27163376a2d617e61a2ad9b59.tar.gz";
     sha256 = "1n6gdjny8k5rwkxh6sp1iwg1y3ni1pm7lvh9sisifgjb18jdvzbm";
   }) {}
-  , ...
+  , ... # TODO: remove, move spec2006-src into examples's overrideScope and rename spec2006-src into src in default.nix, keep name spec2006-src in examples.nix
 } @ args:
 pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
   riscv64-scope = pkgs.lib.makeScope pkgs.newScope (self: {
