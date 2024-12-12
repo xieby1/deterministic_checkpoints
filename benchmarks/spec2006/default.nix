@@ -1,5 +1,5 @@
 { callPackage
-, src
+, src ? throw "Please specify the path of spec2006"
 , size ? "ref" # "ref" or "test"
 , enableVector ? false
 }: let

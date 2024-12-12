@@ -2,8 +2,7 @@
     url = "https://github.com/NixOS/nixpkgs/archive/e8c38b73aeb218e27163376a2d617e61a2ad9b59.tar.gz";
     sha256 = "1n6gdjny8k5rwkxh6sp1iwg1y3ni1pm7lvh9sisifgjb18jdvzbm";
   }) {}
-  , ... # TODO: remove, move spec2006-src into examples's overrideScope and rename spec2006-src into src in default.nix, keep name spec2006-src in examples.nix
-} @ args:
+}:
 pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
   riscv64-scope = pkgs.lib.makeScope pkgs.newScope (self: {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
@@ -56,14 +55,7 @@ pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
   };
 
   spec2006 = let
-    benchmarks = ds.riscv64-scope.callPackage ./benchmarks/spec2006 {
-      src = if args ? spec2006-src
-        then args.spec2006-src
-        else throw ''
-          Please specify the path of spec2006, for example:
-            nix-build ... --arg spec2006-src /path/of/spec2006.tar.gz ...
-        '';
-    };
+    benchmarks = ds.riscv64-scope.callPackage ./benchmarks/spec2006 {};
     bare = builtins.mapAttrs (name: benchmark:
       (ds.build benchmark).overrideScope (
         if name=="483_xalancbmk" then (self: super: {

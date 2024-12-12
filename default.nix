@@ -12,9 +12,7 @@
 , cpt-format ? "zstd"
 }:
 let
-  raw = import ./raw.nix {
-    inherit pkgs spec2006-src;
-  };
+  raw = import ./raw.nix { inherit pkgs; };
 in raw.overrideScope (r-self: r-super: {
   build = benchmark: (r-super.build benchmark).overrideScope (b-self: b-super: {
     stage1-profiling = b-super.stage1-profiling.override {
@@ -31,7 +29,10 @@ in raw.overrideScope (r-self: r-super: {
   spec2006 = let
     bare = pkgs.lib.filterAttrs (n: v: builtins.match "[0-9][0-9][0-9]_.*" n != null) r-super.spec2006;
     bare-overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
-      benchmark = super.benchmark.override { inherit enableVector; };
+      benchmark = super.benchmark.override {
+        inherit enableVector;
+        src = spec2006-src;
+      };
     })) bare;
   in bare-overrided // (r-super.tools.weave bare-overrided);
 
