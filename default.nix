@@ -6,11 +6,13 @@
 , enableVector ? false
 # TODO: figure out how to elegantly set 483_xalancbmk maxK=100
 #, maxK ? 30
-# TODO: check args
 , cpt-intervals ? "20000000"
 , cpt-simulator ? "qemu"
 , cpt-format ? "zstd"
 }:
+assert pkgs.lib.assertOneOf "cpt-simulator" cpt-simulator ["qemu" "nemu"];
+assert pkgs.lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
+assert pkgs.lib.assertMsg (if cpt-simulator=="qemu" then cpt-format=="zstd" else true) "qemu only support cpt-format: zstd";
 let
   raw = import ./raw.nix { inherit pkgs; };
 in raw.overrideScope (r-self: r-super: {
