@@ -4,6 +4,12 @@
   }) {}
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , enableVector ? false
+# TODO: figure out how to elegantly set 483_xalancbmk maxK=100
+#, maxK ? 30
+# TODO: check args
+, cpt-intervals ? "20000000"
+, cpt-simulator ? "qemu"
+, cpt-format ? "zstd"
 }:
 let
   # TODO: remove, use pkgs.lib
@@ -12,6 +18,18 @@ let
     inherit pkgs spec2006-src;
   };
 in deterload.overrideScope (d-self: d-super: {
+  build = benchmark: (d-super.build benchmark).overrideScope (b-self: b-super: {
+    stage1-profiling = b-super.stage1-profiling.override {
+      intervals = cpt-intervals;
+      simulator = cpt-simulator;
+    };
+    stage3-checkpoint = b-super.stage3-checkpoint.override {
+      intervals = cpt-intervals;
+      simulator = cpt-simulator;
+      checkpoint_format = cpt-format;
+    };
+  });
+
   spec2006 = let
     bare = lib.filterAttrs (n: v: builtins.match "[0-9][0-9][0-9]_.*" n != null) d-super.spec2006;
     bare-overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
