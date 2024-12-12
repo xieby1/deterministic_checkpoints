@@ -20,11 +20,16 @@ The tables below demonstrate the build results of Deterload, with the following 
 
 ## SPEC2006
 
+<div style="width: var(--content-max-width); overflow: auto;">
 <div id="spec2006Table"></div>
+</div>
+
 
 ## OpenBLAS
 
+<div style="width: var(--content-max-width); overflow: auto;">
 <div id="openblasTable"></div>
+</div>
 
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
