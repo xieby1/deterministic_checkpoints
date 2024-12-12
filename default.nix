@@ -65,7 +65,7 @@ pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
         '';
     };
     bare = builtins.mapAttrs (name: benchmark:
-      (ds.build { inherit benchmark; }).overrideScope (
+      (ds.build benchmark).overrideScope (
         if name=="483_xalancbmk" then (self: super: {
         stage2-cluster = super.stage2-cluster.override {maxK="100";};
       }) else (self: super: {}))
@@ -74,5 +74,5 @@ pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
 
   openblas = let
     benchmark = ds.riscv64-scope.callPackage ./benchmarks/openblas {};
-  in ds.build { inherit benchmark; };
+  in ds.build benchmark;
 })

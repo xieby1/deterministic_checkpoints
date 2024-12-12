@@ -1,7 +1,7 @@
 { lib
 , callPackage
 }:
-{ benchmark }: lib.makeScope lib.callPackageWith (self: {
+benchmark: lib.makeScope lib.callPackageWith (self: {
   inherit benchmark;
   gen_init_cpio = callPackage ./imgBuilder/linux/initramfs/base/gen_init_cpio {};
   initramfs_base = callPackage ./imgBuilder/linux/initramfs/base {
