@@ -34,3 +34,14 @@ jobs:
         git config --global user.email "miao@wang.zhi"
         git commit -m "update data for git commit $(cat /tmp/rev)"
         git push
+
+  quick-test:
+    runs-on: [self-hosted, Linux, X64, nix, spec2006]
+    steps:
+    - uses: actions/checkout@v4
+    - run: |
+        for example in examples/*.nix; do
+          for benchmark in benchmarks/*; do
+            nix-instantiate $example --arg spec2006-src $(ls -d /spec2006* | head -n1) -A ${benchmark##*/}.cpt
+          done
+        done
