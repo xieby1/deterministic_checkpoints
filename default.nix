@@ -30,7 +30,7 @@
 assert pkgs.lib.assertOneOf "spec2006-size" spec2006-size ["ref" "test"];
 assert pkgs.lib.assertOneOf "cpt-simulator" cpt-simulator ["qemu" "nemu"];
 assert pkgs.lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
-assert pkgs.lib.assertMsg (if cpt-simulator=="qemu" then cpt-format=="zstd" else true) "qemu only support cpt-format: zstd";
+assert pkgs.lib.assertMsg (cpt-simulator=="qemu" -> cpt-format=="zstd") "qemu only support cpt-format: zstd";
 let
   raw = import ./raw.nix { inherit pkgs; };
   getName = p: if (p?pname) then p.pname else p.name;
