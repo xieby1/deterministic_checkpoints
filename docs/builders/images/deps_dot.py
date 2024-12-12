@@ -160,6 +160,11 @@ addFlatEdge(graph, builder.cptBuilder.stage3_checkpoint, output.cpt)
 overrideScope = addNode(outputs, "overrideScope", shape="oval", color="black", penwidth=2, fontsize=20)
 addEdge(outputs, overrideScope, output, constraint=False)
 addEdge(outputs, output.dts, overrideScope, color="transparent")
+override = addNode(outputs, "override", shape="oval", color="black")
+for attr in dir(output):
+  obj = getattr(output, attr)
+  if isinstance(obj, Node) and not attr.startswith("_"):
+    addEdge(outputs, override, obj, constraint=False, color="#00000022")
 
 # Tweaks
 addEdge(graph, builder.imgBuilder, builder.cptBuilder.qemu, color="transparent")
