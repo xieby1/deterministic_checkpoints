@@ -3,10 +3,19 @@
     sha256 = "1n6gdjny8k5rwkxh6sp1iwg1y3ni1pm7lvh9sisifgjb18jdvzbm";
   }) {}
 
+#######################################################################################
+# Common Configuration
+#######################################################################################
+, cc ? "gcc14"
+
 # TODO: replace pkgs.lib with lib
 #######################################################################################
 # Benchmarks Configuration
 #######################################################################################
+# Benchmarks Common Configuration ###############################
+, enableVector ? false
+
+# SPEC CPU 2006 Configuration ###################################
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , spec2006-size ? "ref"
 , spec2006-optimize ? "-O3 -flto"
@@ -20,7 +29,6 @@
 # * Only include 403_gcc: `testcase: testcase=="403_gcc";`
 # * Exlcude "464_h264ref" and "465_tonto": `testcase: !(builtins.elem testcase ["464_h264ref" "465_tonto"]);`
 , spec2006-testcase-filter ? testcase: true
-, enableVector ? false
 
 #######################################################################################
 # Builders Configuration
@@ -40,6 +48,7 @@
 , cpt-simulator ? "qemu"
 , cpt-format ? "zstd"
 }:
+assert pkgs.pkgsCross.riscv64 ? "${cc}Stdenv";
 assert pkgs.lib.assertOneOf "spec2006-size" spec2006-size ["ref" "test"];
 assert pkgs.lib.assertOneOf "cpt-simulator" cpt-simulator ["qemu" "nemu"];
 assert pkgs.lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
@@ -53,6 +62,10 @@ let
       [""  ""  "_" "_" ]
   name);
 in raw.overrideScope (r-self: r-super: {
+  riscv64-scope = r-super.riscv64-scope.overrideScope (self: super: {
+    riscv64-stdenv = super.riscv64-pkgs."${cc}Stdenv";
+  });
+
   build = benchmark: (r-super.build benchmark).overrideScope (b-self: b-super: {
     stage1-profiling = b-super.stage1-profiling.override {
       intervals = cpt-intervals;
@@ -87,7 +100,7 @@ in raw.overrideScope (r-self: r-super: {
   in bare-overrided // (r-super.tools.wrap-l2 (escapeName (builtins.concatStringsSep "_" [
     "spec2006"
     spec2006-size
-    "gcc_1410"
+    (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     spec2006-optimize
     spec2006-march
     cpt-simulator

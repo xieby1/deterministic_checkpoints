@@ -1,4 +1,6 @@
 {...}@args: import ../. ({
+  cc = "gcc13";
+
   enableVector = true;
 
   spec2006-size = "test";
