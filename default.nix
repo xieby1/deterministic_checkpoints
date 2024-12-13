@@ -3,11 +3,14 @@
     sha256 = "1n6gdjny8k5rwkxh6sp1iwg1y3ni1pm7lvh9sisifgjb18jdvzbm";
   }) {}
 
+# TODO: replace pkgs.lib with lib
 #######################################################################################
 # Benchmarks Configuration
 #######################################################################################
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , spec2006-size ? "ref"
+, spec2006-optimize ? "-O3 -flto"
+, spec2006-march ? "rv64gc${pkgs.lib.optionalString enableVector "v"}_zba_zbb_zbc_zbs"
 # spec2006-testcase-filter is a function of type `string -> bool`
 # It takes a testcase name from spec2006 as input and returns:
 # * true: include this testcase
@@ -44,6 +47,11 @@ assert pkgs.lib.assertMsg (cpt-simulator=="qemu" -> cpt-format=="zstd") "qemu on
 let
   raw = import ./raw.nix { inherit pkgs; };
   getName = p: if (p?pname) then p.pname else p.name;
+  escapeName = pkgs.lib.converge (name:
+    builtins.replaceStrings
+      [" " "." "-" "__"]
+      [""  ""  "_" "_" ]
+  name);
 in raw.overrideScope (r-self: r-super: {
   build = benchmark: (r-super.build benchmark).overrideScope (b-self: b-super: {
     stage1-profiling = b-super.stage1-profiling.override {
@@ -72,9 +80,19 @@ in raw.overrideScope (r-self: r-super: {
         inherit enableVector;
         src = spec2006-src;
         size = spec2006-size;
+        optimize = spec2006-optimize;
+        march = spec2006-march;
       };
     })) bare;
-  in bare-overrided // (r-super.tools.wrap-l2 "spec2006_ref_gcc_1410_O3_flto_rv64gc_zba_zbb_zbc_zbs_qemu_1core" bare-overrided);
+  in bare-overrided // (r-super.tools.wrap-l2 (escapeName (builtins.concatStringsSep "_" [
+    "spec2006"
+    spec2006-size
+    "gcc_1410"
+    spec2006-optimize
+    spec2006-march
+    cpt-simulator
+    "1core"
+  ])) bare-overrided);
 
   openblas = r-super.openblas.overrideScope ( self: super: {
     benchmark = super.benchmark.override { inherit enableVector; };

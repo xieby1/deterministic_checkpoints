@@ -4,9 +4,13 @@
 , src
 , size
 , enableVector
+, optimize
+, march
 , testCase
 }: let
-  build-all = callPackage ./build-all.nix { inherit src size enableVector; };
+  build-all = callPackage ./build-all.nix {
+    inherit src size enableVector optimize march;
+  };
 in runCommand "${testCase}" {
   # sh script to run a testcase
   run = ''

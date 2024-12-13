@@ -1,7 +1,12 @@
 { callPackage
+, lib
+
+# TODO: can this default values be removed?
 , src ? throw "Please specify the path of spec2006"
 , size ? "ref" # "ref" or "test"
 , enableVector ? false
+, optimize ? "-O3 -flto"
+, march ? "rv64gc${lib.optionalString enableVector "v"}_zba_zbb_zbc_zbs"
 }: let
   testCases = [
     "400.perlbench"
@@ -38,6 +43,9 @@ in builtins.listToAttrs (
   builtins.map (testCase: {
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"
     name = builtins.replaceStrings ["."] ["_"] testCase;
-    value = callPackage ./build-one.nix { inherit src size enableVector testCase; };
+    value = callPackage ./build-one.nix {
+      inherit src size enableVector optimize march;
+      inherit testCase;
+    };
   }) testCases
 )
