@@ -78,7 +78,7 @@ let
       y=linkFarm "${prefix}_y" [drv1 drv4 drv7];
       z=linkFarm "${prefix}_z" [drv2 drv5 drv8];
     }*/
-  wrap-l2 = prefix: attrs-drvs: let
+  wrap-l2 = prefix: attrBuildResults: let
     /*mapToAttrs (name: {inherit name; value=...}) ["a", "b", "c", ...]
       returns {x=value0; b=value1; c=value2; ...} */
     mapToAttrs = func: list: builtins.listToAttrs (builtins.map func list);
@@ -95,8 +95,14 @@ let
       pkgs.lib.mapAttrsToList (testCase: buildResult: {
         name = testCase;
         path = buildResult."${name}";
-      }) attrs-drvs);
-  }) (attrDrvNames attrs-drvs);
+      }) attrBuildResults);
+  }) (attrDrvNames attrBuildResults);
+
+  wrap-l1 = prefix: buildResult: builtins.mapAttrs (name: value:
+    if pkgs.lib.isDerivation value then
+      pkgs.symlinkJoin {name="${prefix}_${name}"; paths=[value];}
+    else value
+  ) buildResult;
 in raw.overrideScope (r-self: r-super: {
   riscv64-scope = r-super.riscv64-scope.overrideScope (self: super: {
     riscv64-stdenv = super.riscv64-pkgs."${cc}Stdenv";
@@ -141,10 +147,18 @@ in raw.overrideScope (r-self: r-super: {
     "1core"
   ])) overrided);
 
-  openblas = r-super.openblas.overrideScope ( self: super: {
-    benchmark = super.benchmark.override {
-      inherit enableVector;
-      TARGET = openblas-target;
-    };
-  });
+  openblas = let
+    unwrapped = r-super.openblas.overrideScope ( self: super: {
+      benchmark = super.benchmark.override {
+        inherit enableVector;
+        TARGET = openblas-target;
+      };
+    });
+  in wrap-l1 (escapeName (builtins.concatStringsSep "_" [
+    "openblas"
+    (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
+    openblas-target
+    cpt-simulator
+    "1core"
+  ])) unwrapped;
 })
