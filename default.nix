@@ -74,7 +74,7 @@ in raw.overrideScope (r-self: r-super: {
         size = spec2006-size;
       };
     })) bare;
-  in bare-overrided // (r-super.tools.weave bare-overrided);
+  in bare-overrided // (r-super.tools.wrap-l2 "spec2006_ref_gcc_1410_O3_flto_rv64gc_zba_zbb_zbc_zbs_qemu_1core" bare-overrided);
 
   openblas = r-super.openblas.overrideScope ( self: super: {
     benchmark = super.benchmark.override { inherit enableVector; };
