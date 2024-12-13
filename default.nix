@@ -61,6 +61,38 @@ let
       [" " "." "-" "__"]
       [""  ""  "_" "_" ]
   name);
+  /*set -> set: filter derivations in a set*/
+  filterDrvs = set: pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) set;
+  /*string -> set -> set:
+    wrap-l2 prefix {
+      a={x=drv0; y=drv1; z=drv2; w=0;};
+      b={x=drv3; y=drv4; z=drv5; w=1;};
+      c={x=drv6; y=drv7; z=drv8; w=2;};
+    }
+    returns {
+      x=linkFarm "${prefix}_x" [drv0 drv3 drv6];
+      y=linkFarm "${prefix}_y" [drv1 drv4 drv7];
+      z=linkFarm "${prefix}_z" [drv2 drv5 drv8];
+    }*/
+  wrap-l2 = prefix: attrs-drvs: let
+    /*mapToAttrs (name: {inherit name; value=...}) ["a", "b", "c", ...]
+      returns {x=value0; b=value1; c=value2; ...} */
+    mapToAttrs = func: list: builtins.listToAttrs (builtins.map func list);
+    /*attrDrvNames {
+        a={x=drv0; y=drv1; z=drv2; w=0;};
+        b={x=drv3; y=drv4; z=drv5; w=1;};
+        c={x=drv6; y=drv7; z=drv8; w=2;};
+      }
+      returns ["x" "y" "z"] */
+    attrDrvNames = set: builtins.attrNames (filterDrvs (builtins.head (builtins.attrValues set)));
+  in mapToAttrs (name/*represents the name in builders/default.nix, like img, cpt, ...*/: {
+    inherit name;
+    value = pkgs.linkFarm "${prefix}_${name}" (
+      pkgs.lib.mapAttrsToList (testCase: buildResult: {
+        name = testCase;
+        path = buildResult."${name}";
+      }) attrs-drvs);
+  }) (attrDrvNames attrs-drvs);
 in raw.overrideScope (r-self: r-super: {
   riscv64-scope = r-super.riscv64-scope.overrideScope (self: super: {
     riscv64-stdenv = super.riscv64-pkgs."${cc}Stdenv";
@@ -84,11 +116,7 @@ in raw.overrideScope (r-self: r-super: {
   });
 
   spec2006 = let
-    bare = pkgs.lib.filterAttrs (testcase: v:
-      (builtins.match "[0-9][0-9][0-9]_.*" testcase != null) &&
-      (spec2006-testcase-filter testcase)
-    ) r-super.spec2006;
-    bare-overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
+    overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
       benchmark = super.benchmark.override {
         inherit enableVector;
         src = spec2006-src;
@@ -96,8 +124,10 @@ in raw.overrideScope (r-self: r-super: {
         optimize = spec2006-optimize;
         march = spec2006-march;
       };
-    })) bare;
-  in bare-overrided // (r-super.tools.wrap-l2 (escapeName (builtins.concatStringsSep "_" [
+    })) (pkgs.lib.filterAttrs
+      (testcase: v: spec2006-testcase-filter testcase)
+    r-super.spec2006);
+  in overrided // (wrap-l2 (escapeName (builtins.concatStringsSep "_" [
     "spec2006"
     spec2006-size
     (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
@@ -105,7 +135,7 @@ in raw.overrideScope (r-self: r-super: {
     spec2006-march
     cpt-simulator
     "1core"
-  ])) bare-overrided);
+  ])) overrided);
 
   openblas = r-super.openblas.overrideScope ( self: super: {
     benchmark = super.benchmark.override { inherit enableVector; };
