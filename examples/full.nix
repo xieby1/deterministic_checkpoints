@@ -3,15 +3,17 @@
 
   enableVector = true;
 
+  spec2006-extra-tag = "exclude_464_465";
   spec2006-size = "test";
-  # "464_h264ref" and "465_tonto" will be excluded
   spec2006-optimize = "-O3";
   spec2006-march = "rv64gcbv";
+  # "464_h264ref" and "465_tonto" will be excluded
   spec2006-testcase-filter = testcase: !(builtins.elem testcase [
     "464_h264ref"
     "465_tonto"
   ]);
 
+  openblas-extra-tag = "miao";
   openblas-target = "RISCV64_ZVL256B";
 
   cpt-maxK = "10";

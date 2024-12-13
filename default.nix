@@ -16,6 +16,7 @@
 , enableVector ? false
 
 # SPEC CPU 2006 Configuration ###################################
+, spec2006-extra-tag ? ""
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , spec2006-size ? "ref"
 , spec2006-optimize ? "-O3 -flto"
@@ -31,6 +32,7 @@
 , spec2006-testcase-filter ? testcase: true
 
 # OpenBLAS Configuration ########################################
+, openblas-extra-tag ? ""
 , openblas-target ? if enableVector then "RISCV64_ZVL128B" else "RISCV64_GENERIC"
 
 #######################################################################################
@@ -91,7 +93,7 @@ let
     attrDrvNames = set: builtins.attrNames (filterDrvs (builtins.head (builtins.attrValues set)));
   in mapToAttrs (name/*represents the name in builders/default.nix, like img, cpt, ...*/: {
     inherit name;
-    value = pkgs.linkFarm "${prefix}_${name}" (
+    value = pkgs.linkFarm (escapeName "${prefix}_${name}") (
       pkgs.lib.mapAttrsToList (testCase: buildResult: {
         name = testCase;
         path = buildResult."${name}";
@@ -100,7 +102,7 @@ let
 
   wrap-l1 = prefix: buildResult: builtins.mapAttrs (name: value:
     if pkgs.lib.isDerivation value then
-      pkgs.symlinkJoin {name="${prefix}_${name}"; paths=[value];}
+      pkgs.symlinkJoin {name=escapeName "${prefix}_${name}"; paths=[value];}
     else value
   ) buildResult;
 in raw.overrideScope (r-self: r-super: {
@@ -137,7 +139,7 @@ in raw.overrideScope (r-self: r-super: {
     })) (pkgs.lib.filterAttrs
       (testcase: v: spec2006-testcase-filter testcase)
     r-super.spec2006);
-  in overrided // (wrap-l2 (escapeName (builtins.concatStringsSep "_" [
+  in overrided // (wrap-l2 (builtins.concatStringsSep "_" [
     "spec2006"
     spec2006-size
     (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
@@ -145,7 +147,8 @@ in raw.overrideScope (r-self: r-super: {
     spec2006-march
     cpt-simulator
     "1core"
-  ])) overrided);
+    spec2006-extra-tag
+  ]) overrided);
 
   openblas = let
     unwrapped = r-super.openblas.overrideScope ( self: super: {
@@ -154,11 +157,12 @@ in raw.overrideScope (r-self: r-super: {
         TARGET = openblas-target;
       };
     });
-  in wrap-l1 (escapeName (builtins.concatStringsSep "_" [
+  in wrap-l1 (builtins.concatStringsSep "_" [
     "openblas"
     (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     openblas-target
     cpt-simulator
     "1core"
-  ])) unwrapped;
+    openblas-extra-tag
+  ]) unwrapped;
 })
