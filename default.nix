@@ -30,6 +30,9 @@
 # * Exlcude "464_h264ref" and "465_tonto": `testcase: !(builtins.elem testcase ["464_h264ref" "465_tonto"]);`
 , spec2006-testcase-filter ? testcase: true
 
+# OpenBLAS Configuration ########################################
+, openblas-target ? if enableVector then "RISCV64_ZVL128B" else "RISCV64_GENERIC"
+
 #######################################################################################
 # Builders Configuration
 #######################################################################################
@@ -50,6 +53,7 @@
 }:
 assert pkgs.pkgsCross.riscv64 ? "${cc}Stdenv";
 assert pkgs.lib.assertOneOf "spec2006-size" spec2006-size ["ref" "test"];
+assert pkgs.lib.assertOneOf "openblas-target" openblas-target ["RISCV64_GENERIC" "RISCV64_ZVL128B" "RISCV64_ZVL256B"];
 assert pkgs.lib.assertOneOf "cpt-simulator" cpt-simulator ["qemu" "nemu"];
 assert pkgs.lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
 assert pkgs.lib.assertMsg (cpt-simulator=="qemu" -> cpt-format=="zstd") "qemu only support cpt-format: zstd";
@@ -138,6 +142,9 @@ in raw.overrideScope (r-self: r-super: {
   ])) overrided);
 
   openblas = r-super.openblas.overrideScope ( self: super: {
-    benchmark = super.benchmark.override { inherit enableVector; };
+    benchmark = super.benchmark.override {
+      inherit enableVector;
+      TARGET = openblas-target;
+    };
   });
 })

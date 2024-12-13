@@ -12,6 +12,8 @@
     "465_tonto"
   ]);
 
+  openblas-target = "RISCV64_ZVL256B";
+
   cpt-maxK = "10";
   cpt-maxK-bmk = {
     "403.gcc" = "20";
