@@ -8,6 +8,15 @@
 #######################################################################################
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , spec2006-size ? "ref"
+# spec2006-testcase-filter is a function of type `string -> bool`
+# It takes a testcase name from spec2006 as input and returns:
+# * true: include this testcase
+# * false: exclude this testcase
+# For example:
+# * Include all testcases: `testcase: true;`
+# * Only include 403_gcc: `testcase: testcase=="403_gcc";`
+# * Exlcude "464_h264ref" and "465_tonto": `testcase: !(builtins.elem testcase ["464_h264ref" "465_tonto"]);`
+, spec2006-testcase-filter ? testcase: true
 , enableVector ? false
 
 #######################################################################################
@@ -21,6 +30,7 @@
 # * Using pname: `nix-instantiate --eval -A openblas.benchmark.pname`
 # * Using name: `nix-instantiate --eval -A spec2006.483_xalancbmk.benchmark.name`
 , cpt-maxK-bmk ? {
+    # TODO: rename xxx.yyyyyyy to xxx_yyyyyy ?
     "483.xalancbmk" = "100";
   }
 , cpt-intervals ? "20000000"
@@ -53,7 +63,10 @@ in raw.overrideScope (r-self: r-super: {
   });
 
   spec2006 = let
-    bare = pkgs.lib.filterAttrs (n: v: builtins.match "[0-9][0-9][0-9]_.*" n != null) r-super.spec2006;
+    bare = pkgs.lib.filterAttrs (testcase: v:
+      (builtins.match "[0-9][0-9][0-9]_.*" testcase != null) &&
+      (spec2006-testcase-filter testcase)
+    ) r-super.spec2006;
     bare-overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
       benchmark = super.benchmark.override {
         inherit enableVector;
