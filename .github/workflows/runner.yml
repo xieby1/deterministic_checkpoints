@@ -10,7 +10,7 @@ on:
       - "!docs/**"
 jobs:
   build-deterload:
-    timeout-minutes: 2880
+    timeout-minutes: 10080 # one week (spec2006 with enableVector needs about 4 days)
     runs-on: [self-hosted, Linux, X64, nix, spec2006]
     permissions:
       contents: write
