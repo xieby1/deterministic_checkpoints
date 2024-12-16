@@ -101,9 +101,11 @@ let
   }) (attrDrvNames attrBuildResults);
 
   wrap-l1 = prefix: buildResult: builtins.mapAttrs (name: value:
-    if pkgs.lib.isDerivation value then
-      pkgs.symlinkJoin {name=escapeName "${prefix}_${name}"; paths=[value];}
-    else value
+    if pkgs.lib.isDerivation value then pkgs.symlinkJoin {
+      name = escapeName "${prefix}_${name}";
+      paths = [value];
+      passthru = pkgs.lib.optionalAttrs (value?passthru) value.passthru;
+    } else value
   ) buildResult;
 in raw.overrideScope (r-self: r-super: {
   riscv64-scope = r-super.riscv64-scope.overrideScope (self: super: {
