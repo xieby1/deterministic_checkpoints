@@ -7,7 +7,7 @@
 , nemu_trap
 , trapCommand
 , benchmark-run
-}:
+}@args:
 let
   name = "initramfs-overlays";
   riscv64-busybox = riscv64-pkgs.busybox.override {
@@ -26,10 +26,7 @@ let
     ${trapCommand}
   '';
 in runCommand name {
-  passthru = {
-    inherit before_workload qemu_trap nemu_trap;
-    inherit inittab run_sh;
-  };
+  passthru = args // { inherit inittab run_sh; };
 } ''
   mkdir -p $out/bin
   cp ${riscv64-busybox}/bin/busybox $out/bin/

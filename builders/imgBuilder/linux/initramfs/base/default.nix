@@ -2,7 +2,7 @@
 , runCommand
 
 , gen_init_cpio
-}:
+}@args:
 let
   name = "init.cpio";
   cpio_list = writeText "cpio_list" ''
@@ -28,9 +28,7 @@ let
     nod /dev/null     644 0 0 c 1 3
   '';
 in runCommand name {
-  passthru = {
-    inherit cpio_list gen_init_cpio;
-  };
+  passthru = args // { inherit cpio_list; };
 } ''
   mkdir -p $out
   ${gen_init_cpio}/bin/gen_init_cpio -t 0 ${cpio_list} > $out/${name}

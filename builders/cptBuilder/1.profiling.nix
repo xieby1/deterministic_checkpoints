@@ -8,7 +8,7 @@
 , intervals
 , simulator
 , profiling_log
-}:
+}@args:
 let
   name = "${lib.removeSuffix ".gcpt" img.name}.1_profiling";
 
@@ -36,7 +36,7 @@ let
   ];
 
 in runCommand name {
-  passthru = { inherit qemu nemu img; };
+  passthru = args;
 } ''
   mkdir -p $out
 

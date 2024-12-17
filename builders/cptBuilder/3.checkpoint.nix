@@ -10,7 +10,7 @@
 , checkpoint_format
 , simulator
 , checkpoint_log
-}:
+}@args:
 let
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
@@ -36,7 +36,7 @@ let
   ];
 
 in runCommand "${lib.removeSuffix ".2_cluster" stage2-cluster.name}.3_checkpoint" {
-  passthru = { inherit qemu nemu img stage2-cluster; };
+  passthru = args;
 } ''
   mkdir -p $out
 

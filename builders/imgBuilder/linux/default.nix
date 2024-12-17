@@ -8,7 +8,7 @@
 , initramfs
   # TODO: use overlayfs to reduce disk usage
 , common-build
-}: stdenv.mkDerivation {
+}@args: stdenv.mkDerivation {
   name = "${rmExt initramfs.name}.linux";
   src = common-build;
   buildInputs = [
@@ -35,5 +35,5 @@
   installPhase = ''
     cp arch/riscv/boot/Image $out
   '';
-  passthru = { inherit initramfs common-build; };
+  passthru = args;
 }

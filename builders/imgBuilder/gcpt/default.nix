@@ -4,7 +4,7 @@
 , riscv64-cc
 , rmExt
 , opensbi
-}: stdenv.mkDerivation {
+}@args: stdenv.mkDerivation {
   name = "${rmExt opensbi.name}.gcpt";
 
     src = fetchFromGitHub {
@@ -29,5 +29,5 @@
     installPhase = ''
         cp build/gcpt.bin $out
     '';
-    passthru = { inherit opensbi; };
+    passthru = args;
 }

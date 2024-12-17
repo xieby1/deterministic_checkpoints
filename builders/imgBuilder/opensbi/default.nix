@@ -6,7 +6,7 @@
 , linux
 , dts
 , common-build
-}: stdenv.mkDerivation {
+}@args: stdenv.mkDerivation {
   name = "${rmExt linux.name}.opensbi";
 
   src = common-build;
@@ -57,5 +57,5 @@
   installPhase = ''
     cp build/platform/generic/firmware/fw_payload.bin $out
   '';
-  passthru = { inherit linux dts common-build; };
+  passthru = args;
 }

@@ -4,12 +4,10 @@
 , benchmark
 , base
 , overlays
-}: let
+}@args: let
   cpioPatched = cpio.overrideAttrs (old: { patches = [./cpio_reset_timestamp.patch]; });
 in runCommand "${benchmark.name}.cpio" {
-  passthru = {
-    inherit base overlays;
-  };
+  passthru = args // { inherit cpioPatched; };
 } ''
   cp ${base}/init.cpio $out
   chmod +w $out

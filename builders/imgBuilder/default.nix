@@ -1,3 +1,3 @@
-{ gcpt }: gcpt.overrideAttrs (old: {
-  passthru = { inherit gcpt; };
+{ gcpt }@args: gcpt.overrideAttrs (old: {
+  passthru = args;
 })
