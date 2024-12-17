@@ -107,6 +107,25 @@ let
       passthru = pkgs.lib.optionalAttrs (value?passthru) value.passthru;
     } else value
   ) buildResult;
+
+  metricPrefix = input: let
+    num =  if builtins.isInt input then input
+      else if builtins.isString input then pkgs.lib.toInt input
+      else throw "metricPrefix: unspported type of ${input}";
+    K = 1000;
+    M = 1000 * K;
+    G = 1000 * M;
+    T = 1000 * G;
+    P = 1000 * T;
+    E = 1000 * P;
+  in     if num < K then "${toString  num     }"
+    else if num < M then "${toString (num / K)}K"
+    else if num < G then "${toString (num / M)}M"
+    else if num < T then "${toString (num / G)}G"
+    else if num < P then "${toString (num / T)}T"
+    else if num < E then "${toString (num / P)}P"
+    else                 "${toString (num / E)}E"
+  ;
 in raw.overrideScope (r-self: r-super: {
   riscv64-scope = r-super.riscv64-scope.overrideScope (self: super: {
     riscv64-stdenv = super.riscv64-pkgs."${cc}Stdenv";
@@ -156,6 +175,7 @@ in raw.overrideScope (r-self: r-super: {
     spec2006-optimize
     spec2006-march
     cpt-simulator
+    (metricPrefix cpt-intervals)
     "1core"
     spec2006-extra-tag
   ]) overrided);
@@ -171,6 +191,7 @@ in raw.overrideScope (r-self: r-super: {
     (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     openblas-target
     cpt-simulator
+    (metricPrefix cpt-intervals)
     "1core"
     openblas-extra-tag
   ]) unwrapped;
