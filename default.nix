@@ -176,6 +176,10 @@ in raw.overrideScope (r-self: r-super: {
     spec2006-march
     cpt-simulator
     (metricPrefix cpt-intervals)
+    (let suffix = pkgs.lib.optionalString (builtins.any
+      (x: x.stage2-cluster.maxK!=cpt-maxK)
+      (builtins.attrValues overrided)
+    ) "x"; in"maxK${cpt-maxK}${suffix}")
     "1core"
     spec2006-extra-tag
   ]) overrided);
@@ -192,6 +196,7 @@ in raw.overrideScope (r-self: r-super: {
     openblas-target
     cpt-simulator
     (metricPrefix cpt-intervals)
+    "maxK${unwrapped.stage2-cluster.maxK}"
     "1core"
     openblas-extra-tag
   ]) unwrapped;
