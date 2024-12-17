@@ -2,13 +2,13 @@
     url = "https://github.com/NixOS/nixpkgs/archive/e8c38b73aeb218e27163376a2d617e61a2ad9b59.tar.gz";
     sha256 = "1n6gdjny8k5rwkxh6sp1iwg1y3ni1pm7lvh9sisifgjb18jdvzbm";
   }) {}
+, lib ? pkgs.lib
 
 #######################################################################################
 # Common Configuration
 #######################################################################################
 , cc ? "gcc14"
 
-# TODO: replace pkgs.lib with lib
 #######################################################################################
 # Benchmarks Configuration
 #######################################################################################
@@ -20,7 +20,7 @@
 , spec2006-src ? throw "Please specify <spec2006-src> the path of spec2006, for example: /path/of/spec2006.tar.gz"
 , spec2006-size ? "ref"
 , spec2006-optimize ? "-O3 -flto"
-, spec2006-march ? "rv64gc${pkgs.lib.optionalString enableVector "v"}_zba_zbb_zbc_zbs"
+, spec2006-march ? "rv64gc${lib.optionalString enableVector "v"}_zba_zbb_zbc_zbs"
 # spec2006-testcase-filter is a function of type `string -> bool`
 # It takes a testcase name from spec2006 as input and returns:
 # * true: include this testcase
@@ -54,21 +54,21 @@
 , cpt-format ? "zstd"
 }:
 assert pkgs.pkgsCross.riscv64 ? "${cc}Stdenv";
-assert pkgs.lib.assertOneOf "spec2006-size" spec2006-size ["ref" "test"];
-assert pkgs.lib.assertOneOf "openblas-target" openblas-target ["RISCV64_GENERIC" "RISCV64_ZVL128B" "RISCV64_ZVL256B"];
-assert pkgs.lib.assertOneOf "cpt-simulator" cpt-simulator ["qemu" "nemu"];
-assert pkgs.lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
-assert pkgs.lib.assertMsg (cpt-simulator=="qemu" -> cpt-format=="zstd") "qemu only support cpt-format: zstd";
+assert lib.assertOneOf "spec2006-size" spec2006-size ["ref" "test"];
+assert lib.assertOneOf "openblas-target" openblas-target ["RISCV64_GENERIC" "RISCV64_ZVL128B" "RISCV64_ZVL256B"];
+assert lib.assertOneOf "cpt-simulator" cpt-simulator ["qemu" "nemu"];
+assert lib.assertOneOf "cpt-format" cpt-format ["gz" "zstd"];
+assert lib.assertMsg (cpt-simulator=="qemu" -> cpt-format=="zstd") "qemu only support cpt-format: zstd";
 let
   raw = import ./raw.nix { inherit pkgs; };
   getName = p: if (p?pname) then p.pname else p.name;
-  escapeName = pkgs.lib.converge (name:
+  escapeName = lib.converge (name:
     builtins.replaceStrings
       [" " "." "-" "__"]
       [""  ""  "_" "_" ]
   name);
   /*set -> set: filter derivations in a set*/
-  filterDrvs = set: pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) set;
+  filterDrvs = set: lib.filterAttrs (n: v: (lib.isDerivation v)) set;
   /*string -> set -> set:
     wrap-l2 prefix {
       a={x=drv0; y=drv1; z=drv2; w=0;};
@@ -94,23 +94,23 @@ let
   in mapToAttrs (name/*represents the name in builders/default.nix, like img, cpt, ...*/: {
     inherit name;
     value = pkgs.linkFarm (escapeName "${prefix}_${name}") (
-      pkgs.lib.mapAttrsToList (testCase: buildResult: {
+      lib.mapAttrsToList (testCase: buildResult: {
         name = testCase;
         path = buildResult."${name}";
       }) attrBuildResults);
   }) (attrDrvNames attrBuildResults);
 
   wrap-l1 = prefix: buildResult: builtins.mapAttrs (name: value:
-    if pkgs.lib.isDerivation value then pkgs.symlinkJoin {
+    if lib.isDerivation value then pkgs.symlinkJoin {
       name = escapeName "${prefix}_${name}";
       paths = [value];
-      passthru = pkgs.lib.optionalAttrs (value?passthru) value.passthru;
+      passthru = lib.optionalAttrs (value?passthru) value.passthru;
     } else value
   ) buildResult;
 
   metricPrefix = input: let
     num =  if builtins.isInt input then input
-      else if builtins.isString input then pkgs.lib.toInt input
+      else if builtins.isString input then lib.toInt input
       else throw "metricPrefix: unspported type of ${input}";
     K = 1000;
     M = 1000 * K;
@@ -165,18 +165,18 @@ in raw.overrideScope (r-self: r-super: {
         optimize = spec2006-optimize;
         march = spec2006-march;
       };
-    })) (pkgs.lib.filterAttrs
+    })) (lib.filterAttrs
       (testcase: v: spec2006-testcase-filter testcase)
     r-super.spec2006);
   in overrided // (wrap-l2 (builtins.concatStringsSep "_" [
     "spec2006"
     spec2006-size
-    (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
+    (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     spec2006-optimize
     spec2006-march
     cpt-simulator
     (metricPrefix cpt-intervals)
-    (let suffix = pkgs.lib.optionalString (builtins.any
+    (let suffix = lib.optionalString (builtins.any
       (x: x.stage2-cluster.maxK!=cpt-maxK)
       (builtins.attrValues overrided)
     ) "x"; in"maxK${cpt-maxK}${suffix}")
@@ -192,7 +192,7 @@ in raw.overrideScope (r-self: r-super: {
     });
   in wrap-l1 (builtins.concatStringsSep "_" [
     "openblas"
-    (pkgs.lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
+    (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     openblas-target
     cpt-simulator
     (metricPrefix cpt-intervals)
