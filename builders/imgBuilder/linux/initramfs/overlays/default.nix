@@ -5,7 +5,7 @@
 , before_workload
 , qemu_trap
 , nemu_trap
-, trapCommand ? "qemu_trap" # "nemu_trap" or "qemu_trap"
+, trapCommand
 , benchmark-run
 }:
 let

@@ -5,17 +5,17 @@
 , nemu
 , img
 , stage2-cluster
-, intervals ? "20000000"
-, workload ? "miao"
-, checkpoint_format ? "zstd" # gz or zstd, qemu only support zstd compressed
-, simulator ? "qemu" # nemu or qemu
-, checkpoint_log ? "checkpoint.log"
+, intervals
+, workload_name
+, checkpoint_format
+, simulator
+, checkpoint_log
 }:
 let
   qemuCommand = [
     "${qemu}/bin/qemu-system-riscv64"
     "-bios ${img}"
-    "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${intervals},output-base-dir=$out,config-name=${workload},checkpoint-mode=SimpointCheckpoint"
+    "-M nemu,simpoint-path=${stage2-cluster},workload=.,cpt-interval=${intervals},output-base-dir=$out,config-name=${workload_name},checkpoint-mode=SimpointCheckpoint"
     "-nographic"
     "-m 8G"
     "-smp 1"

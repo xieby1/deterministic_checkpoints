@@ -1,12 +1,10 @@
 { callPackage
-, lib
 
-# TODO: can this default values be removed?
-, src ? throw "Please specify the path of spec2006"
-, size ? "ref" # "ref" or "test"
-, enableVector ? false
-, optimize ? "-O3 -flto"
-, march ? "rv64gc${lib.optionalString enableVector "v"}_zba_zbb_zbc_zbs"
+, src
+, size
+, enableVector
+, optimize
+, march
 }: let
   testCases = [
     "400.perlbench"

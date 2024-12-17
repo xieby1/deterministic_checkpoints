@@ -1,7 +1,7 @@
 { runCommand
 , lib
 
-, maxK ? "30"
+, maxK
 , simpoint
 , stage1-profiling
 }: runCommand "${lib.removeSuffix ".1_profiling" stage1-profiling.name}.2_cluster" {

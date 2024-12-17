@@ -113,9 +113,15 @@ in raw.overrideScope (r-self: r-super: {
   });
 
   build = benchmark: (r-super.build benchmark).overrideScope (b-self: b-super: {
+    initramfs_overlays = b-super.initramfs_overlays.override {
+      trapCommand = "${cpt-simulator}_trap";
+    };
+
     stage1-profiling = b-super.stage1-profiling.override {
+      workload_name = "miao";
       intervals = cpt-intervals;
       simulator = cpt-simulator;
+      profiling_log = "profiling.log";
     };
     stage2-cluster = b-super.stage2-cluster.override {
       maxK = if (cpt-maxK-bmk ? "${getName benchmark}")
@@ -123,9 +129,11 @@ in raw.overrideScope (r-self: r-super: {
         else cpt-maxK;
     };
     stage3-checkpoint = b-super.stage3-checkpoint.override {
+      workload_name = "miao";
       intervals = cpt-intervals;
       simulator = cpt-simulator;
       checkpoint_format = cpt-format;
+      checkpoint_log = "checkpoint.log";
     };
   });
 
@@ -155,7 +163,6 @@ in raw.overrideScope (r-self: r-super: {
   openblas = let
     unwrapped = r-super.openblas.overrideScope ( self: super: {
       benchmark = super.benchmark.override {
-        inherit enableVector;
         TARGET = openblas-target;
       };
     });

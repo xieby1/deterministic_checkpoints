@@ -4,10 +4,10 @@
 , qemu
 , nemu
 , img
-, workload ? "miao"
-, intervals ? "20000000"
-, simulator ? "qemu" # "qemu" or "nemu"
-, profiling_log ? "profiling.log"
+, workload_name
+, intervals
+, simulator
+, profiling_log
 }:
 let
   name = "${lib.removeSuffix ".gcpt" img.name}.1_profiling";
@@ -20,7 +20,7 @@ let
     "-m 8G"
     "-smp 1"
     "-cpu rv64,v=true,vlen=128,h=false,sv39=true,sv48=false,sv57=false,sv64=false"
-    "-plugin ${qemu}/lib/libprofiling.so,workload=${workload},intervals=${intervals},target=$out"
+    "-plugin ${qemu}/lib/libprofiling.so,workload=${workload_name},intervals=${intervals},target=$out"
     "-icount shift=0,align=off,sleep=off"
   ];
 
@@ -30,7 +30,7 @@ let
     "-b"
     "-D $out"
     "-C ${name}"
-    "-w ${workload}"
+    "-w ${workload_name}"
     "--simpoint-profile"
     "--cpt-interval ${intervals}"
   ];
@@ -46,6 +46,6 @@ in runCommand name {
   '' else ''
     echo ${builtins.toString nemuCommand}
     ${builtins.toString nemuCommand} | tee $out/${profiling_log}
-    cp $out/${name}/${workload}/simpoint_bbv.gz $out/
+    cp $out/${name}/${workload_name}/simpoint_bbv.gz $out/
   ''}
 ''
