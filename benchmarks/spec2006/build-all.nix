@@ -2,11 +2,11 @@
 , lib
 , fetchFromGitHub
 , libxcrypt-legacy
-
-, riscv64-pkgs
 , riscv64-cc
 , riscv64-fortran
 , riscv64-libc-static
+
+, riscv64-jemalloc
 , src
 , size
 , enableVector # TODO: enable vector in libc and jemalloc
@@ -14,22 +14,6 @@
 , march
 }:
 let
-  customJemalloc = riscv64-pkgs.jemalloc.overrideAttrs (oldAttrs: {
-    configureFlags = (oldAttrs.configureFlags or []) ++ [
-      "--enable-static"
-      "--disable-shared"
-    ];
-    preBuild = ''
-      # Add weak attribute to C++ operators, same as jemalloc_cpp.patch
-      sed -i 's/void \*operator new(size_t)/void *operator new(size_t) __attribute__((weak))/g' src/jemalloc_cpp.cpp
-      sed -i 's/void operator delete(void \*)/void operator delete(void *) __attribute__((weak))/g' src/jemalloc_cpp.cpp
-    '';
-    # Ensure static libraries are installed
-    postInstall = ''
-      ${oldAttrs.postInstall or ""}
-      cp -v lib/libjemalloc.a $out/lib/
-    '';
-  });
   CPU2006LiteWrapper = fetchFromGitHub {
     owner = "OpenXiangShan";
     repo = "CPU2006LiteWrapper";
@@ -50,7 +34,7 @@ in stdenv.mkDerivation {
     riscv64-cc
     riscv64-fortran
     riscv64-libc-static
-    customJemalloc
+    riscv64-jemalloc
   ];
 
   prePatch = ''
@@ -88,9 +72,9 @@ in stdenv.mkDerivation {
     export OPTIMIZE="${optimize} -march=${march}"
     export SUBPROCESS_NUM=5
 
-    export CFLAGS="$CFLAGS -static -Wno-format-security -I${customJemalloc}/include "
-    export CXXFLAGS="$CXXFLAGS -static -Wno-format-security -I${customJemalloc}/include"
-    export LDFLAGS="$LDFLAGS -static -ljemalloc -L${customJemalloc}/lib"
+    export CFLAGS="$CFLAGS -static -Wno-format-security -I${riscv64-jemalloc}/include "
+    export CXXFLAGS="$CXXFLAGS -static -Wno-format-security -I${riscv64-jemalloc}/include"
+    export LDFLAGS="$LDFLAGS -static -ljemalloc -L${riscv64-jemalloc}/lib"
 
     pushd $SPEC && source shrc && popd
     make copy-all-src

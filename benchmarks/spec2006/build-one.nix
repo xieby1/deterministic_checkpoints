@@ -1,6 +1,7 @@
 { runCommand
-
 , callPackage
+
+, riscv64-jemalloc
 , src
 , size
 , enableVector
@@ -9,6 +10,7 @@
 , testCase
 }: let
   build-all = callPackage ./build-all.nix {
+    inherit riscv64-jemalloc;
     inherit src size enableVector optimize march;
   };
 in runCommand "${testCase}" {
