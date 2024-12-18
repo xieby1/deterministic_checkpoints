@@ -1,7 +1,10 @@
 { lib
 , callPackage
 , riscv64-pkgs
+, riscv64-stdenv
 }: lib.makeScope lib.callPackageWith (self: {
+  riscv64-libc = riscv64-stdenv.cc.libc.static;
+
   riscv64-jemalloc = riscv64-pkgs.jemalloc.overrideAttrs (oldAttrs: {
     configureFlags = (oldAttrs.configureFlags or []) ++ [
       "--enable-static"
@@ -19,11 +22,11 @@
     '';
   });
   spec2006 = callPackage ./spec2006 {
-    inherit (self) riscv64-jemalloc;
+    inherit (self) riscv64-libc riscv64-jemalloc;
   };
 
   riscv64-libfortran = riscv64-pkgs.gfortran.cc;
   openblas = callPackage ./openblas {
-    inherit (self) riscv64-libfortran;
+    inherit (self) riscv64-libc riscv64-libfortran;
   };
 })

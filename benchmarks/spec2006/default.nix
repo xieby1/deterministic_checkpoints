@@ -1,5 +1,6 @@
 { callPackage
 
+, riscv64-libc
 , riscv64-jemalloc
 , src
 , size
@@ -43,7 +44,7 @@ in builtins.listToAttrs (
     # change `.` to `_`, e.g. "403.gcc" to "403_gcc"
     name = builtins.replaceStrings ["."] ["_"] testCase;
     value = callPackage ./build-one.nix {
-      inherit riscv64-jemalloc;
+      inherit riscv64-libc riscv64-jemalloc;
       inherit src size enableVector optimize march;
       inherit testCase;
     };

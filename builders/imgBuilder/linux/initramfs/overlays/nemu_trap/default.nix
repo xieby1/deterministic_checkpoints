@@ -1,6 +1,7 @@
 { stdenv
 , riscv64-cc
-, riscv64-libc-static
+
+, riscv64-libc
 }:
 stdenv.mkDerivation rec {
   name = "nemu_trap";
@@ -11,7 +12,7 @@ stdenv.mkDerivation rec {
   dontUnpack = true;
   buildInputs = [
     riscv64-cc
-    riscv64-libc-static
+    riscv64-libc
   ];
   buildPhase = ''
     riscv64-unknown-linux-gnu-gcc ${src} -o ${name} -static

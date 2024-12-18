@@ -4,8 +4,8 @@
 , libxcrypt-legacy
 , riscv64-cc
 , riscv64-fortran
-, riscv64-libc-static
 
+, riscv64-libc
 , riscv64-jemalloc
 , src
 , size
@@ -33,7 +33,7 @@ in stdenv.mkDerivation {
   buildInputs = [
     riscv64-cc
     riscv64-fortran
-    riscv64-libc-static
+    riscv64-libc
     riscv64-jemalloc
   ];
 

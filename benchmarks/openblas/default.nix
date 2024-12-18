@@ -2,8 +2,8 @@
 , fetchFromGitHub
 , riscv64-cc
 , riscv64-fortran
-, riscv64-libc-static
 
+, riscv64-libc
 , riscv64-libfortran
 , TARGET
 }: stdenv.mkDerivation {
@@ -19,7 +19,7 @@
   depsBuildBuild = [
     riscv64-cc
     riscv64-fortran
-    riscv64-libc-static
+    riscv64-libc
   ];
 
   buildPhase = let
@@ -52,8 +52,8 @@
     makeFlags2 = makeFlags_common ++ [
       # benchmark/Makefile uses `cc` to compile and link, does not use `ld` directly.
       # Therefore, benchmark/Makefile does not receive LDFLAGS, only receives CFLAGS
-      "CFLAGS=\"-L${riscv64-libfortran}/lib -L${riscv64-libc-static}/lib -static\""
-      "FFLAGS=\"-L${riscv64-libfortran}/lib -L${riscv64-libc-static}/lib -static\""
+      "CFLAGS=\"-L${riscv64-libfortran}/lib -L${riscv64-libc}/lib -static\""
+      "FFLAGS=\"-L${riscv64-libfortran}/lib -L${riscv64-libc}/lib -static\""
       "-C benchmark"
     ];
   in ''

@@ -21,7 +21,6 @@ pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
     riscv64-pkgs = pkgs.pkgsCross.riscv64;
     riscv64-stdenv = self.riscv64-pkgs.gcc14Stdenv;
     riscv64-cc = self.riscv64-stdenv.cc;
-    riscv64-libc-static = self.riscv64-stdenv.cc.libc.static;
     riscv64-fortran = self.riscv64-pkgs.wrapCCWith {
       cc = self.riscv64-stdenv.cc.cc.override {
         name = "gfortran";
