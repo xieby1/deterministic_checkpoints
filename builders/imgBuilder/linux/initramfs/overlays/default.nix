@@ -1,7 +1,7 @@
 { writeText
 , runCommand
 
-, riscv64-pkgs
+, riscv64-busybox
 , before_workload
 , qemu_trap
 , nemu_trap
@@ -10,10 +10,6 @@
 }@args:
 let
   name = "initramfs-overlays";
-  riscv64-busybox = riscv64-pkgs.busybox.override {
-    enableStatic = true;
-    useMusl = true;
-  };
   inittab = writeText "inittab" ''
     ::sysinit:/bin/busybox --install -s
     /dev/console::sysinit:-/bin/sh /bin/run.sh

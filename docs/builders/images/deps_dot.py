@@ -16,6 +16,7 @@ class ImgBuilder(CCluster):
           class Overlays(CCluster):
             def __init__(self, **args):
               CCluster.__init__(self, "overlays", **args)
+              self.busybox = addNode(self, "busybox")
               self.before_workload = addNode(self, "before_workload")
               self.qemu_trap = addNode(self, "qemu_trap")
               self.nemu_trap = addNode(self, "nemu_trap")
@@ -95,6 +96,7 @@ class Output(CCluster):
     addEdge(self, self._level0_, self._level1_, color="transparent")
     self.gen_init_cpio = addNode(self._level1_, "gen_init_cpio"); set_colors.gcpt(self.gen_init_cpio)
     self.initramfs_base = addNode(self._level1_, "initramfs_base"); set_colors.gcpt(self.initramfs_base)
+    self.busybox = addNode(self._level1_, "busybox"); set_colors.gcpt(self.busybox)
     self.before_workload = addNode(self._level1_, "before_workload"); set_colors.gcpt(self.before_workload)
     self.nemu_trap = addNode(self._level1_, "nemu_trap"); set_colors.gcpt(self.nemu_trap)
     self.qemu_trap = addNode(self._level1_, "qemu_trap"); set_colors.gcpt(self.qemu_trap)
@@ -137,6 +139,7 @@ def addFlatEdge(g: Graph, n1: Node|CCluster, n2: Node|CCluster, **args):
 addFlatEdge(graph, benchmark, output.benchmark)
 addFlatEdge(graph, builder.imgBuilder.gcpt.opensbi.linux.initramfs.base.gen_init_cpio, output.gen_init_cpio)
 addFlatEdge(graph, builder.imgBuilder.gcpt.opensbi.linux.initramfs.base, output.initramfs_base)
+addFlatEdge(graph, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.busybox, output.busybox)
 addFlatEdge(graph, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.before_workload, output.before_workload)
 addFlatEdge(graph, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.nemu_trap, output.nemu_trap)
 addFlatEdge(graph, builder.imgBuilder.gcpt.opensbi.linux.initramfs.overlays.qemu_trap, output.qemu_trap)

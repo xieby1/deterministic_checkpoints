@@ -1,5 +1,6 @@
 { lib
 , callPackage
+, riscv64-pkgs
 }:
 benchmark: lib.makeScope lib.callPackageWith (self: {
   inherit benchmark;
@@ -8,11 +9,15 @@ benchmark: lib.makeScope lib.callPackageWith (self: {
     inherit (self) gen_init_cpio;
   };
 
+  riscv64-busybox = riscv64-pkgs.busybox.override {
+    enableStatic = true;
+    useMusl = true;
+  };
   before_workload = callPackage ./imgBuilder/linux/initramfs/overlays/before_workload {};
   nemu_trap = callPackage ./imgBuilder/linux/initramfs/overlays/nemu_trap {};
   qemu_trap = callPackage ./imgBuilder/linux/initramfs/overlays/qemu_trap {};
   initramfs_overlays = callPackage ./imgBuilder/linux/initramfs/overlays {
-    inherit (self) before_workload qemu_trap nemu_trap;
+    inherit (self) riscv64-busybox before_workload qemu_trap nemu_trap;
     benchmark-run = self.benchmark.run;
   };
 
