@@ -41,7 +41,8 @@ jobs:
     - uses: actions/checkout@v4
     - run: |
         for example in examples/*.nix; do
-          for benchmark in benchmarks/*; do
+          for folder in benchmarks/*/; do
+            benchmark=${folder%/}
             nix-instantiate $example --arg spec2006-src $(ls -d /spec2006* | head -n1) -A ${benchmark##*/}.cpt
           done
         done
