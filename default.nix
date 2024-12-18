@@ -131,6 +131,22 @@ in raw.overrideScope (r-self: r-super: {
     riscv64-stdenv = super.riscv64-pkgs."${cc}Stdenv";
   });
 
+  benchmarks = r-super.benchmarks.overrideScope (bmks-self: bmks-super: {
+    spec2006 = builtins.mapAttrs (testcase: value: value.override {
+      inherit enableVector;
+      src = spec2006-src;
+      size = spec2006-size;
+      optimize = spec2006-optimize;
+      march = spec2006-march;
+    }) (lib.filterAttrs (testcase: value:
+      (spec2006-testcase-filter testcase) && (lib.isDerivation value))
+    bmks-super.spec2006);
+
+    openblas = bmks-super.openblas.override {
+      TARGET = openblas-target;
+    };
+  });
+
   build = benchmark: (r-super.build benchmark).overrideScope (b-self: b-super: {
     initramfs_overlays = b-super.initramfs_overlays.override {
       trapCommand = "${cpt-simulator}_trap";
@@ -156,19 +172,7 @@ in raw.overrideScope (r-self: r-super: {
     };
   });
 
-  spec2006 = let
-    overrided = builtins.mapAttrs (n: v: v.overrideScope ( self: super: {
-      benchmark = super.benchmark.override {
-        inherit enableVector;
-        src = spec2006-src;
-        size = spec2006-size;
-        optimize = spec2006-optimize;
-        march = spec2006-march;
-      };
-    })) (lib.filterAttrs
-      (testcase: v: spec2006-testcase-filter testcase)
-    r-super.spec2006);
-  in overrided // (wrap-l2 (builtins.concatStringsSep "_" [
+  spec2006 = r-super.spec2006 // (wrap-l2 (builtins.concatStringsSep "_" [
     "spec2006"
     spec2006-size
     (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
@@ -178,26 +182,20 @@ in raw.overrideScope (r-self: r-super: {
     (metricPrefix cpt-intervals)
     (let suffix = lib.optionalString (builtins.any
       (x: x.stage2-cluster.maxK!=cpt-maxK)
-      (builtins.attrValues overrided)
+      (builtins.attrValues r-super.spec2006)
     ) "x"; in"maxK${cpt-maxK}${suffix}")
     "1core"
     spec2006-extra-tag
-  ]) overrided);
+  ]) r-super.spec2006);
 
-  openblas = let
-    unwrapped = r-super.openblas.overrideScope ( self: super: {
-      benchmark = super.benchmark.override {
-        TARGET = openblas-target;
-      };
-    });
-  in wrap-l1 (builtins.concatStringsSep "_" [
+  openblas = wrap-l1 (builtins.concatStringsSep "_" [
     "openblas"
     (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     openblas-target
     cpt-simulator
     (metricPrefix cpt-intervals)
-    "maxK${unwrapped.stage2-cluster.maxK}"
+    "maxK${r-super.openblas.stage2-cluster.maxK}"
     "1core"
     openblas-extra-tag
-  ]) unwrapped;
+  ]) r-super.openblas;
 })
