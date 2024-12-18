@@ -68,6 +68,14 @@ nix-shell
 # Generate checkpoints for <benchmark> using 10 threads, saved in result/:
 nom-build -A <benchmark>.cpt -j10
 
+# 通过命令行开启编译器的自动向量化，为<benchmark>生成切片，切片存于result/：
+# Enable compiler's auto vectorization by CLI, generate checkpoints for <benchmark>, saved in result/:
+nom-build --arg enableVector true -A <benchmark>.cpt
+
+# 或者通过配置文件开启编译器的自动向量化，为<benchmark>生成切片，切片存于result/：
+# Or enable compiler's auto vectorization by a config file, generate checkpoints for <benchmark>, saved in result/:
+nom-build examples/vector.nix -A <benchmark>.cpt
+
 # 显示帮助信息：
 # Display help information:
 h
