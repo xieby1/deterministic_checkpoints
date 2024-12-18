@@ -178,6 +178,8 @@ in raw.overrideScope (r-self: r-super: {
     (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     spec2006-optimize
     spec2006-march
+    r-self.benchmarks.riscv64-libc.pname
+    r-self.benchmarks.riscv64-jemalloc.pname
     cpt-simulator
     (metricPrefix cpt-intervals)
     (let suffix = lib.optionalString (builtins.any
@@ -192,6 +194,7 @@ in raw.overrideScope (r-self: r-super: {
     "openblas"
     (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     openblas-target
+    r-self.benchmarks.riscv64-libc.pname
     cpt-simulator
     (metricPrefix cpt-intervals)
     "maxK${r-super.openblas.stage2-cluster.maxK}"
