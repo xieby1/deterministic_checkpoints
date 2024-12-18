@@ -172,7 +172,7 @@ in raw.overrideScope (r-self: r-super: {
     };
   });
 
-  spec2006 = r-super.spec2006 // (wrap-l2 (builtins.concatStringsSep "_" [
+  spec2006 = let tag = builtins.concatStringsSep "_" [
     "spec2006"
     spec2006-size
     (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
@@ -186,9 +186,9 @@ in raw.overrideScope (r-self: r-super: {
     ) "x"; in"maxK${cpt-maxK}${suffix}")
     "1core"
     spec2006-extra-tag
-  ]) r-super.spec2006);
+  ]; in r-super.spec2006 // (wrap-l2 tag r-super.spec2006);
 
-  openblas = wrap-l1 (builtins.concatStringsSep "_" [
+  openblas = let tag = builtins.concatStringsSep "_" [
     "openblas"
     (lib.removePrefix "${r-self.riscv64-scope.riscv64-stdenv.targetPlatform.config}-" r-self.riscv64-scope.riscv64-stdenv.cc.cc.name)
     openblas-target
@@ -197,5 +197,5 @@ in raw.overrideScope (r-self: r-super: {
     "maxK${r-super.openblas.stage2-cluster.maxK}"
     "1core"
     openblas-extra-tag
-  ]) r-super.openblas;
+  ]; in wrap-l1 tag r-super.openblas;
 })
