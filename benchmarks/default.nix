@@ -22,5 +22,8 @@
     inherit (self) riscv64-jemalloc;
   };
 
-  openblas = callPackage ./openblas {};
+  riscv64-libfortran = riscv64-pkgs.gfortran.cc;
+  openblas = callPackage ./openblas {
+    inherit (self) riscv64-libfortran;
+  };
 })
