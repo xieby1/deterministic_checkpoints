@@ -46,14 +46,12 @@ pkgs.lib.makeScope pkgs.lib.callPackageWith (ds/*deterload-scope itself*/: {
         (pkgs.lib.splitString "." name));
   });
 
+  benchmarks = ds.riscv64-scope.callPackage ./benchmarks {};
+
   build = ds.riscv64-scope.callPackage ./builders {};
 
-  spec2006 = let
-    benchmarks = ds.riscv64-scope.callPackage ./benchmarks/spec2006 {};
-  in builtins.mapAttrs (name: benchmark: (ds.build benchmark))
-    (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) benchmarks);
+  spec2006 = builtins.mapAttrs (name: benchmark: (ds.build benchmark))
+    (pkgs.lib.filterAttrs (n: v: (pkgs.lib.isDerivation v)) ds.benchmarks.spec2006);
 
-  openblas = let
-    benchmark = ds.riscv64-scope.callPackage ./benchmarks/openblas {};
-  in ds.build benchmark;
+  openblas = ds.build ds.benchmarks.openblas;
 })
