@@ -9,7 +9,7 @@
 , optimize
 , march
 , testCase
-}: let
+}@args: let
   build-all = callPackage ./build-all.nix {
     inherit riscv64-libc riscv64-jemalloc;
     inherit src size enableVector optimize march;
@@ -20,6 +20,7 @@ in runCommand "${testCase}" {
     cd /run
     sh ./run-spec.sh
   '';
+  passthru = args;
 } ''
   mkdir -p $out
   cp -r ${build-all}/${testCase}/* $out/
