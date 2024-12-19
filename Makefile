@@ -1,7 +1,8 @@
 .NOTINTERMEDIATE:
 
 PYSVGs=$(subst _dot.py,_py.svg,$(shell find docs/ -name "*_dot.py"))
-doc: $(shell find . -name "*.md") ${PYSVGs}
+EXTRACTMDs=docs/reference/default_extract.md
+doc: $(shell find . -name "*.md") ${PYSVGs} ${EXTRACTMDs}
 	mdbook build
 
 %_py.dot: %_dot.py docs/builders/images/common.py
