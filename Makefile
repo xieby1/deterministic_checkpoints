@@ -11,3 +11,6 @@ doc: $(shell find . -name "*.md") ${PYSVGs}
 	# css can only recognize intrinsic size in px
 	# https://developer.mozilla.org/en-US/docs/Glossary/Intrinsic_Size
 	sed -i 's/\([0-9]\+\)pt/\1px/g' $@
+
+docs/reference/default_extract.md: ./docs/extract_comments.py default.nix
+	$^ $@
